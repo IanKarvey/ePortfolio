@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ian Karvey L. Manimtim — Portfolio</title>
+<meta name="description" content="BSIT student at De La Salle Lipa — Web Developer, Systems Developer & Mobile Engineer based in Talisay, Batangas, Philippines.">
+<meta name="author" content="Ian Karvey L. Manimtim">
+<meta name="theme-color" content="#0d0b09">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ian Karvey L. Manimtim — Portfolio">
+<meta property="og:description" content="BSIT student at De La Salle Lipa — Web Developer, Systems Developer & Mobile Engineer based in Talisay, Batangas, Philippines.">
+<meta property="og:site_name" content="IKM Portfolio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ian Karvey L. Manimtim — Portfolio">
+<meta name="twitter:description" content="BSIT student at De La Salle Lipa — Web Developer, Systems Developer & Mobile Engineer.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d0b09'/%3E%3Ctext x='16' y='23' text-anchor='middle' fill='%23c9a84c' font-family='Georgia,serif' font-size='15' font-weight='bold'%3EIK%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;1,100;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto}
+
+:root{
+  --bg:    #0d0b09;
+  --bg2:   #131109;
+  --bg3:   #1c1814;
+  --fg:    #f4efe6;
+  --fg2:   #c8b99a;
+  --fg3:   #a8967c;
+  --gold:  #dbb95e;
+  --gold2: #f0d478;
+  --brd:   rgba(244,239,230,.07);
+  --brd2:  rgba(244,239,230,.13);
+  --serif: 'Cooper BT','Cooper Black','Playfair Display',Georgia,serif;
+  --sans:  'ITC Avant Garde Gothic','Avant Garde','Josefin Sans','Century Gothic',Futura,sans-serif;
+  --mono:  'DM Mono','Courier New',monospace;
+  --g:     clamp(20px,5vw,80px);
+  --w:     1200px;
+  --nav:   68px;
+}
+
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  cursor:none;
+  overflow-x:hidden;
+}
+
+/* ── SCROLL PROGRESS ── */
+#prog{
+  position:fixed;top:0;left:0;
+  width:100%;height:2px;
+  background:var(--gold);
+  transform:scaleX(0);transform-origin:left;
+  z-index:9999;pointer-events:none;
+}
+
+/* ── CURSOR ── */
+.cur{
+  position:fixed;width:30px;height:30px;
+  border:1px solid rgba(244,239,230,.35);
+  border-radius:50%;pointer-events:none;
+  z-index:9998;transform:translate(-50%,-50%);
+  transition:width .32s cubic-bezier(.25,1,.5,1),height .32s,border-color .32s,background .32s;
+  will-change:transform;
+}
+.cur.hov{width:54px;height:54px;border-color:var(--gold);background:rgba(201,168,76,.07)}
+.cdot{
+  position:fixed;width:4px;height:4px;
+  background:var(--gold);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);will-change:transform;
+}
+
+/* ── NAV ── */
+#nav{
+  position:fixed;top:0;left:0;right:0;
+  height:var(--nav);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--g);z-index:500;
+  transition:background .5s,backdrop-filter .5s,-webkit-backdrop-filter .5s;
+}
+#nav.on{
+  background:rgba(13,11,9,.85);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--brd);
+}
+.n-logo{
+  font-family:var(--serif);font-size:21px;font-weight:700;
+  color:var(--fg);text-decoration:none;letter-spacing:-.01em;
+}
+.n-links{display:flex;gap:36px;list-style:none}
+.n-links a{
+  font-family:var(--sans);font-size:9.5px;font-weight:400;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--fg3);
+  text-decoration:none;position:relative;padding-bottom:3px;transition:color .3s;
+}
+.n-links a::after{
+  content:'';position:absolute;bottom:0;left:0;
+  width:0;height:.7px;background:var(--gold);
+  transition:width .4s cubic-bezier(.25,1,.5,1);
+}
+.n-links a:hover{color:var(--fg)}
+.n-links a:hover::after{width:100%}
+
+/* ── SIDE NAV ── */
+#snav{
+  position:fixed;right:22px;top:50%;
+  transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:13px;
+  z-index:400;
+}
+.snd{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--fg3);cursor:pointer;
+  transition:background .3s,transform .3s;
+}
+.snd.act{background:var(--gold);transform:scale(1.6)}
+
+/* ── HERO ── */
+#hero{
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:var(--nav) var(--g) clamp(48px,7vh,80px);
+  overflow:hidden;
+}
+.h-glow{
+  position:absolute;width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.07) 0%,transparent 68%);
+  top:-160px;right:-160px;pointer-events:none;
+  animation:breathe 9s ease-in-out infinite alternate;
+}
+@keyframes breathe{
+  from{transform:translate(0,0) scale(1)}
+  to{transform:translate(-80px,80px) scale(1.12)}
+}
+.h-noise{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='3' height='3' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='.8' cy='.8' r='.4' fill='%23c8b99a' opacity='.055'/%3E%3C/svg%3E");
+}
+.h-vert{
+  position:absolute;top:calc(var(--nav) + 52px);right:var(--g);
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--fg3);z-index:1;
+}
+.h-inner{position:relative;z-index:1;max-width:var(--w)}
+.h-hello{
+  font-family:var(--serif);font-size:clamp(15px,1.6vw,20px);
+  font-weight:400;font-style:italic;color:var(--fg3);
+  margin-bottom:clamp(6px,1vw,12px);overflow:hidden;
+}
+.h-hello-i{display:block}
+.h-name{line-height:.85;margin-bottom:clamp(14px,2vw,26px)}
+.h-fill{display:block;overflow:hidden}
+.h-fill-i{
+  display:block;
+  font-family:var(--serif);
+  font-size:clamp(80px,15vw,230px);
+  font-weight:900;color:var(--fg);letter-spacing:-.04em;line-height:1;
+}
+.h-stroke{display:block;overflow:hidden}
+.h-stroke-i{
+  display:block;
+  font-family:var(--sans);
+  font-size:clamp(38px,6.5vw,100px);
+  font-weight:700;letter-spacing:-.01em;line-height:1;
+  -webkit-text-stroke:1.2px var(--fg2);color:transparent;
+}
+.h-sub-name{
+  font-family:var(--sans);
+  font-size:clamp(9px,1.3vw,13px);
+  font-weight:400;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--fg3);margin-top:8px;overflow:hidden;
+}
+.h-sub-name-i{display:block}
+.h-photo{
+  position:absolute;right:0;top:0;height:100%;
+  width:clamp(240px,36vw,520px);z-index:0;pointer-events:none;
+}
+.h-photo img{
+  width:100%;height:100%;object-fit:cover;object-position:center 15%;
+  display:block;
+  filter:grayscale(100%) brightness(.42) contrast(1.18);
+}
+.h-photo::before{
+  content:'';position:absolute;inset:0;z-index:1;
+  background:
+    linear-gradient(to right,var(--bg) 0%,rgba(13,11,9,.5) 40%,transparent 75%),
+    linear-gradient(to top,var(--bg) 0%,transparent 38%);
+}
+.h-rule{
+  width:100%;height:.6px;margin:clamp(18px,2vw,30px) 0;
+  background:linear-gradient(90deg,var(--gold),rgba(201,168,76,.08));
+  transform:scaleX(0);transform-origin:left;
+}
+.h-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.h-subtitle{
+  font-family:var(--serif);font-size:clamp(13px,1.3vw,16px);
+  font-weight:400;font-style:italic;color:var(--fg3);
+  line-height:1.65;max-width:340px;
+}
+.h-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.h-tag{
+  font-family:var(--sans);font-size:8px;font-weight:400;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--fg3);border:.7px solid var(--brd2);
+  border-radius:2px;padding:5px 10px;
+  transition:color .3s,border-color .3s;
+}
+.h-tag:hover{color:var(--gold);border-color:rgba(201,168,76,.4)}
+.h-scrollhint{
+  position:absolute;bottom:clamp(18px,3vh,38px);left:50%;
+  transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:7px;z-index:2;
+}
+.h-scrollhint span{
+  font-family:var(--mono);font-size:7px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--fg3);
+}
+.h-sline{
+  width:.8px;height:42px;
+  background:linear-gradient(to bottom,var(--gold),transparent);
+  animation:sp 2.6s ease-in-out infinite;
+}
+@keyframes sp{
+  0%,100%{opacity:.3;transform:scaleY(.6);transform-origin:top}
+  50%{opacity:1;transform:scaleY(1)}
+}
+
+/* ── SCROLL-DRIVEN TEXT STRIPS ── */
+.hscroll{
+  overflow:hidden;
+  padding:clamp(28px,3.5vw,52px) 0;
+  border-top:.6px solid var(--brd);
+  border-bottom:.6px solid var(--brd);
+  background:var(--bg);
+  position:relative;z-index:1;
+}
+.hscroll-inner{
+  display:flex;align-items:center;
+  gap:clamp(36px,4vw,72px);
+  white-space:nowrap;
+  will-change:transform;
+}
+.hs-word{
+  font-family:var(--serif);
+  font-size:clamp(60px,9.5vw,138px);
+  font-weight:900;
+  letter-spacing:-.03em;
+  line-height:1;
+  text-transform:uppercase;
+  -webkit-text-stroke:1px rgba(244,239,230,.1);
+  color:transparent;
+  user-select:none;
+}
+.hs-dot{
+  font-family:var(--mono);
+  font-size:clamp(14px,2vw,32px);
+  color:var(--gold);
+  opacity:.45;
+  flex-shrink:0;
+}
+
+/* ── SECTION SHARED ── */
+.wrap{max-width:var(--w);margin:0 auto;padding:clamp(72px,9vw,128px) var(--g)}
+.sl{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--fg3);margin-bottom:10px;
+  display:flex;align-items:center;gap:10px;
+}
+.sl::before{content:'';display:inline-block;width:20px;height:.7px;background:var(--gold);flex-shrink:0}
+.st{
+  font-family:var(--serif);font-size:clamp(48px,7vw,92px);
+  font-weight:900;letter-spacing:-.025em;line-height:.88;
+  color:var(--fg);text-transform:uppercase;overflow:hidden;
+  margin-bottom:clamp(32px,4vw,52px);
+}
+.st-i{display:block}
+.bnum{
+  position:absolute;right:var(--g);top:clamp(40px,5vw,70px);
+  font-family:var(--sans);font-size:clamp(160px,22vw,340px);
+  font-weight:700;color:rgba(244,239,230,.022);
+  line-height:1;letter-spacing:-.05em;
+  pointer-events:none;user-select:none;z-index:0;
+}
+
+/* ── ABOUT ── */
+#about{background:var(--bg2);position:relative;overflow:hidden}
+.a-grid{
+  display:grid;grid-template-columns:1fr 1.55fr;
+  gap:clamp(36px,7vw,96px);align-items:start;
+  position:relative;z-index:1;
+}
+.a-info{margin-top:24px;border-top:.6px solid var(--brd2)}
+.a-row{
+  display:flex;align-items:baseline;gap:14px;
+  padding:12px 0;border-bottom:.6px solid var(--brd);
+}
+.a-lbl{
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fg3);min-width:50px;flex-shrink:0;
+}
+.a-val{font-family:var(--sans);font-size:12px;font-weight:300;letter-spacing:.03em;color:var(--fg2)}
+.a-paras{display:flex;flex-direction:column;gap:17px;position:relative;z-index:1}
+.a-p{
+  font-family:var(--sans);font-size:13.5px;font-weight:300;
+  line-height:1.85;color:var(--fg2);letter-spacing:.015em;
+}
+.a-p.lead{
+  font-family:var(--serif);font-size:clamp(16px,1.7vw,20px);
+  font-weight:400;font-style:italic;line-height:1.58;color:var(--fg2);
+  border-left:1.5px solid var(--gold);padding-left:16px;
+}
+
+/* ── EDUCATION ── */
+#education{position:relative;overflow:hidden}
+.e-list{border-top:.6px solid var(--brd);margin-top:0;position:relative;z-index:1}
+.e-item{
+  display:grid;grid-template-columns:90px 1fr;
+  gap:0 clamp(18px,4vw,52px);
+  padding:clamp(22px,3vw,40px) 0;
+  border-bottom:.6px solid var(--brd);
+  position:relative;overflow:hidden;cursor:default;
+}
+.e-item::after{
+  content:'';position:absolute;left:0;bottom:0;
+  width:0;height:1px;background:var(--gold);
+  transition:width .7s cubic-bezier(.25,1,.5,1);
+}
+.e-item:hover::after{width:100%}
+.e-yr{
+  font-family:var(--mono);font-size:10px;letter-spacing:.06em;
+  color:var(--fg3);line-height:1.7;padding-top:4px;
+  position:relative;z-index:1;
+}
+.e-content{position:relative;z-index:1}
+.e-tag{
+  font-family:var(--sans);font-size:8px;font-weight:400;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;
+}
+.e-name{
+  font-family:var(--serif);font-size:clamp(20px,2.5vw,32px);
+  font-weight:700;color:var(--fg);line-height:1.05;letter-spacing:-.01em;margin-bottom:5px;
+}
+.e-place{
+  font-family:var(--sans);font-size:11px;font-weight:300;
+  color:var(--fg3);letter-spacing:.04em;margin-bottom:11px;
+  display:flex;align-items:center;gap:8px;
+}
+.e-place::before{content:'';width:12px;height:.6px;background:var(--gold);flex-shrink:0}
+.e-desc{font-family:var(--sans);font-size:12px;font-weight:300;line-height:1.78;color:var(--fg3)}
+.e-badge{
+  display:inline-block;margin-top:11px;
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);background:rgba(201,168,76,.06);
+  border:.6px solid rgba(201,168,76,.22);border-radius:2px;padding:3px 9px;
+}
+
+/* ── SKILLS ── */
+#skills{background:var(--bg2);position:relative;overflow:hidden}
+.sk-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--brd);border:1px solid var(--brd);
+  position:relative;z-index:1;
+}
+.sk-card{
+  background:var(--bg2);padding:clamp(22px,2.8vw,38px);
+  position:relative;overflow:hidden;transition:background .4s;
+}
+.sk-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--gold);transform:scaleY(0);transform-origin:bottom;
+  transition:transform .45s cubic-bezier(.25,1,.5,1);
+}
+.sk-card:hover{background:var(--bg3)}
+.sk-card:hover::before{transform:scaleY(1)}
+.sk-num{font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:var(--gold);margin-bottom:13px}
+.sk-name{
+  font-family:var(--serif);font-size:clamp(15px,1.5vw,19px);
+  font-weight:700;color:var(--fg);line-height:1.2;letter-spacing:-.01em;margin-bottom:11px;
+}
+.sk-text{font-family:var(--sans);font-size:11.5px;font-weight:300;line-height:1.78;color:var(--fg3);margin-bottom:13px}
+.sk-pills{display:flex;flex-wrap:wrap;gap:4px}
+.sk-pill{
+  font-family:var(--mono);font-size:7px;letter-spacing:.08em;
+  color:var(--fg3);background:rgba(244,239,230,.04);
+  border:.6px solid var(--brd2);border-radius:2px;padding:3px 7px;
+  transition:color .3s,border-color .3s;
+}
+.sk-card:hover .sk-pill{color:var(--gold);border-color:rgba(201,168,76,.28)}
+
+/* ── CERTIFICATES ── */
+#certs{position:relative;overflow:hidden}
+.cert-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--brd);border:1px solid var(--brd);
+  position:relative;z-index:1;
+}
+.cert-card{
+  background:var(--bg);padding:clamp(24px,3vw,44px);
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:background .4s;
+}
+.cert-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .55s cubic-bezier(.25,1,.5,1);
+}
+.cert-card:hover{background:var(--bg3)}
+.cert-card:hover::after{transform:scaleX(1)}
+.cert-hex{width:60px;height:60px;margin-bottom:18px;opacity:.65;transition:opacity .3s}
+.cert-card:hover .cert-hex{opacity:1}
+.cert-issuer{
+  font-family:var(--mono);font-size:8px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:9px;
+}
+.cert-name{
+  font-family:var(--serif);font-size:clamp(17px,1.6vw,21px);
+  font-weight:700;color:var(--fg);line-height:1.2;letter-spacing:-.01em;
+  margin-bottom:8px;flex:1;
+}
+.cert-level{
+  font-family:var(--sans);font-size:8.5px;font-weight:400;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--fg3);margin-bottom:12px;
+}
+.cert-desc{
+  font-family:var(--sans);font-size:11px;font-weight:300;
+  line-height:1.75;color:var(--fg3);margin-bottom:14px;
+}
+.cert-date{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;color:var(--fg3);margin-bottom:13px}
+.cert-skills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px}
+.cert-skill{
+  font-family:var(--mono);font-size:7px;letter-spacing:.07em;
+  color:var(--fg3);background:rgba(244,239,230,.04);
+  border:.6px solid var(--brd);border-radius:2px;padding:2px 7px;
+}
+.cert-link{
+  font-family:var(--sans);font-size:8.5px;font-weight:400;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--gold);
+  text-decoration:none;display:flex;align-items:center;gap:8px;
+  margin-top:auto;padding-top:14px;border-top:.6px solid var(--brd);
+  transition:gap .3s,color .3s;
+}
+.cert-link:hover{gap:14px}
+
+/* ── PROFILE PHOTO ── */
+.a-photo{
+  position:relative;width:100%;
+  aspect-ratio:1/1.15;overflow:hidden;
+  border:.6px solid var(--brd2);
+}
+.a-photo img{
+  width:100%;height:100%;object-fit:cover;object-position:top center;
+  display:block;filter:grayscale(20%) brightness(.82);
+  transition:filter .55s,transform .65s cubic-bezier(.25,1,.5,1);
+}
+.a-photo:hover img{filter:grayscale(0%) brightness(1);transform:scale(1.04)}
+.a-photo-cap{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:14px 16px 12px;
+  background:linear-gradient(to top,rgba(13,11,9,.88),transparent);
+  font-family:var(--mono);font-size:7.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);
+}
+
+/* ── SCHOOL LOGOS (GSAP-driven hover reveal) ── */
+.e-logo{
+  position:absolute;
+  right:0;
+  top:50%;transform:translateY(-50%);
+  width:clamp(120px,12vw,180px);
+  height:clamp(120px,12vw,180px);
+  pointer-events:none;z-index:1;
+  will-change:transform,opacity;
+}
+.e-logo img{
+  width:100%;height:100%;object-fit:contain;display:block;
+  filter:grayscale(40%) brightness(1.1);
+}
+
+/* ── IMAGE CERT CARDS ── */
+.cert-img-wrap{
+  position:relative;width:100%;
+  aspect-ratio:16/10;overflow:hidden;
+  margin-bottom:18px;
+  border:.6px solid var(--brd2);
+}
+.cert-img-wrap img{
+  width:100%;height:100%;object-fit:cover;object-position:top center;
+  display:block;filter:brightness(.65) saturate(.85);
+  transition:filter .5s,transform .65s cubic-bezier(.25,1,.5,1);
+}
+.cert-card:hover .cert-img-wrap img{filter:brightness(.88) saturate(1.1);transform:scale(1.04)}
+.cert-grid--docs{
+  grid-template-columns:repeat(2,1fr);
+  margin-top:1px;
+}
+
+/* ── FOOTER ── */
+footer{
+  border-top:.6px solid var(--brd);background:var(--bg);
+  padding:clamp(44px,6vw,72px) var(--g);
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+}
+.ft-name{
+  font-family:var(--serif);font-size:clamp(22px,2.2vw,30px);
+  font-weight:700;color:var(--fg);letter-spacing:-.01em;
+}
+.ft-meta{text-align:right}
+.ft-meta p{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--fg3);line-height:2.2}
+.ft-meta a{color:var(--gold);text-decoration:none;transition:color .3s}
+.ft-meta a:hover{color:var(--fg)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .a-grid{grid-template-columns:1fr}
+  .sk-grid{grid-template-columns:1fr 1fr}
+  .cert-grid{grid-template-columns:1fr 1fr}
+  #snav{display:none}
+}
+@media(max-width:600px){
+  .sk-grid,.cert-grid{grid-template-columns:1fr}
+  .e-item{grid-template-columns:68px 1fr}
+  .h-foot{flex-direction:column;align-items:flex-start}
+  .n-links{gap:18px}
+}
+@media print{
+  #nav,.cur,.cdot,#snav,#prog,.h-scrollhint,.mq{display:none!important}
+}
+
+/* ── PRELOADER ── */
+#preloader{
+  position:fixed;inset:0;background:var(--bg);
+  z-index:99999;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.pl-inner{display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
+.pl-glow{
+  position:absolute;width:600px;height:600px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(219,185,94,.07) 0%,transparent 62%);
+  animation:plPulse 2.8s ease-in-out infinite alternate;
+}
+@keyframes plPulse{
+  from{transform:scale(.75);opacity:.5}
+  to{transform:scale(1.2);opacity:1}
+}
+.pl-letters{display:flex;align-items:baseline;gap:.02em}
+.pl-l{
+  font-family:var(--serif);font-size:clamp(80px,13vw,155px);
+  font-weight:900;color:var(--fg);line-height:1;
+  display:inline-block;will-change:transform,opacity;
+}
+.pl-bar{
+  width:110px;height:.7px;background:rgba(219,185,94,.15);
+  margin:24px 0 16px;overflow:hidden;
+}
+.pl-fill{height:100%;width:0;background:var(--gold)}
+.pl-label{
+  font-family:var(--mono);font-size:8px;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--fg3);
+}
+
+/* ── GLOBAL GRAIN ── */
+.grain{
+  position:fixed;inset:0;pointer-events:none;z-index:9996;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity:.032;
+}
+
+/* ── PROJECTS ── */
+#projects{background:var(--bg2);position:relative;overflow:hidden}
+.proj-list{border-top:.6px solid var(--brd);margin-top:0;position:relative;z-index:1}
+.proj-item{
+  padding:clamp(40px,5vw,72px) 0;
+  border-bottom:.6px solid var(--brd);
+  display:grid;grid-template-columns:90px 1fr;
+  gap:0 clamp(18px,4vw,52px);
+  position:relative;overflow:hidden;cursor:default;
+}
+.proj-logo{
+  position:absolute;right:0;top:50%;transform:translateY(-50%);
+  width:clamp(110px,11vw,160px);height:clamp(110px,11vw,160px);
+  border-radius:clamp(12px,1.8vw,22px);overflow:hidden;
+  pointer-events:none;z-index:1;will-change:transform,opacity;
+  box-shadow:0 0 40px rgba(0,0,0,.5);
+}
+.proj-logo img{width:100%;height:100%;object-fit:contain;display:block}
+.proj-item::after{
+  content:'';position:absolute;left:0;bottom:0;
+  width:0;height:1px;background:var(--gold);
+  transition:width .7s cubic-bezier(.25,1,.5,1);
+}
+.proj-item:hover::after{width:100%}
+.proj-meta{display:flex;flex-direction:column;gap:6px;padding-top:6px}
+.proj-num{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--fg3)}
+.proj-type{
+  font-family:var(--mono);font-size:7px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold);
+  writing-mode:vertical-rl;transform:rotate(180deg);margin-top:10px;
+}
+.proj-name{
+  font-family:var(--serif);font-size:clamp(26px,3.2vw,48px);
+  font-weight:900;color:var(--fg);line-height:.95;letter-spacing:-.02em;
+  margin-bottom:clamp(14px,1.8vw,24px);
+}
+.proj-desc{
+  font-family:var(--sans);font-size:13px;font-weight:300;
+  line-height:1.88;color:var(--fg2);max-width:680px;
+  margin-bottom:clamp(18px,2.2vw,30px);
+}
+.proj-stack{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px}
+.proj-pill{
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--fg3);background:rgba(244,239,230,.04);
+  border:.6px solid var(--brd2);border-radius:2px;padding:4px 10px;
+  transition:color .3s,border-color .3s;
+}
+.proj-item:hover .proj-pill{color:var(--gold);border-color:rgba(201,168,76,.28)}
+.proj-badges{display:flex;flex-wrap:wrap;gap:6px}
+.proj-badge{
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);background:rgba(201,168,76,.06);
+  border:.6px solid rgba(201,168,76,.22);border-radius:2px;padding:3px 9px;
+}
+
+/* ── HAMBURGER ── */
+.n-ham{
+  display:none;background:none;border:none;cursor:none;
+  flex-direction:column;justify-content:center;gap:5px;padding:4px;
+}
+.n-ham span{
+  display:block;width:22px;height:.8px;background:var(--fg2);
+  transition:transform .35s cubic-bezier(.25,1,.5,1),opacity .3s,background .3s;
+}
+.n-ham.open span:nth-child(1){transform:translateY(5px) rotate(45deg)}
+.n-ham.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.n-ham.open span:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+
+/* ── MOBILE ── */
+@media(max-width:680px){
+  .n-ham{display:flex}
+  .n-links{
+    position:fixed;top:var(--nav);left:0;right:0;
+    background:rgba(13,11,9,.97);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    flex-direction:column;align-items:center;gap:0;
+    max-height:0;overflow:hidden;
+    transition:max-height .45s cubic-bezier(.25,1,.5,1);
+    border-bottom:.6px solid var(--brd);
+  }
+  .n-links.open{max-height:500px}
+  .n-links li{width:100%;text-align:center}
+  .n-links a{display:block;padding:18px;font-size:11px}
+  .e-logo{display:none}
+}
+@media(max-width:600px){
+  .cert-grid--docs{grid-template-columns:1fr}
+  .proj-item{grid-template-columns:1fr}
+  .proj-meta{flex-direction:row;align-items:center;gap:12px;margin-bottom:14px}
+  .proj-type{writing-mode:horizontal-tb;transform:none;margin-top:0}
+  footer{flex-direction:column;gap:14px}
+  .ft-meta{text-align:left}
+}
+
+/* ── HSCROLL SIDE VIGNETTE ── */
+.hscroll::before,.hscroll::after{
+  content:'';position:absolute;top:0;bottom:0;
+  width:clamp(60px,8vw,120px);z-index:2;pointer-events:none;
+}
+.hscroll::before{left:0;background:linear-gradient(to right,var(--bg),transparent)}
+.hscroll::after{right:0;background:linear-gradient(to left,var(--bg),transparent)}
+
+/* ── TYPEWRITER ROLE ── */
+.h-role{
+  font-family:var(--mono);font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);
+  margin-top:10px;display:flex;align-items:center;gap:4px;min-height:18px;
+}
+.h-role-cur{animation:blink .75s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── ABOUT STATS ── */
+.a-stats{
+  display:flex;border-top:.6px solid var(--brd2);
+  margin-top:clamp(32px,4vw,56px);position:relative;z-index:1;
+}
+.a-stat{
+  flex:1;padding:clamp(16px,2vw,26px) clamp(8px,1.5vw,18px);
+  border-right:.6px solid var(--brd);text-align:center;
+}
+.a-stat:last-child{border-right:none}
+.a-stat-n{
+  display:block;font-family:var(--serif);
+  font-size:clamp(28px,3.8vw,48px);
+  font-weight:900;color:var(--gold);letter-spacing:-.03em;line-height:1;
+}
+.a-stat-l{
+  display:block;font-family:var(--mono);font-size:7px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--fg3);margin-top:5px;
+}
+
+/* ── SKILL LEVEL BAR ── */
+.sk-bar{
+  height:.7px;background:rgba(244,239,230,.07);
+  margin-top:16px;position:relative;overflow:hidden;
+}
+.sk-bar-fill{
+  position:absolute;left:0;top:0;height:100%;width:0;
+  background:linear-gradient(90deg,var(--gold),var(--gold2));
+}
+
+/* ── SCROLL TO TOP ── */
+#totop{
+  position:fixed;bottom:28px;right:28px;
+  width:42px;height:42px;border-radius:2px;
+  background:var(--bg3);border:.6px solid var(--brd2);
+  color:var(--fg3);cursor:none;z-index:500;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .3s,border-color .3s,background .3s;
+}
+#totop:hover{color:var(--gold);border-color:rgba(201,168,76,.4)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:28px;left:50%;
+  background:var(--bg3);border:.6px solid var(--brd2);
+  font-family:var(--mono);font-size:8px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--fg2);
+  padding:10px 22px;border-radius:2px;
+  pointer-events:none;z-index:99990;white-space:nowrap;
+}
+
+/* ── LIGHTBOX ── */
+#lightbox{
+  position:fixed;inset:0;z-index:99990;
+  display:none;align-items:center;justify-content:center;
+}
+.lb-backdrop{
+  position:absolute;inset:0;cursor:pointer;
+  background:rgba(13,11,9,.92);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.lb-inner{
+  position:relative;z-index:1;
+  max-width:min(900px,90vw);max-height:88vh;overflow:hidden;
+}
+.lb-inner img{width:100%;height:100%;object-fit:contain;display:block}
+.lb-close{
+  position:absolute;top:10px;right:10px;
+  background:rgba(13,11,9,.72);border:.6px solid var(--brd2);
+  color:var(--fg2);font-size:18px;cursor:pointer;
+  width:36px;height:36px;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .3s,border-color .3s;
+}
+.lb-close:hover{color:var(--gold);border-color:var(--gold)}
+
+/* ── FOOTER REDESIGN ── */
+footer{padding:0;display:block;border-top:none}
+.ft-cta{
+  padding:clamp(72px,10vw,140px) var(--g) clamp(40px,5vw,72px);
+  border-top:.6px solid var(--brd);overflow:hidden;
+}
+.ft-cta-lbl{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--fg3);margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.ft-cta-lbl::before{
+  content:'';display:inline-block;width:20px;height:.7px;
+  background:var(--gold);flex-shrink:0;
+}
+.ft-cta-head{
+  font-family:var(--serif);font-size:clamp(54px,9vw,140px);
+  font-weight:900;color:var(--fg);line-height:.86;
+  letter-spacing:-.04em;text-transform:uppercase;
+}
+.ft-cta-rule{
+  width:100%;height:.6px;margin-top:clamp(36px,4.5vw,64px);
+  background:linear-gradient(90deg,var(--gold),rgba(201,168,76,.06));
+  transform:scaleX(0);transform-origin:left;
+}
+.ft-lower{
+  padding:clamp(28px,3.5vw,48px) var(--g) clamp(44px,6vw,72px);
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;border-top:.6px solid var(--brd);
+}
+@media(max-width:600px){
+  .a-stats{flex-wrap:wrap}
+  .a-stat{flex:0 0 50%}
+  .ft-lower{flex-direction:column;gap:12px}
+  .ft-meta{text-align:left!important}
+}
+</style>
+</head>
+<body>
+
+<div id="preloader" aria-hidden="true">
+  <div class="pl-glow"></div>
+  <div class="pl-inner">
+    <div class="pl-letters">
+      <span class="pl-l" id="plI">I</span>
+      <span class="pl-l" id="plK">K</span>
+      <span class="pl-l" id="plM">M</span>
+    </div>
+    <div class="pl-bar"><div class="pl-fill" id="plFill"></div></div>
+    <div class="pl-label" id="plLabel">Ian Karvey L. Manimtim &nbsp;·&nbsp; 2026</div>
+  </div>
+</div>
+
+<div class="grain" aria-hidden="true"></div>
+<div id="prog"></div>
+<div class="cur" id="cur"></div>
+<div class="cdot" id="cdot"></div>
+
+<nav id="nav">
+  <a href="#hero" class="n-logo">IKM</a>
+  <ul class="n-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#certs">Certificates</a></li>
+  </ul>
+  <button class="n-ham" id="ham" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="snav">
+  <div class="snd act" data-target="#hero"></div>
+  <div class="snd" data-target="#about"></div>
+  <div class="snd" data-target="#education"></div>
+  <div class="snd" data-target="#skills"></div>
+  <div class="snd" data-target="#projects"></div>
+  <div class="snd" data-target="#certs"></div>
+</div>
+
+
+<!-- ════ HERO ════ -->
+<section id="hero">
+  <div class="h-glow"></div>
+  <div class="h-noise"></div>
+  <div class="h-photo">
+    <img src="Picture%20of%20Me/Manimtim_Ian_Karvey_L..jpg" alt="Ian Karvey L. Manimtim">
+  </div>
+  <div class="h-vert">Portfolio · 2026</div>
+
+  <div class="h-inner">
+    <div class="h-hello"><span class="h-hello-i">Hello, I'm</span></div>
+    <div class="h-name">
+      <div class="h-fill"><span class="h-fill-i">IAN</span></div>
+      <div class="h-stroke"><span class="h-stroke-i">KARVEY.</span></div>
+      <div class="h-sub-name"><span class="h-sub-name-i">Manimtim</span></div>
+    </div>
+    <div class="h-rule"></div>
+    <div class="h-foot">
+      <div>
+        <p class="h-subtitle">Bachelor of Science in IT<br><em>De La Salle Lipa</em></p>
+        <div class="h-role"><span id="hRole"></span><span class="h-role-cur">|</span></div>
+      </div>
+      <div class="h-tags">
+        <span class="h-tag">Web Dev</span>
+        <span class="h-tag">Systems Dev</span>
+        <span class="h-tag">Mobile</span>
+        <span class="h-tag">UI/UX</span>
+        <span class="h-tag">Music</span>
+        <span class="h-tag">Dance</span>
+        <span class="h-tag">Visual Art</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="h-scrollhint" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="h-sline"></div>
+  </div>
+</section>
+
+
+<!-- ════ STRIP 1 (scroll-driven) ════ -->
+<div class="hscroll" aria-hidden="true">
+  <div class="hscroll-inner" id="hs1">
+    <span class="hs-word">Web Developer</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Systems Dev</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">UI / UX</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Mobile</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Batangas PH</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Visual Art</span>
+  </div>
+</div>
+
+
+<!-- ════ ABOUT ════ -->
+<section id="about">
+  <span class="bnum" aria-hidden="true">01</span>
+  <div class="wrap">
+    <div class="sl">Who I Am</div>
+    <div class="st">
+      <span class="st-i">About</span>
+      <span class="st-i">Me.</span>
+    </div>
+    <div class="a-grid">
+      <div>
+        <div class="a-photo">
+          <img src="Picture%20of%20Me/Manimtim_Ian_Karvey_L..jpg" alt="Ian Karvey L. Manimtim" loading="lazy">
+          <div class="a-photo-cap">Ian Karvey &middot; 2026</div>
+        </div>
+        <div class="a-info">
+          <div class="a-row">
+            <span class="a-lbl">Based</span>
+            <span class="a-val">Talisay, Batangas, PH</span>
+          </div>
+          <div class="a-row">
+            <span class="a-lbl">Study</span>
+            <span class="a-val">De La Salle Lipa</span>
+          </div>
+          <div class="a-row">
+            <span class="a-lbl">Track</span>
+            <span class="a-val">BSIT — 3rd Year</span>
+          </div>
+          <div class="a-row">
+            <span class="a-lbl">Focus</span>
+            <span class="a-val">Web &amp; Systems Dev</span>
+          </div>
+        </div>
+      </div>
+      <div class="a-paras">
+        <p class="a-p lead">I build systems that are as thoughtful as they are functional — bridging technical rigor with genuine empathy for the end user.</p>
+        <p class="a-p">My name is Ian Karvey L. Manimtim, currently pursuing a Bachelor of Science in Information Technology at De La Salle Lipa — one of CALABARZON's distinguished institutions known for strong academic standards and commitment to producing competent technology professionals.</p>
+        <p class="a-p">Born and raised in Quiling, Talisay, Batangas. The values from growing up in a tight-knit community continue to shape how I approach work and relationships — with deep respect, accountability, and a collaborative spirit.</p>
+        <p class="a-p">My primary focus lies in Web Development and Systems Development. Outside of technology, I create music, engage in dance, and explore visual art — pursuits that sharpen my eye for design and naturally complement my frontend work.</p>
+      </div>
+    </div>
+    <div class="a-stats">
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="5">0</span>
+        <span class="a-stat-l">Certificates</span>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="3">0</span>
+        <span class="a-stat-l">Years Studied</span>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="6">0</span>
+        <span class="a-stat-l">Skill Areas</span>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="1">0</span>
+        <span class="a-stat-l">Capstone Project</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ STRIP 2 (scroll-driven, reverse) ════ -->
+<div class="hscroll" aria-hidden="true">
+  <div class="hscroll-inner" id="hs2">
+    <span class="hs-word">San Guillermo</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">De La Salle</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">CALABARZON</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">BSIT 2027</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">3rd Year</span>
+  </div>
+</div>
+
+
+<!-- ════ EDUCATION ════ -->
+<section id="education">
+  <span class="bnum" aria-hidden="true">02</span>
+  <div class="wrap">
+    <div class="sl">Academic Journey</div>
+    <div class="st"><span class="st-i">Education</span></div>
+    <div class="e-list">
+
+      <div class="e-item">
+        <div class="e-yr">2008<br>—<br>2010</div>
+        <div class="e-content">
+          <div class="e-tag">Early Childhood Education</div>
+          <div class="e-name">San Guillermo Academy</div>
+          <div class="e-place">Talisay, Batangas — <em style="color:var(--gold);font-style:italic">"Where Leaders Are Born"</em></div>
+          <div class="e-desc">Began formal schooling through Kinder 1 and Kinder 2 — the very first steps of an academic journey spanning over a decade within the same institution, cultivating early social skills and a genuine love for learning.</div>
+          <span class="e-badge">Kinder 1 – Kinder 2</span>
+        </div>
+        <div class="e-logo"><img src="School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+      </div>
+
+      <div class="e-item">
+        <div class="e-yr">2010<br>—<br>2016</div>
+        <div class="e-content">
+          <div class="e-tag">Elementary Education</div>
+          <div class="e-name">San Guillermo Academy</div>
+          <div class="e-place">Talisay, Batangas — Private Institution</div>
+          <div class="e-desc">Established a strong academic foundation through structured learning and active participation — building the discipline and curiosity that carried through to higher studies.</div>
+          <span class="e-badge">Grade 1 – Grade 6</span>
+        </div>
+        <div class="e-logo"><img src="School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+      </div>
+
+      <div class="e-item">
+        <div class="e-yr">2016<br>—<br>2021</div>
+        <div class="e-content">
+          <div class="e-tag">Junior High School</div>
+          <div class="e-name">San Guillermo Academy</div>
+          <div class="e-place">Talisay, Batangas — Private Institution</div>
+          <div class="e-desc">Deepened academic knowledge and critical thinking through various academic and extracurricular activities — shaping a well-rounded character and a lasting commitment to excellence.</div>
+          <span class="e-badge">Grade 7 – Grade 10</span>
+        </div>
+        <div class="e-logo"><img src="School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+      </div>
+
+      <div class="e-item">
+        <div class="e-yr">2021<br>—<br>2023</div>
+        <div class="e-content">
+          <div class="e-tag">Senior High School</div>
+          <div class="e-name">San Guillermo Academy</div>
+          <div class="e-place">Talisay, Batangas — Private Institution</div>
+          <div class="e-desc">Completed the Senior High track with greater academic maturity and specialization — preparing for the transition into tertiary education with a focused, goal-oriented mindset.</div>
+          <span class="e-badge">Grade 11 – Grade 12</span>
+        </div>
+        <div class="e-logo"><img src="School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+      </div>
+
+      <div class="e-item">
+        <div class="e-yr">2023<br>—<br>2027</div>
+        <div class="e-content">
+          <div class="e-tag">College Education — Ongoing</div>
+          <div class="e-name">De La Salle Lipa</div>
+          <div class="e-place">Lipa City, Batangas — CALABARZON Premier Institution</div>
+          <div class="e-desc">Currently pursuing BSIT at a university recognized for its rigorous IT programs and holistic formation. Developing competencies in web development, systems development, mobile apps, and data analytics through coursework and real-world project delivery.</div>
+          <span class="e-badge">BSIT — Present</span>
+        </div>
+        <div class="e-logo"><img src="School%20Logos/DLSL_Official_logo.png" alt="De La Salle Lipa" loading="lazy"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ SKILLS ════ -->
+<section id="skills">
+  <span class="bnum" aria-hidden="true">03</span>
+  <div class="wrap">
+    <div class="sl">Competencies &amp; Expertise</div>
+    <div class="st"><span class="st-i">Skills</span></div>
+    <div class="sk-grid">
+
+      <div class="sk-card">
+        <div class="sk-num">01</div>
+        <div class="sk-name">Mobile Application Development</div>
+        <div class="sk-text">Full-stack mobile development using Flutter — covering UI design through backend integration with continuous attention to usability.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Flutter</span><span class="sk-pill">Dart</span><span class="sk-pill">UI Design</span><span class="sk-pill">Backend Integration</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="82"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">02</div>
+        <div class="sk-name">Application &amp; Systems Dev</div>
+        <div class="sk-text">Functional systems via coursework and independent projects — experienced in C++ and Node.js with a growing foundation in software architecture.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">C++</span><span class="sk-pill">Node.js</span><span class="sk-pill">Software Architecture</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="75"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">03</div>
+        <div class="sk-name">Backend &amp; API Fundamentals</div>
+        <div class="sk-text">Node.js backend experience covering API queries, middleware, data aggregation, and error handling across real-world projects.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Node.js</span><span class="sk-pill">REST API</span><span class="sk-pill">Middleware</span><span class="sk-pill">Error Handling</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="70"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">04</div>
+        <div class="sk-name">Database &amp; Info Management</div>
+        <div class="sk-text">Relational databases for storing, organizing, and retrieving data — understanding how well-managed data forms the backbone of any reliable system.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">SQL</span><span class="sk-pill">Relational DB</span><span class="sk-pill">Data Modelling</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="73"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">05</div>
+        <div class="sk-name">Data Analytics &amp; Automation</div>
+        <div class="sk-text">Power BI for visual reports and UiPath for automating repetitive workflows — identifying where technology removes friction from everyday processes.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Power BI</span><span class="sk-pill">UiPath</span><span class="sk-pill">Data Visualization</span><span class="sk-pill">RPA</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="65"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">06</div>
+        <div class="sk-name">Digital Design &amp; Media</div>
+        <div class="sk-text">Adobe tools for clean, professional visual content — with a developed eye for layout, typography, and visual communication.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Adobe Suite</span><span class="sk-pill">Typography</span><span class="sk-pill">Visual Design</span><span class="sk-pill">Layout</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="86"></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ STRIP 3 (scroll-driven) ════ -->
+<div class="hscroll" aria-hidden="true">
+  <div class="hscroll-inner" id="hs3">
+    <span class="hs-word">Flutter</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Node.js</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">SQL</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Power BI</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Adobe Suite</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">UiPath</span>
+  </div>
+</div>
+
+<!-- ════ PROJECTS ════ -->
+<section id="projects">
+  <span class="bnum" aria-hidden="true">04</span>
+  <div class="wrap">
+    <div class="sl">Built Work</div>
+    <div class="st"><span class="st-i">Projects</span></div>
+    <div class="proj-list">
+
+      <div class="proj-item">
+        <div class="proj-meta">
+          <div class="proj-num">01</div>
+          <div class="proj-type">Capstone Project</div>
+        </div>
+        <div>
+          <div class="proj-name">Barangay Safety App</div>
+          <div class="proj-desc">A full-stack mobile safety application built for barangay-level emergency response. Enables residents to report incidents with GPS-tagged location data in real time, with map visualization, incident categorization, and a command dashboard for barangay officials. Built end-to-end — from Flutter UI through a Node.js REST API to a MySQL database with spatial indexing for proximity-based queries.</div>
+          <div class="proj-stack">
+            <span class="proj-pill">Flutter</span>
+            <span class="proj-pill">Dart</span>
+            <span class="proj-pill">Node.js</span>
+            <span class="proj-pill">MySQL</span>
+            <span class="proj-pill">Spatial DB</span>
+            <span class="proj-pill">REST API</span>
+            <span class="proj-pill">Push Notifications</span>
+            <span class="proj-pill">Map Integration</span>
+            <span class="proj-pill">Real-Time Data</span>
+          </div>
+          <div class="proj-badges">
+            <span class="proj-badge">Status — Ongoing</span>
+            <span class="proj-badge">Role — Full-Stack Developer</span>
+            <span class="proj-badge">Year — 2026</span>
+          </div>
+        </div>
+        <div class="proj-logo"><img src="App%20Logo/Barangay%20Safety.png" alt="Barangay Safety App" loading="lazy"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ STRIP 4 (scroll-driven, reverse) ════ -->
+<div class="hscroll" aria-hidden="true">
+  <div class="hscroll-inner" id="hs4">
+    <span class="hs-word">Barangay Safety</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Flutter</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Node.js</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Capstone</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Full-Stack</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">MySQL</span>
+  </div>
+</div>
+
+
+<!-- ════ CERTIFICATES ════ -->
+<section id="certs">
+  <span class="bnum" aria-hidden="true">05</span>
+  <div class="wrap">
+    <div class="sl">Verified Credentials</div>
+    <div class="st"><span class="st-i">Certificates</span></div>
+    <div class="cert-grid">
+
+      <div class="cert-card">
+        <svg class="cert-hex" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="40,3 77,24 77,68 40,89 3,68 3,24" stroke="#c9a84c" stroke-width="1.2"/>
+          <text x="40" y="44" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" font-size="9" font-family="DM Mono,monospace" letter-spacing="2">CISCO</text>
+          <text x="40" y="57" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" opacity=".5" font-size="6" font-family="DM Mono,monospace" letter-spacing="1.5">CERTIFIED</text>
+        </svg>
+        <div class="cert-issuer">Cisco Networking Academy</div>
+        <div class="cert-name">Cyber Threat Management</div>
+        <div class="cert-level">Intermediate Level</div>
+        <div class="cert-desc">Covers cybersecurity governance, network vulnerability assessment, risk management planning, and post-incident response procedures.</div>
+        <div class="cert-date">Issued · April 17, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">Risk Management</span>
+          <span class="cert-skill">Incident Response</span>
+          <span class="cert-skill">Governance</span>
+          <span class="cert-skill">Pen Testing</span>
+          <span class="cert-skill">Threat Analysis</span>
+        </div>
+        <a class="cert-link" href="https://www.credly.com/users/ian-karvey-manimtim" target="_blank" rel="noopener">View Badge &rarr;</a>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-hex" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="40,3 77,24 77,68 40,89 3,68 3,24" stroke="#c9a84c" stroke-width="1.2"/>
+          <text x="40" y="44" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" font-size="9" font-family="DM Mono,monospace" letter-spacing="2">CISCO</text>
+          <text x="40" y="57" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" opacity=".5" font-size="6" font-family="DM Mono,monospace" letter-spacing="1.5">CERTIFIED</text>
+        </svg>
+        <div class="cert-issuer">Cisco × OpenEDG Python Institute</div>
+        <div class="cert-name">Python Essentials 2</div>
+        <div class="cert-level">Intermediate Level</div>
+        <div class="cert-desc">Intermediate Python — modules, packages, exception handling, file processing, and object-oriented programming principles.</div>
+        <div class="cert-date">Issued · April 15, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">OOP</span>
+          <span class="cert-skill">Classes</span>
+          <span class="cert-skill">Inheritance</span>
+          <span class="cert-skill">Exceptions</span>
+          <span class="cert-skill">Modules</span>
+        </div>
+        <a class="cert-link" href="https://www.credly.com/users/ian-karvey-manimtim" target="_blank" rel="noopener">View Badge &rarr;</a>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-hex" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="40,3 77,24 77,68 40,89 3,68 3,24" stroke="#c9a84c" stroke-width="1.2"/>
+          <text x="40" y="44" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" font-size="9" font-family="DM Mono,monospace" letter-spacing="2">CISCO</text>
+          <text x="40" y="57" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" opacity=".5" font-size="6" font-family="DM Mono,monospace" letter-spacing="1.5">CERTIFIED</text>
+        </svg>
+        <div class="cert-issuer">Cisco × OpenEDG Python Institute</div>
+        <div class="cert-name">Python Essentials 1</div>
+        <div class="cert-level">Intermediate Level</div>
+        <div class="cert-desc">Foundational Python — syntax, semantics, the Standard Library, and algorithmic thinking for solving real-world problems in code.</div>
+        <div class="cert-date">Issued · April 7, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">Python Basics</span>
+          <span class="cert-skill">Algorithmic Thinking</span>
+          <span class="cert-skill">Procedural Programming</span>
+          <span class="cert-skill">Standard Library</span>
+        </div>
+        <a class="cert-link" href="https://www.credly.com/users/ian-karvey-manimtim" target="_blank" rel="noopener">View Badge &rarr;</a>
+      </div>
+
+    </div>
+
+    <!-- Image-based certificates -->
+    <div class="cert-grid cert-grid--docs">
+
+      <div class="cert-card">
+        <div class="cert-img-wrap">
+          <img src="Certificates/ACCENTURE.png" alt="Accenture Certificate of Achievement" loading="lazy">
+        </div>
+        <div class="cert-issuer">Accenture</div>
+        <div class="cert-name">Skills to Succeed Academy</div>
+        <div class="cert-level">Certificate of Achievement</div>
+        <div class="cert-desc">Successfully completed 58 learning modules within the Accenture Skills to Succeed Academy — building career-ready skills and a strong foundation for the job-seeking journey.</div>
+        <div class="cert-date">Issued · March 4, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">58 Modules</span>
+          <span class="cert-skill">Career Skills</span>
+          <span class="cert-skill">Job Readiness</span>
+          <span class="cert-skill">Professional Dev</span>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-img-wrap">
+          <img src="Certificates/JPCS.png" alt="JPCS Certificate of Participation" loading="lazy">
+        </div>
+        <div class="cert-issuer">JPCS — De La Salle Chapter</div>
+        <div class="cert-name">DevRoutes: Learning How to Learn with Roadmaps</div>
+        <div class="cert-level">Certificate of Participation</div>
+        <div class="cert-desc">Participated in a seminar on career roadmapping — covering self-assessment, goal setting, certification milestones, and IT role exploration across Cybersecurity, Web Dev, Cloud, and DevOps.</div>
+        <div class="cert-date">Issued · January 29, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">Roadmapping</span>
+          <span class="cert-skill">Career Planning</span>
+          <span class="cert-skill">IT Roles</span>
+          <span class="cert-skill">Goal Setting</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div class="ft-cta">
+    <div class="ft-cta-lbl">Get In Touch</div>
+    <div class="ft-cta-head">LET'S<br>CONNECT.</div>
+    <div class="ft-cta-rule"></div>
+  </div>
+  <div class="ft-lower">
+    <div class="ft-name">Ian Karvey L. Manimtim</div>
+    <div class="ft-meta">
+      <p>BSIT &mdash; De La Salle Lipa</p>
+      <p>Talisay, Batangas &mdash; Philippines</p>
+      <p style="margin-top:6px"><a href="mailto:ian_karvey_manimtim@dlsl.edu.ph">ian_karvey_manimtim@dlsl.edu.ph</a></p>
+      <p><a href="mailto:ianmanimtim07.3@gmail.com">ianmanimtim07.3@gmail.com</a></p>
+    </div>
+  </div>
+</footer>
+
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <div class="lb-backdrop" id="lbBackdrop"></div>
+  <div class="lb-inner">
+    <img id="lbImg" src="" alt="">
+    <button class="lb-close" id="lbClose">&times;</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Scroll to top -->
+<button id="totop" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M8 13V3M3 8l5-5 5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<script>
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+/* ── Cursor ── */
+const $cur  = document.getElementById('cur');
+const $cdot = document.getElementById('cdot');
+document.addEventListener('mousemove', e => {
+  gsap.to($cdot, { x: e.clientX, y: e.clientY, duration: .07, ease: 'none' });
+  gsap.to($cur,  { x: e.clientX, y: e.clientY, duration: .28, ease: 'power2.out' });
+});
+document.querySelectorAll('a, .h-tag, .sk-card, .e-item, .cert-card').forEach(el => {
+  el.addEventListener('mouseenter', () => $cur.classList.add('hov'));
+  el.addEventListener('mouseleave', () => $cur.classList.remove('hov'));
+});
+
+/* ── Scroll progress bar ── */
+ScrollTrigger.create({
+  start: 'top top', end: 'max',
+  onUpdate: s => gsap.set('#prog', { scaleX: s.progress }),
+});
+
+/* ── Nav glass ── */
+ScrollTrigger.create({
+  start: 'top -60',
+  onEnter:     () => document.getElementById('nav').classList.add('on'),
+  onLeaveBack: () => document.getElementById('nav').classList.remove('on'),
+});
+
+/* ── Nav + side-dot smooth scroll ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    gsap.to(window, { scrollTo: { y: a.getAttribute('href'), offsetY: 62 }, duration: 1.1, ease: 'power3.inOut' });
+  });
+});
+document.querySelectorAll('.snd').forEach(d => {
+  d.addEventListener('click', () => {
+    gsap.to(window, { scrollTo: { y: d.dataset.target, offsetY: 62 }, duration: 1.1, ease: 'power3.inOut' });
+  });
+});
+
+/* ── Side-dot active on scroll ── */
+['#hero','#about','#education','#skills','#projects','#certs'].forEach((id, i) => {
+  ScrollTrigger.create({
+    trigger: id, start: 'top 55%', end: 'bottom 55%',
+    onEnter:     () => activeDot(i),
+    onEnterBack: () => activeDot(i),
+  });
+});
+function activeDot(i) {
+  document.querySelectorAll('.snd').forEach((d, j) => d.classList.toggle('act', j === i));
+}
+
+/* ── Scramble ── */
+function scramble(el, delay) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const orig = el.textContent;
+  let frame = 0;
+  setTimeout(() => {
+    const id = setInterval(() => {
+      el.textContent = orig.split('').map((c, i) => {
+        if (c === ' ') return ' ';
+        return i < (frame / 24) * orig.length ? c : chars[Math.floor(Math.random() * chars.length)];
+      }).join('');
+      if (++frame > 24) { clearInterval(id); el.textContent = orig; }
+    }, 36);
+  }, delay || 0);
+}
+
+/* ── Preloader ── */
+document.body.style.overflow = 'hidden';
+
+/* gentle float while bar loads */
+const plFloat = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut' } });
+plFloat
+  .to('#plI', { y: -10, duration: 1.9 }, 0)
+  .to('#plK', { y: -15, duration: 2.3 }, 0.4)
+  .to('#plM', { y: -10, duration: 1.7 }, 0.75);
+
+gsap.timeline({
+  onComplete() { document.body.style.overflow = ''; heroEntrance(); }
+})
+.to('#plFill', { width: '100%', duration: 1.15, ease: 'power2.inOut' })
+.call(() => { plFloat.kill(); })
+.to('.pl-inner', { opacity: 0, y: -18, duration: 0.55, ease: 'power2.inOut' }, '+=0.15')
+.to('#preloader', { opacity: 0, duration: 0.45, ease: 'power2.in' }, '+=0.05')
+.set('#preloader', { display: 'none' });
+
+/* ── HERO entrance (fires after preloader) ── */
+function heroEntrance() {
+  gsap.timeline({ defaults: { ease: 'expo.out' } })
+    .from('.h-photo',      { opacity: 0, scale: 1.06, duration: 1.6, ease: 'power2.out' }, 0)
+    .from('#nav',          { y: -42, opacity: 0, duration: .85 }, 0)
+    .from('#snav',         { opacity: 0, x: 12, duration: .7 }, .4)
+    .from('.h-hello-i',    { yPercent: 115, duration: .9 }, .3)
+    .from('.h-fill-i',     { yPercent: 108, duration: 1.1 }, .44)
+    .from('.h-stroke-i',   { yPercent: -108, duration: 1.1 }, .54)
+    .from('.h-sub-name-i', { yPercent: 130, duration: .85 }, .64)
+    .to('.h-rule',         { scaleX: 1, duration: .95, ease: 'power3.inOut' }, .85)
+    .from('.h-subtitle',   { opacity: 0, y: 16, duration: .7 }, 1.0)
+    .from('.h-tag',        { opacity: 0, y: 10, stagger: .06, duration: .5 }, 1.05)
+    .from('.h-vert',       { opacity: 0, y: 14, duration: .6 }, .5)
+    .from('.h-scrollhint', { opacity: 0, y: 10, duration: .6 }, 1.45);
+}
+
+/* ── Horizontal scroll strips (GSAP scrub) ── */
+[
+  { id: '#hs1', dir:  1 },
+  { id: '#hs2', dir: -1 },
+  { id: '#hs3', dir:  1 },
+  { id: '#hs4', dir: -1 },
+].forEach(({ id, dir }) => {
+  const el = document.querySelector(id);
+  if (!el) return;
+  const vw = el.scrollWidth;
+  gsap.fromTo(el,
+    { x: dir * vw * 0.12 },
+    {
+      x: dir * -vw * 0.12,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: el.closest('.hscroll'),
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1.4,
+      },
+    }
+  );
+});
+
+/* ── About ── */
+ScrollTrigger.create({
+  trigger: '#about', start: 'top 75%', once: true,
+  onEnter() {
+    scramble(document.querySelector('#about .sl'));
+    gsap.from('#about .st-i',   { yPercent: 100, stagger: .12, duration: 1, ease: 'expo.out', delay: .1 });
+    gsap.from('.a-row',         { x: -28, opacity: 0, stagger: .1, duration: .7, ease: 'power3.out', delay: .28 });
+    gsap.from('.a-p',           { y: 26, opacity: 0, stagger: .12, duration: .8, ease: 'power3.out', delay: .32 });
+  },
+});
+
+/* ── Education ── */
+ScrollTrigger.create({
+  trigger: '#education', start: 'top 76%', once: true,
+  onEnter() {
+    scramble(document.querySelector('#education .sl'));
+    gsap.from('#education .st-i', { yPercent: 100, duration: 1.05, ease: 'expo.out', delay: .1 });
+  },
+});
+document.querySelectorAll('.e-item').forEach((el, i) => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+    x: -36, opacity: 0, duration: .75, delay: i * .04, ease: 'power3.out',
+  });
+  /* subtle ongoing scrub parallax on each year stamp */
+  gsap.to(el.querySelector('.e-yr'), {
+    y: -18,
+    ease: 'none',
+    scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
+  });
+});
+
+/* ── Skills ── */
+ScrollTrigger.create({
+  trigger: '#skills', start: 'top 76%', once: true,
+  onEnter() {
+    scramble(document.querySelector('#skills .sl'));
+    gsap.from('#skills .st-i', { yPercent: 100, duration: 1, ease: 'expo.out', delay: .1 });
+  },
+});
+document.querySelectorAll('.sk-card').forEach((el, i) => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+    y: 44, opacity: 0, duration: .7, delay: i * .07, ease: 'power3.out',
+  });
+});
+
+/* ── Projects ── */
+ScrollTrigger.create({
+  trigger: '#projects', start: 'top 76%', once: true,
+  onEnter() {
+    scramble(document.querySelector('#projects .sl'));
+    gsap.from('#projects .st-i', { yPercent: 100, duration: 1, ease: 'expo.out', delay: .1 });
+  },
+});
+gsap.from('.proj-item', {
+  scrollTrigger: { trigger: '.proj-item', start: 'top 85%', once: true },
+  x: -40, opacity: 0, duration: .9, ease: 'power3.out',
+});
+
+/* ── Certificates ── */
+ScrollTrigger.create({
+  trigger: '#certs', start: 'top 76%', once: true,
+  onEnter() {
+    scramble(document.querySelector('#certs .sl'));
+    gsap.from('#certs .st-i', { yPercent: 100, duration: 1, ease: 'expo.out', delay: .1 });
+  },
+});
+document.querySelectorAll('.cert-card').forEach((el, i) => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+    y: 52, opacity: 0, rotation: (i % 3 - 1) * 1.2,
+    duration: .85, delay: (i % 3) * .13, ease: 'power3.out',
+  });
+});
+
+/* ── Footer ── */
+gsap.from('footer > *', {
+  scrollTrigger: { trigger: 'footer', start: 'top 92%', once: true },
+  y: 20, opacity: 0, stagger: .15, duration: .7, ease: 'power3.out',
+});
+
+/* ── Background number parallax ── */
+document.querySelectorAll('.bnum').forEach(n => {
+  gsap.to(n, {
+    scrollTrigger: { trigger: n.closest('section'), scrub: 1.8 },
+    y: -70, ease: 'none',
+  });
+});
+
+/* ── Skill card number scrub (depth layer) ── */
+document.querySelectorAll('.sk-num').forEach(n => {
+  gsap.to(n, {
+    y: -12,
+    ease: 'none',
+    scrollTrigger: { trigger: n.closest('.sk-card'), start: 'top bottom', end: 'bottom top', scrub: 1 },
+  });
+});
+
+/* ── Cert hex scrub (float up as you scroll past) ── */
+document.querySelectorAll('.cert-hex').forEach(h => {
+  gsap.to(h, {
+    y: -20,
+    ease: 'none',
+    scrollTrigger: { trigger: h.closest('.cert-card'), start: 'top bottom', end: 'bottom top', scrub: 1 },
+  });
+});
+
+/* ── Hero photo parallax scrub ── */
+gsap.to('.h-photo img', {
+  y: 70,
+  ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
+});
+
+/* ── Hero fill text subtle scrub (pulls away as you scroll off) ── */
+gsap.to('.h-fill-i', {
+  y: -60,
+  ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
+});
+gsap.to('.h-stroke-i', {
+  y: -30,
+  ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
+});
+
+/* ── 3D card tilt ── */
+document.querySelectorAll('.sk-card, .cert-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const mx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+    const my = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+    gsap.to(card, { rotationY: mx * 7, rotationX: -my * 7, transformPerspective: 900, duration: .4, ease: 'power2.out' });
+  });
+  card.addEventListener('mouseleave', () => {
+    gsap.to(card, { rotationY: 0, rotationX: 0, duration: .6, ease: 'power3.out' });
+  });
+});
+
+/* ── Magnetic cursor on small elements ── */
+document.querySelectorAll('.h-tag, .proj-badge, .e-badge, .cert-link').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width / 2) * 0.3;
+    const y = (e.clientY - r.top - r.height / 2) * 0.3;
+    gsap.to(el, { x, y, duration: .35, ease: 'power2.out' });
+  });
+  el.addEventListener('mouseleave', () => {
+    gsap.to(el, { x: 0, y: 0, duration: .55, ease: 'elastic.out(1.1,.4)' });
+  });
+});
+
+/* ── Typewriter role cycle ── */
+const roles = ['Web Developer','Systems Developer','Mobile Engineer','UI / UX Design','Visual Artist'];
+let ri = 0, ci = 0, del = false;
+const roleEl = document.getElementById('hRole');
+function typeRole() {
+  if (!roleEl) return;
+  const word = roles[ri];
+  if (!del) {
+    roleEl.textContent = word.slice(0, ++ci);
+    if (ci === word.length) { del = true; setTimeout(typeRole, 1900); return; }
+  } else {
+    roleEl.textContent = word.slice(0, --ci);
+    if (ci === 0) { del = false; ri = (ri + 1) % roles.length; }
+  }
+  setTimeout(typeRole, del ? 42 : 82);
+}
+setTimeout(typeRole, 2800);
+
+/* ── About stats counters ── */
+document.querySelectorAll('.a-stat-n').forEach(el => {
+  const target = +el.dataset.count;
+  ScrollTrigger.create({
+    trigger: el, start: 'top 88%', once: true,
+    onEnter() {
+      gsap.to({ v: 0 }, {
+        v: target, duration: 1.5, ease: 'power2.out',
+        onUpdate() { el.textContent = Math.round(this.targets()[0].v); },
+      });
+    },
+  });
+});
+
+/* ── Lightbox for cert images ── */
+const lb   = document.getElementById('lightbox');
+const lbIm = document.getElementById('lbImg');
+function closeLb() {
+  gsap.to('.lb-inner', { scale: .88, opacity: 0, duration: .26, ease: 'power3.in',
+    onComplete() { lb.style.display = 'none'; gsap.set('.lb-inner', { clearProps: 'all' }); }
+  });
+}
+document.querySelectorAll('.cert-img-wrap img').forEach(img => {
+  img.parentElement.style.cursor = 'zoom-in';
+  img.addEventListener('click', () => {
+    lbIm.src = img.src; lbIm.alt = img.alt;
+    lb.style.display = 'flex';
+    gsap.fromTo('.lb-inner', { scale: .86, opacity: 0 }, { scale: 1, opacity: 1, duration: .42, ease: 'back.out(1.5)' });
+  });
+});
+document.getElementById('lbClose').addEventListener('click', closeLb);
+document.getElementById('lbBackdrop').addEventListener('click', closeLb);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+/* ── Copy email to clipboard + toast ── */
+gsap.set('#toast', { xPercent: -50, y: 20, opacity: 0 });
+document.querySelectorAll('a[href^="mailto:"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const email = a.getAttribute('href').replace('mailto:', '');
+    navigator.clipboard.writeText(email).then(() => {
+      const t = document.getElementById('toast');
+      t.textContent = 'Copied — ' + email;
+      gsap.killTweensOf(t);
+      gsap.timeline()
+        .to(t, { opacity: 1, y: 0, duration: .3, ease: 'power2.out' })
+        .to(t, { opacity: 0, y: 20, duration: .3, ease: 'power2.in', delay: 2.4 });
+    });
+  });
+});
+
+/* ── Scroll to top ── */
+gsap.set('#totop', { opacity: 0, y: 10, pointerEvents: 'none' });
+ScrollTrigger.create({
+  start: 'top -50%',
+  onEnter:     () => gsap.to('#totop', { opacity: 1, y: 0, pointerEvents: 'auto', duration: .4, ease: 'power2.out' }),
+  onLeaveBack: () => gsap.to('#totop', { opacity: 0, y: 10, pointerEvents: 'none', duration: .3 }),
+});
+document.getElementById('totop').addEventListener('click', () => {
+  gsap.to(window, { scrollTo: 0, duration: 1.2, ease: 'power3.inOut' });
+});
+
+/* ── About photo parallax ── */
+gsap.to('.a-photo', {
+  y: -30, ease: 'none',
+  scrollTrigger: { trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: 1.4 },
+});
+
+/* ── Footer CTA reveal ── */
+ScrollTrigger.create({
+  trigger: 'footer', start: 'top 82%', once: true,
+  onEnter() {
+    gsap.from('.ft-cta-head', { yPercent: 40, opacity: 0, duration: 1.1, ease: 'expo.out' });
+    gsap.to('.ft-cta-rule', { scaleX: 1, duration: 1.1, ease: 'power3.inOut', delay: .5 });
+  },
+});
+
+/* ── Skill level bars ── */
+document.querySelectorAll('.sk-bar-fill').forEach(fill => {
+  ScrollTrigger.create({
+    trigger: fill.closest('.sk-card'), start: 'top 88%', once: true,
+    onEnter() {
+      gsap.to(fill, { width: fill.dataset.pct + '%', duration: 1.2, ease: 'power2.out', delay: .1 });
+    },
+  });
+});
+
+/* ── Mobile hamburger ── */
+const ham = document.getElementById('ham');
+const navLinks = document.getElementById('navLinks');
+if (ham && navLinks) {
+  ham.addEventListener('click', () => {
+    ham.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      ham.classList.remove('open');
+      navLinks.classList.remove('open');
+    });
+  });
+}
+
+/* ── Project logo hover reveal ── */
+const projLogo = document.querySelector('.proj-logo');
+const projItem = document.querySelector('.proj-item');
+if (projLogo && projItem) {
+  gsap.set(projLogo, { opacity: 0, scale: 0.3, rotation: -40, x: 60 });
+  projItem.addEventListener('mouseenter', () => {
+    gsap.killTweensOf([projLogo, projItem]);
+    const pad = projLogo.offsetWidth + 28;
+    gsap.to(projItem, { paddingRight: pad, duration: 0.6, ease: 'power3.out' });
+    gsap.to(projLogo, { opacity: 1, scale: 1, rotation: 0, x: 0, duration: 0.78, ease: 'back.out(1.6)' });
+  });
+  projItem.addEventListener('mouseleave', () => {
+    gsap.killTweensOf([projLogo, projItem]);
+    gsap.to(projItem, { paddingRight: 0, duration: 0.52, ease: 'power3.inOut' });
+    gsap.to(projLogo, { opacity: 0, scale: 0.3, rotation: 30, x: 60, duration: 0.38, ease: 'power3.in' });
+  });
+}
+
+/* ── Education logo hover reveal ── */
+document.querySelectorAll('.e-item').forEach(item => {
+  const logo = item.querySelector('.e-logo');
+  if (!logo) return;
+  gsap.set(logo, { opacity: 0, scale: 0.3, rotation: -45, x: 60 });
+  item.addEventListener('mouseenter', () => {
+    gsap.killTweensOf([logo, item]);
+    const pad = logo.offsetWidth + 28;
+    gsap.to(item, { paddingRight: pad, duration: 0.6, ease: 'power3.out' });
+    gsap.to(logo, { opacity: 0.72, scale: 1, rotation: 0, x: 0, duration: 0.75, ease: 'back.out(1.6)' });
+  });
+  item.addEventListener('mouseleave', () => {
+    gsap.killTweensOf([logo, item]);
+    gsap.to(item, { paddingRight: 0, duration: 0.52, ease: 'power3.inOut' });
+    gsap.to(logo, { opacity: 0, scale: 0.3, rotation: 30, x: 60, duration: 0.38, ease: 'power3.in' });
+  });
+});
+</script>
+</body>
+</html>
