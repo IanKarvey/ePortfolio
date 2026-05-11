@@ -93,8 +93,15 @@ body{
   border-bottom:1px solid var(--brd);
 }
 .n-logo{
-  font-family:var(--serif);font-size:21px;font-weight:700;
-  color:var(--fg);text-decoration:none;letter-spacing:-.01em;
+  font-family:var(--sans);font-size:clamp(11px,1.2vw,14px);font-weight:400;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--fg);text-decoration:none;
+  display:flex;align-items:center;gap:5px;
+}
+.n-logo-e{
+  font-family:var(--serif);font-size:clamp(16px,1.7vw,20px);
+  font-weight:900;font-style:italic;color:var(--gold);
+  letter-spacing:-.02em;line-height:1;
 }
 .n-links{display:flex;gap:36px;list-style:none}
 .n-links a{
@@ -175,10 +182,10 @@ body{
   -webkit-text-stroke:1.2px var(--fg2);color:transparent;
 }
 .h-sub-name{
-  font-family:var(--sans);
-  font-size:clamp(9px,1.3vw,13px);
-  font-weight:400;letter-spacing:.32em;text-transform:uppercase;
-  color:var(--fg3);margin-top:8px;overflow:hidden;
+  font-family:var(--serif);
+  font-size:clamp(14px,1.8vw,22px);
+  font-weight:400;font-style:italic;letter-spacing:.04em;text-transform:none;
+  color:var(--fg3);margin-top:10px;overflow:hidden;
 }
 .h-sub-name-i{display:block}
 .h-photo{
@@ -794,6 +801,48 @@ footer{padding:0;display:block;border-top:none}
   display:flex;align-items:flex-start;justify-content:space-between;
   gap:24px;flex-wrap:wrap;border-top:.6px solid var(--brd);
 }
+/* ── FOOTER CONTACT CHANNELS ── */
+.ft-cta-subhead{
+  font-family:var(--serif);font-size:clamp(14px,1.6vw,19px);
+  font-weight:400;font-style:italic;color:var(--fg3);
+  margin-top:clamp(14px,2vw,22px);letter-spacing:.01em;
+}
+.ft-channels{
+  margin-top:clamp(28px,4vw,48px);
+  border-top:.6px solid var(--brd2);
+}
+.ft-ch{
+  display:flex;align-items:center;gap:clamp(16px,3vw,40px);
+  padding:clamp(14px,2vw,22px) 0;
+  border-bottom:.6px solid var(--brd);
+  text-decoration:none;color:inherit;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.ft-ch::after{
+  content:'';position:absolute;left:0;bottom:0;
+  width:0;height:1px;background:var(--gold);
+  transition:width .65s cubic-bezier(.25,1,.5,1);
+}
+.ft-ch:hover::after{width:100%}
+.ft-ch-ch{
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);
+  min-width:68px;flex-shrink:0;
+}
+.ft-ch-val{
+  font-family:var(--serif);font-size:clamp(15px,2vw,26px);
+  font-weight:400;color:var(--fg2);flex:1;line-height:1.2;
+  transition:color .3s;
+}
+.ft-ch:hover .ft-ch-val{color:var(--fg)}
+.ft-ch-arr{
+  font-family:var(--mono);font-size:12px;color:var(--fg3);
+  transition:transform .35s cubic-bezier(.25,1,.5,1),color .3s;
+  flex-shrink:0;
+}
+.ft-ch:hover .ft-ch-arr{transform:translateX(10px);color:var(--gold)}
+
 @media(max-width:600px){
   .a-stats{flex-wrap:wrap}
   .a-stat{flex:0 0 50%}
@@ -823,7 +872,7 @@ footer{padding:0;display:block;border-top:none}
 <div class="cdot" id="cdot"></div>
 
 <nav id="nav">
-  <a href="#hero" class="n-logo">IKM</a>
+  <a href="#hero" class="n-logo"><span class="n-logo-e">e</span>Portfolio</a>
   <ul class="n-links" id="navLinks">
     <li><a href="#about">About</a></li>
     <li><a href="#education">Education</a></li>
@@ -1323,8 +1372,33 @@ footer{padding:0;display:block;border-top:none}
 <!-- ════ FOOTER ════ -->
 <footer>
   <div class="ft-cta">
-    <div class="ft-cta-lbl">Get In Touch</div>
-    <div class="ft-cta-head">LET'S<br>CONNECT.</div>
+    <div class="ft-cta-lbl">Initiate Transmission</div>
+    <div class="ft-cta-head">OPEN<br>SIGNAL.</div>
+    <div class="ft-cta-subhead">Pick a channel &mdash; I respond to all of them.</div>
+
+    <div class="ft-channels">
+      <a href="https://www.facebook.com/search/top?q=Karvey+Laurel" class="ft-ch" target="_blank" rel="noopener">
+        <span class="ft-ch-ch">Facebook</span>
+        <span class="ft-ch-val">Karvey Laurel</span>
+        <span class="ft-ch-arr">&#8594;</span>
+      </a>
+      <a href="mailto:ian_karvey_manimtim@dlsl.edu.ph" class="ft-ch">
+        <span class="ft-ch-ch">School</span>
+        <span class="ft-ch-val">ian_karvey_manimtim@dlsl.edu.ph</span>
+        <span class="ft-ch-arr">&#8594;</span>
+      </a>
+      <a href="mailto:ianmanimtim07.3@gmail.com" class="ft-ch">
+        <span class="ft-ch-ch">Personal</span>
+        <span class="ft-ch-val">ianmanimtim07.3@gmail.com</span>
+        <span class="ft-ch-arr">&#8594;</span>
+      </a>
+      <a href="tel:+639938673884" class="ft-ch">
+        <span class="ft-ch-ch">Phone</span>
+        <span class="ft-ch-val">+63 993 867 3884</span>
+        <span class="ft-ch-arr">&#8594;</span>
+      </a>
+    </div>
+
     <div class="ft-cta-rule"></div>
   </div>
   <div class="ft-lower">
@@ -1332,8 +1406,7 @@ footer{padding:0;display:block;border-top:none}
     <div class="ft-meta">
       <p>BSIT &mdash; De La Salle Lipa</p>
       <p>Talisay, Batangas &mdash; Philippines</p>
-      <p style="margin-top:6px"><a href="mailto:ian_karvey_manimtim@dlsl.edu.ph">ian_karvey_manimtim@dlsl.edu.ph</a></p>
-      <p><a href="mailto:ianmanimtim07.3@gmail.com">ianmanimtim07.3@gmail.com</a></p>
+      <p style="margin-top:6px;font-size:7.5px;letter-spacing:.1em">&copy; 2026 Ian Karvey L. Manimtim</p>
     </div>
   </div>
 </footer>
@@ -1732,6 +1805,8 @@ ScrollTrigger.create({
   trigger: 'footer', start: 'top 82%', once: true,
   onEnter() {
     gsap.from('.ft-cta-head', { yPercent: 40, opacity: 0, duration: 1.1, ease: 'expo.out' });
+    gsap.from('.ft-cta-subhead', { yPercent: 30, opacity: 0, duration: .9, ease: 'expo.out', delay: .35 });
+    gsap.from('.ft-ch', { yPercent: 22, opacity: 0, duration: .75, ease: 'expo.out', stagger: .1, delay: .55 });
     gsap.to('.ft-cta-rule', { scaleX: 1, duration: 1.1, ease: 'power3.inOut', delay: .5 });
   },
 });
