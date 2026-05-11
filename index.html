@@ -791,6 +791,11 @@ footer{padding:0;display:block;border-top:none}
   font-weight:900;color:var(--fg);line-height:.86;
   letter-spacing:-.04em;text-transform:uppercase;
 }
+.ft-cta-contact{
+  display:block;font-size:clamp(36px,5.5vw,88px);
+  font-weight:400;font-style:italic;text-transform:none;
+  color:var(--fg3);letter-spacing:-.02em;margin-top:.12em;
+}
 .ft-cta-rule{
   width:100%;height:.6px;margin-top:clamp(36px,4.5vw,64px);
   background:linear-gradient(90deg,var(--gold),rgba(201,168,76,.06));
@@ -802,11 +807,6 @@ footer{padding:0;display:block;border-top:none}
   gap:24px;flex-wrap:wrap;border-top:.6px solid var(--brd);
 }
 /* ── FOOTER CONTACT CHANNELS ── */
-.ft-cta-subhead{
-  font-family:var(--serif);font-size:clamp(14px,1.6vw,19px);
-  font-weight:400;font-style:italic;color:var(--fg3);
-  margin-top:clamp(14px,2vw,22px);letter-spacing:.01em;
-}
 .ft-channels{
   margin-top:clamp(28px,4vw,48px);
   border-top:.6px solid var(--brd2);
@@ -831,8 +831,8 @@ footer{padding:0;display:block;border-top:none}
   min-width:68px;flex-shrink:0;
 }
 .ft-ch-val{
-  font-family:var(--serif);font-size:clamp(15px,2vw,26px);
-  font-weight:400;color:var(--fg2);flex:1;line-height:1.2;
+  font-family:var(--sans);font-size:clamp(13px,1.6vw,20px);
+  font-weight:300;letter-spacing:.02em;color:var(--fg2);flex:1;line-height:1.2;
   transition:color .3s;
 }
 .ft-ch:hover .ft-ch-val{color:var(--fg)}
@@ -1372,9 +1372,8 @@ footer{padding:0;display:block;border-top:none}
 <!-- ════ FOOTER ════ -->
 <footer>
   <div class="ft-cta">
-    <div class="ft-cta-lbl">Initiate Transmission</div>
-    <div class="ft-cta-head">OPEN<br>SIGNAL.</div>
-    <div class="ft-cta-subhead">Pick a channel &mdash; I respond to all of them.</div>
+    <div class="ft-cta-lbl">Get In Touch</div>
+    <div class="ft-cta-head">INTERESTED?<br><span class="ft-cta-contact">contact me.</span></div>
 
     <div class="ft-channels">
       <a href="https://www.facebook.com/IanKarveyM/" class="ft-ch" target="_blank" rel="noopener">
@@ -1805,8 +1804,7 @@ ScrollTrigger.create({
   trigger: 'footer', start: 'top 82%', once: true,
   onEnter() {
     gsap.from('.ft-cta-head', { yPercent: 40, opacity: 0, duration: 1.1, ease: 'expo.out' });
-    gsap.from('.ft-cta-subhead', { yPercent: 30, opacity: 0, duration: .9, ease: 'expo.out', delay: .35 });
-    gsap.from('.ft-ch', { yPercent: 22, opacity: 0, duration: .75, ease: 'expo.out', stagger: .1, delay: .55 });
+    gsap.from('.ft-ch', { yPercent: 22, opacity: 0, duration: .75, ease: 'expo.out', stagger: .1, delay: .45 });
     gsap.to('.ft-cta-rule', { scaleX: 1, duration: 1.1, ease: 'power3.inOut', delay: .5 });
   },
 });
