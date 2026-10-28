@@ -5,13 +5,13 @@ export const profile = {
   goesBy: 'Ian',
   location: 'Talisay, Batangas, Philippines',
   headline: 'BSIT student at De La Salle Lipa — web, mobile and systems developer.',
+  availability: 'Open to OJT & Internship Opportunities',
+  availabilityDetail: 'Ian is actively looking for an OJT (on-the-job training) or internship placement as part of his BSIT degree at De La Salle Lipa (Class of 2027), and is happy to discuss schedules and requirements.',
   objective:
     'To build systems that are as thoughtful as they are functional — applying growing skills in web, mobile and systems development toward a reputed organization where he can contribute effectively, keep learning, and grow professionally.',
   education: [
     'Bachelor of Science in Information Technology — De La Salle Lipa, 2023–2027 (currently 4th year)',
     'Senior High School — San Guillermo Academy, 2021–2023',
-    'Junior High School — San Guillermo Academy, 2016–2021',
-    'Elementary — San Guillermo Academy, 2010–2016',
   ],
   certifications: [
     'Cyber Threat Management — Cisco Networking Academy (April 2026)',

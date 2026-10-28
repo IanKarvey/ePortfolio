@@ -39,7 +39,7 @@ if (FINE && $cur && $cdot) {
   });
   document.documentElement.addEventListener('mouseleave', () => { $cur.classList.remove('live'); $cdot.classList.remove('live'); });
   /* delegated, so elements the demos create later get the hover ring too */
-  const HOV = 'a, button, input, select, textarea, .h-tag, .sk-card, .e-item, .cert-card, .proj-item, [data-hov]';
+  const HOV = 'a, button, input, select, textarea, .h-tag, .sk-card, .ed-card, .cert-card, .proj-item, [data-hov]';
   document.addEventListener('mouseover', e => $cur.classList.toggle('hov', !!e.target.closest(HOV)));
 }
 
@@ -118,6 +118,25 @@ if (ham && navLinks) {
   ham.addEventListener('click', () => toggleMenu(!navLinks.classList.contains('open')));
   navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleMenu(false)));
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && navLinks.classList.contains('open')) toggleMenu(false); });
+}
+
+/* ── Aurora: each [data-glow="#a,#b,#c"] region re-tints the background light as it scrolls in ── */
+const aurora = document.getElementById('aurora');
+if (aurora) {
+  const tint = (el) => {
+    const [a1, a2, a3] = el.dataset.glow.split(',');
+    gsap.to(aurora, { '--a1': a1, '--a2': a2, '--a3': a3, duration: 1.6, ease: 'power2.out', overwrite: 'auto' });
+  };
+  document.querySelectorAll('[data-glow]').forEach(el => {
+    ScrollTrigger.create({ trigger: el, start: 'top 60%', end: 'bottom 60%', onEnter: () => tint(el), onEnterBack: () => tint(el) });
+  });
+  const auCur = document.getElementById('auCur');
+  if (FINE && !REDUCE && auCur) {
+    const ax = gsap.quickTo(auCur, 'x', { duration: 2.4, ease: 'power3.out' });
+    const ay = gsap.quickTo(auCur, 'y', { duration: 2.4, ease: 'power3.out' });
+    gsap.set(auCur, { xPercent: -50, yPercent: -50 });
+    document.addEventListener('mousemove', e => { ax(e.clientX); ay(e.clientY); auCur.classList.add('on'); });
+  }
 }
 
 /* ── Footer CTA reveal ── */

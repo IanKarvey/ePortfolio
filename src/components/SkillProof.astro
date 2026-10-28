@@ -1,0 +1,146 @@
+---
+/* "Don't take my word for it": every technology used in a shipped project becomes a chip.
+   Tapping one lists the projects that prove it — with the exact part of the system that uses it.
+   Skill-card pills that match a proven technology get a ✓ and open the same proof. */
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9+#.]/g, '');
+
+type Proof = { id: string; title: string; type: string; logo: string; logoBg: string; accent: string; where: string; text: string; demo: boolean };
+const map = new Map<string, { label: string; proofs: Proof[] }>();
+for (const p of projects) {
+  const d = p.data;
+  for (const tech of d.stack) {
+    const key = norm(tech);
+    const hit = d.architecture.find(a => norm(a.tech).includes(key) || norm(a.name).includes(key));
+    const feat = d.features.find(f => norm(f.text).includes(key));
+    const proof: Proof = {
+      id: p.id, title: d.title, type: d.type, logo: encodeURI(d.logo), logoBg: d.logoBg, accent: d.accent, demo: !!d.demo,
+      where: hit ? `${hit.name} · ${hit.tech}` : feat ? feat.title : 'Project stack',
+      text: hit ? hit.text : feat ? feat.text : d.summary,
+    };
+    if (!map.has(key)) map.set(key, { label: tech, proofs: [] });
+    map.get(key)!.proofs.push(proof);
+  }
+}
+const techs = [...map.entries()]
+  .sort((a, b) => b[1].proofs.length - a[1].proofs.length || a[1].label.localeCompare(b[1].label))
+  .map(([key, v]) => ({ key, ...v }));
+---
+<div class="spf" id="spf">
+  <div class="spf-head">
+    <span class="spf-badge">✓ Proof</span>
+    <p>Don't take my word for it — <b>tap a technology</b> to see the shipped project that uses it.</p>
+  </div>
+  <div class="spf-chips" role="list">
+    {techs.map(t => (
+      <button type="button" class="spf-chip" data-key={t.key} role="listitem" aria-expanded="false">
+        {t.label}<span class="spf-n">{t.proofs.length}</span>
+      </button>
+    ))}
+  </div>
+  <div class="spf-panel" id="spfPanel" hidden aria-live="polite"></div>
+</div>
+<script type="application/json" id="spfData" set:html={JSON.stringify(Object.fromEntries(techs.map(t => [t.key, t])))} />
+
+<script>
+  import { gsap, REDUCE } from '../scripts/core.js';
+
+  const data = JSON.parse(document.getElementById('spfData')!.textContent || '{}');
+  const panel = document.getElementById('spfPanel') as HTMLElement;
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('.spf-chip')];
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9+#.]/g, '');
+  let open = '';
+
+  function show(key: string) {
+    if (open === key) { close(); return; }
+    open = key;
+    const t = data[key];
+    chips.forEach(c => { const on = c.dataset.key === key; c.classList.toggle('on', on); c.setAttribute('aria-expanded', String(on)); });
+    panel.innerHTML = '';
+    const h = document.createElement('div');
+    h.className = 'spf-ph';
+    h.innerHTML = '<span class="spf-check">✓</span><span></span>';
+    h.lastElementChild!.textContent = `${t.label} — used in ${t.proofs.length} shipped project${t.proofs.length > 1 ? 's' : ''}`;
+    panel.appendChild(h);
+    const grid = document.createElement('div');
+    grid.className = 'spf-grid';
+    t.proofs.forEach((p: any) => {
+      const a = document.createElement('a');
+      a.className = 'spf-card';
+      a.href = `/projects/${p.id}/${p.demo ? '#demo' : '#how'}`;
+      a.style.setProperty('--accent', p.accent);
+      a.innerHTML = `<span class="spf-logo"><img alt="" loading="lazy"></span><span class="spf-body"><b></b><small></small><em></em><span class="spf-text"></span><span class="spf-go">${p.demo ? 'See it working' : 'See how it works'} →</span></span>`;
+      (a.querySelector('.spf-logo') as HTMLElement).style.background = p.logoBg;
+      a.querySelector('img')!.src = p.logo;
+      a.querySelector('b')!.textContent = p.title;
+      a.querySelector('small')!.textContent = p.type;
+      a.querySelector('em')!.textContent = p.where;
+      a.querySelector('.spf-text')!.textContent = p.text;
+      grid.appendChild(a);
+    });
+    panel.appendChild(grid);
+    panel.hidden = false;
+    if (!REDUCE) gsap.fromTo(panel.querySelectorAll('.spf-ph, .spf-card'), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .5, stagger: .07, ease: 'power3.out' });
+  }
+  function close() {
+    open = '';
+    chips.forEach(c => { c.classList.remove('on'); c.setAttribute('aria-expanded', 'false'); });
+    panel.hidden = true;
+  }
+  chips.forEach(c => c.addEventListener('click', () => show(c.dataset.key!)));
+
+  /* skill-card pills backed by a real project get a ✓ and open the same proof */
+  document.querySelectorAll<HTMLElement>('.sk-pill').forEach(pill => {
+    const key = norm(pill.textContent || '');
+    if (!data[key]) return;
+    pill.classList.add('proven');
+    pill.title = `Proven in ${data[key].proofs.map((p: any) => p.title).join(', ')} — click to see`;
+    pill.setAttribute('role', 'button');
+    pill.tabIndex = 0;
+    const go = () => { show(key); document.getElementById('spf')!.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); };
+    pill.addEventListener('click', go);
+    pill.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+
+  /* terminal: `proof <skill>` */
+  (window as any).ikmProof = (q: string) => {
+    const key = Object.keys(data).find(k => k === norm(q) || k.includes(norm(q)));
+    if (key) { if (open !== key) show(key); document.getElementById('spf')!.scrollIntoView({ block: 'start' }); }
+    return key ? data[key] : null;
+  };
+  (window as any).ikmProofKeys = () => Object.values(data).map((t: any) => t.label);
+</script>
+
+<style is:global>
+  .spf{position:relative;z-index:1;margin-bottom:clamp(24px,3vw,40px);scroll-margin-top:90px}
+  .spf-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .spf-head p{font-family:var(--sans);font-size:13px;font-weight:300;color:var(--fg3)}
+  .spf-head b{font-weight:400;color:var(--fg2)}
+  .spf-badge{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#14110d;background:var(--gold);padding:4px 9px;border-radius:2px}
+  .spf-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .spf-chip{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 6px 0 12px;border-radius:999px;border:.6px solid var(--brd2);background:rgba(19,17,9,.6);color:var(--fg2);font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;cursor:pointer;transition:all .25s}
+  .spf-chip:hover{border-color:rgba(219,185,94,.5);color:var(--fg)}
+  .spf-chip.on{background:var(--gold);border-color:var(--gold);color:#14110d}
+  .spf-n{display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:rgba(244,239,230,.08);font-size:9px;color:var(--fg3)}
+  .spf-chip.on .spf-n{background:rgba(20,17,13,.18);color:#14110d}
+  .spf-panel{margin-top:16px;padding:clamp(16px,2vw,24px);border:.6px solid rgba(219,185,94,.3);border-radius:6px;background:rgba(13,11,9,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .spf-ph{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:700;font-size:clamp(16px,1.6vw,20px);color:var(--fg);margin-bottom:14px}
+  .spf-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#6fcf7f;color:#0d0b09;font-size:12px;font-family:var(--sans)}
+  .spf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+  .spf-card{display:grid;grid-template-columns:52px 1fr;gap:14px;padding:16px;border-radius:5px;border:.6px solid var(--brd2);background:rgba(28,24,20,.6);color:inherit;text-decoration:none;transition:border-color .3s,transform .35s cubic-bezier(.25,1,.5,1)}
+  .spf-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+  .spf-logo{width:52px;height:52px;border-radius:12px;overflow:hidden;border:.6px solid var(--brd2)}
+  .spf-logo img{width:100%;height:100%;object-fit:contain;padding:5px;display:block}
+  .spf-body{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .spf-body b{font-family:var(--serif);font-size:17px;color:var(--fg)}
+  .spf-body small{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg3)}
+  .spf-body em{font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--accent);margin-top:6px}
+  .spf-text{font-family:var(--sans);font-size:12.5px;font-weight:300;line-height:1.65;color:var(--fg2)}
+  .spf-go{margin-top:6px;font-family:var(--sans);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  .sk-pill.proven{color:var(--fg2);border-color:rgba(111,207,127,.35);cursor:pointer}
+  .sk-pill.proven::before{content:'✓ ';color:#6fcf7f}
+  .sk-pill.proven:hover{color:var(--fg);border-color:#6fcf7f}
+  html:not(.touch) .spf button,html:not(.touch) .sk-pill.proven{cursor:none}
+</style>

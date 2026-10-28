@@ -1,0 +1,201 @@
+---
+/* Recruiter mode — the whole portfolio as a 30-second read, with the CV one click away.
+   Opens from any [data-open-recruiter] element. */
+import { getCollection } from 'astro:content';
+import { profile } from '../data/profile';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const topSkills = ['Flutter', 'Dart', 'Supabase', 'PostgreSQL', 'Python', 'SQL', 'Node.js', 'UI/UX', 'Power BI'];
+const facts = [
+  ['4th year', 'BSIT · De La Salle Lipa'],
+  [String(projects.length), 'Projects shipped'],
+  ['Solo', 'Developer on every project'],
+  [String(profile.certifications.length), 'Certifications'],
+];
+---
+<div class="rm" id="rm" role="dialog" aria-modal="true" aria-labelledby="rmName" hidden>
+  <div class="rm-backdrop" data-rm-close></div>
+  <div class="rm-sheet" data-lenis-prevent>
+    <div class="rm-timer" aria-hidden="true"><i id="rmTimer"></i></div>
+    <header class="rm-top">
+      <span class="rm-mode">Recruiter mode · 30-second read</span>
+      <button type="button" class="rm-x" data-rm-close aria-label="Close recruiter mode">Close ✕</button>
+    </header>
+
+    <section class="rm-hero">
+      <img src="/Picture%20of%20Me/ian-professional-700.jpg" alt="Ian Karvey L. Manimtim" class="rm-photo" loading="lazy">
+      <div>
+        <div class="rm-avail"><span></span>{profile.availability}</div>
+        <h2 class="rm-name" id="rmName">{profile.name}</h2>
+        <p class="rm-head">{profile.headline}</p>
+        <p class="rm-loc">📍 {profile.location} · Class of 2027</p>
+        <div class="rm-cta">
+          <a class="rm-btn rm-btn-main" href="/Ian-Karvey-Manimtim-CV.pdf" download>Download CV (PDF) ↓</a>
+          <a class="rm-btn" href="/cv/">View CV online</a>
+          <button type="button" class="rm-btn" id="rmCopy" data-email={profile.contact.personalEmail}>Copy email</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="rm-facts">
+      {facts.map(([n, l]) => <div><b>{n}</b><span>{l}</span></div>)}
+    </section>
+
+    <section class="rm-block">
+      <h3>Why Ian</h3>
+      <p class="rm-why">{profile.availabilityDetail} He has already shipped three complete systems on his own — a capstone safety platform on Flutter and Supabase, and two commissioned desktop apps in Python — every layer, from data to interface.</p>
+    </section>
+
+    <section class="rm-block">
+      <h3>Projects</h3>
+      <div class="rm-projects">
+        {projects.map(p => (
+          <a class="rm-proj" href={`/projects/${p.id}/`} style={`--accent:${p.data.accent}`}>
+            <span class="rm-proj-logo" style={`background:${p.data.logoBg}`}><img src={encodeURI(p.data.logo)} alt="" loading="lazy"></span>
+            <span class="rm-proj-body">
+              <b>{p.data.title}</b>
+              <small>{p.data.type} · {p.data.year} · {p.data.role.split(' — ')[0]}</small>
+              <span>{p.data.tagline}</span>
+              <em>{p.data.stack.slice(0, 5).join(' · ')}</em>
+            </span>
+            <span class="rm-proj-go" aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <div class="rm-two">
+      <section class="rm-block">
+        <h3>Core skills</h3>
+        <div class="rm-skills">{topSkills.map(s => <span class="proj-pill">{s}</span>)}</div>
+        <h3 class="rm-h-gap">Strengths</h3>
+        <p class="rm-small">{profile.strengths.join(' · ')}</p>
+      </section>
+      <section class="rm-block">
+        <h3>Certifications</h3>
+        <ul class="rm-certs">{profile.certifications.map(c => <li>{c}</li>)}</ul>
+      </section>
+    </div>
+
+    <section class="rm-block rm-contact">
+      <h3>Contact</h3>
+      <div class="rm-links">
+        <a href={`mailto:${profile.contact.personalEmail}`}>✉ {profile.contact.personalEmail}</a>
+        <a href={`mailto:${profile.contact.schoolEmail}`}>🎓 {profile.contact.schoolEmail}</a>
+        <a href={`tel:${profile.contact.phone.replace(/\s/g, '')}`}>☎ {profile.contact.phone}</a>
+        <a href={profile.contact.facebook} target="_blank" rel="noopener">f Facebook</a>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  import { gsap, lenis, REDUCE, showToast } from '../scripts/core.js';
+
+  const rm = document.getElementById('rm') as HTMLElement;
+  let timer: gsap.core.Tween | null = null;
+
+  function open() {
+    rm.hidden = false;
+    document.documentElement.classList.add('rm-open');
+    lenis?.stop();
+    requestAnimationFrame(() => rm.classList.add('on'));
+    (rm.querySelector('.rm-x') as HTMLElement).focus({ preventScroll: true });
+    if (!REDUCE) {
+      gsap.fromTo('.rm-hero, .rm-facts > div, .rm-block', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .6, stagger: .05, ease: 'power3.out', delay: .1 });
+      timer?.kill();
+      timer = gsap.fromTo('#rmTimer', { scaleX: 0 }, { scaleX: 1, duration: 30, ease: 'none' });
+    }
+  }
+  function close() {
+    rm.classList.remove('on');
+    document.documentElement.classList.remove('rm-open');
+    lenis?.start();
+    timer?.kill();
+    setTimeout(() => { if (!rm.classList.contains('on')) rm.hidden = true; }, 350);
+  }
+  document.addEventListener('click', e => {
+    const t = e.target as HTMLElement;
+    if (t.closest('[data-open-recruiter]')) { e.preventDefault(); open(); }
+    else if (t.closest('[data-rm-close]')) close();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !rm.hidden) close(); });
+  document.getElementById('rmCopy')!.addEventListener('click', e => {
+    const email = (e.currentTarget as HTMLElement).dataset.email!;
+    navigator.clipboard?.writeText(email).then(() => showToast('Copied — ' + email)).catch(() => { location.href = `mailto:${email}`; });
+  });
+  (window as any).ikmRecruiter = open;
+</script>
+
+<style is:global>
+  .rm{position:fixed;inset:0;z-index:99970;display:flex;justify-content:center;align-items:flex-start;padding:clamp(0px,3vw,40px) clamp(0px,3vw,40px) 0}
+  .rm[hidden]{display:none}
+  html.rm-open{overflow:hidden}
+  .rm-backdrop{position:absolute;inset:0;background:rgba(8,7,5,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity .35s}
+  .rm-sheet{position:relative;width:min(980px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;
+    background:#f3eee4;color:#1b1813;border-radius:10px 10px 0 0;box-shadow:0 -20px 80px rgba(0,0,0,.5);
+    padding:0 clamp(18px,4vw,52px) clamp(28px,4vw,52px);transform:translateY(40px);opacity:0;
+    transition:transform .45s cubic-bezier(.25,1,.5,1),opacity .35s;font-variation-settings:normal}
+  .rm.on .rm-backdrop,.rm.on .rm-sheet{opacity:1}
+  .rm.on .rm-sheet{transform:none}
+  .rm-timer{position:sticky;top:0;height:3px;margin:0 calc(-1 * clamp(18px,4vw,52px));background:#e3dccd;z-index:2}
+  .rm-timer i{display:block;height:100%;background:#b48a2c;transform:scaleX(0);transform-origin:left}
+  .rm-top{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid #e3dccd;position:sticky;top:3px;background:#f3eee4;z-index:1}
+  .rm-mode{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#8a7d68}
+  .rm-x{background:none;border:1px solid #d6cdb9;border-radius:999px;padding:7px 14px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#4a4237;cursor:pointer}
+  .rm-x:hover{border-color:#1b1813;color:#1b1813}
+  .rm-hero{display:grid;grid-template-columns:150px 1fr;gap:clamp(18px,3vw,36px);align-items:center;padding:clamp(24px,3vw,36px) 0}
+  .rm-photo{width:150px;aspect-ratio:3/4;object-fit:cover;object-position:50% 20%;border-radius:6px;box-shadow:0 14px 40px rgba(40,30,10,.18)}
+  .rm-avail{display:inline-flex;align-items:center;gap:9px;padding:7px 14px;border-radius:999px;background:#e2f3e2;border:1px solid #9fd3a6;color:#1f6b2c;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+  .rm-avail span{width:8px;height:8px;border-radius:50%;background:#2f9a44;box-shadow:0 0 0 3px rgba(47,154,68,.2)}
+  .rm-name{font-family:var(--serif);font-weight:900;font-size:clamp(30px,4.4vw,52px);line-height:1;letter-spacing:-.02em;color:#1b1813;margin:14px 0 8px}
+  .rm-head{font-family:var(--sans);font-size:15px;color:#3d372e}
+  .rm-loc{font-family:var(--sans);font-size:13px;color:#7a705f;margin-top:4px}
+  .rm-cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .rm-btn{display:inline-flex;align-items:center;height:42px;padding:0 18px;border-radius:4px;border:1px solid #cfc5b0;background:#fff;color:#1b1813;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:transform .25s,background .25s}
+  .rm-btn:hover{transform:translateY(-2px);background:#faf7f0}
+  .rm-btn-main{background:#1b1813;border-color:#1b1813;color:#f3eee4}
+  .rm-btn-main:hover{background:#000}
+  .rm-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e3dccd;border:1px solid #e3dccd;border-radius:6px;overflow:hidden}
+  .rm-facts div{background:#faf7f0;padding:16px;display:flex;flex-direction:column;gap:4px}
+  .rm-facts b{font-family:var(--serif);font-weight:900;font-size:28px;color:#9a7420;line-height:1}
+  .rm-facts span{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:#7a705f}
+  .rm-block{margin-top:clamp(22px,3vw,34px)}
+  .rm-block h3{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:#9a7420;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+  .rm-block h3::before{content:'';width:18px;height:1px;background:#b48a2c}
+  .rm-why{font-family:var(--sans);font-size:clamp(15px,1.6vw,17px);font-weight:400;line-height:1.7;color:#2e2a23;max-width:760px}
+  .rm-projects{display:flex;flex-direction:column;gap:8px}
+  .rm-proj{display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;padding:14px;border-radius:6px;background:#fff;border:1px solid #e3dccd;color:inherit;text-decoration:none;transition:border-color .25s,transform .3s}
+  .rm-proj:hover{border-color:var(--accent);transform:translateX(4px)}
+  .rm-proj-logo{width:56px;height:56px;border-radius:12px;overflow:hidden;border:1px solid #e3dccd}
+  .rm-proj-logo img{width:100%;height:100%;object-fit:contain;padding:5px}
+  .rm-proj-body{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .rm-proj-body b{font-family:var(--serif);font-size:18px;color:#1b1813}
+  .rm-proj-body small{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:#8a7d68}
+  .rm-proj-body span{font-family:var(--sans);font-size:13px;color:#4a4237;line-height:1.5}
+  .rm-proj-body em{font-style:normal;font-family:var(--mono);font-size:9.5px;color:#9a7420}
+  .rm-proj-go{font-size:18px;color:#b9ad96}
+  .rm-two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,3vw,40px)}
+  .rm-skills{display:flex;flex-wrap:wrap;gap:5px}
+  .rm-skills .proj-pill{color:#4a4237;background:#fff;border-color:#d6cdb9;font-size:9px}
+  .rm-h-gap{margin-top:18px}
+  .rm-small{font-family:var(--sans);font-size:13px;color:#4a4237}
+  .rm-certs{list-style:none;display:flex;flex-direction:column;gap:7px}
+  .rm-certs li{font-family:var(--sans);font-size:12.5px;line-height:1.5;color:#3d372e;padding-left:20px;position:relative}
+  .rm-certs li::before{content:'✓';position:absolute;left:0;color:#2f9a44}
+  .rm-links{display:flex;flex-wrap:wrap;gap:8px}
+  .rm-links a{padding:9px 14px;border-radius:4px;background:#fff;border:1px solid #e3dccd;color:#1b1813;font-family:var(--sans);font-size:13px;text-decoration:none}
+  .rm-links a:hover{border-color:#b48a2c}
+  html:not(.touch) .rm a,html:not(.touch) .rm button{cursor:none}
+  @media(max-width:700px){
+    .rm{padding:0}
+    .rm-sheet{border-radius:0;min-height:100%}
+    .rm-hero{grid-template-columns:1fr}
+    .rm-photo{width:110px}
+    .rm-facts{grid-template-columns:repeat(2,1fr)}
+    .rm-two{grid-template-columns:1fr}
+    .rm-proj{grid-template-columns:46px 1fr}
+    .rm-proj-logo{width:46px;height:46px}
+    .rm-proj-go{display:none}
+  }
+</style>

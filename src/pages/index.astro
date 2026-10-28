@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import SkillProof from '../components/SkillProof.astro';
 import { getCollection } from 'astro:content';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
@@ -29,7 +30,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
   <div class="snd" data-target="#certs"></div>
 </div>
 <!-- ════ HERO ════ -->
-<section id="hero">
+<section id="hero" data-glow="#dbb95e,#b5532c,#2f6b66">
   <div class="h-glow"></div>
   <div class="h-noise"></div>
   <div class="h-photo" id="hPhoto">
@@ -45,6 +46,11 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
   <div class="h-vert">Portfolio · 2026</div>
 
   <div class="h-inner">
+    <button type="button" class="h-avail" data-open-recruiter aria-label="Open to OJT and internship opportunities — view a 30-second summary">
+      <span class="h-avail-dot" aria-hidden="true"></span>
+      <span class="h-avail-t">Open to OJT &amp; Internship Opportunities</span>
+      <span class="h-avail-go">30-sec summary <span aria-hidden="true">→</span></span>
+    </button>
     <div class="h-hello"><span class="h-hello-i">Hello, I'm</span></div>
     <div class="h-name">
       <div class="h-fill"><span class="h-fill-i">IAN</span></div>
@@ -95,7 +101,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 
 
 <!-- ════ ABOUT ════ -->
-<section id="about">
+<section id="about" data-glow="#dbb95e,#b5532c,#5a3a6e">
   <span class="bnum" aria-hidden="true">01</span>
   <div class="wrap">
     <div class="sl">Who I Am</div>
@@ -179,84 +185,69 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 
 
 <!-- ════ EDUCATION ════ -->
-<section id="education">
+<section id="education" data-glow="#e0a84f,#1f6b65,#7a2f45">
   <span class="bnum" aria-hidden="true">02</span>
   <div class="wrap">
     <div class="sl">Academic Journey</div>
     <div class="st"><span class="st-i">Education</span></div>
-    <div class="e-list">
-
-      <div class="e-item">
-        <div class="e-yr">2008<br>—<br>2010</div>
-        <div class="e-content">
-          <div class="e-tag">Early Childhood Education</div>
-          <div class="e-name">San Guillermo Academy</div>
-          <div class="e-place">Talisay, Batangas — <em style="color:var(--gold);font-style:italic">"Where Leaders Are Born"</em></div>
-          <div class="e-desc">Began formal schooling through Kinder 1 and Kinder 2 — the very first steps of an academic journey spanning over a decade within the same institution, cultivating early social skills and a genuine love for learning.</div>
-          <span class="e-badge">Kinder 1 – Kinder 2</span>
-        </div>
-        <div class="e-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+    <!-- proportional timeline: 2021 → 2027, each card as wide as the years it covers -->
+    <div class="ed" id="ed">
+      <div class="ed-rail" aria-hidden="true">
+        <div class="ed-rail-track"><i class="ed-rail-fill" id="edFill"></i></div>
+        <span class="ed-tick" style="left:0%">2021</span>
+        <span class="ed-tick" style="left:33.333%">2023</span>
+        <span class="ed-tick ed-tick-end" style="left:100%">2027</span>
+        <span class="ed-now" id="edNow"><i></i><b>Now</b></span>
       </div>
 
-      <div class="e-item">
-        <div class="e-yr">2010<br>—<br>2016</div>
-        <div class="e-content">
-          <div class="e-tag">Elementary Education</div>
-          <div class="e-name">San Guillermo Academy</div>
-          <div class="e-place">Talisay, Batangas — Private Institution</div>
-          <div class="e-desc">Established a strong academic foundation through structured learning and active participation — building the discipline and curiosity that carried through to higher studies.</div>
-          <span class="e-badge">Grade 1 – Grade 6</span>
-        </div>
-        <div class="e-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
-      </div>
+      <div class="ed-grid">
+        <article class="ed-card">
+          <div class="ed-top">
+            <div class="ed-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+            <div class="ed-yrs">2021<span>—</span>2023</div>
+          </div>
+          <div class="ed-tag">Senior High School</div>
+          <h3 class="ed-name">San Guillermo Academy</h3>
+          <div class="ed-place">Talisay, Batangas · <em>"Where Leaders Are Born"</em></div>
+          <p class="ed-desc">Completed the Senior High track with greater academic maturity and focus — the launchpad into tertiary education and a career in technology.</p>
+          <div class="ed-foot">
+            <span class="e-badge">Grade 11 – Grade 12</span>
+            <span class="ed-status">✓ Completed</span>
+          </div>
+        </article>
 
-      <div class="e-item">
-        <div class="e-yr">2016<br>—<br>2021</div>
-        <div class="e-content">
-          <div class="e-tag">Junior High School</div>
-          <div class="e-name">San Guillermo Academy</div>
-          <div class="e-place">Talisay, Batangas — Private Institution</div>
-          <div class="e-desc">Deepened academic knowledge and critical thinking through various academic and extracurricular activities — shaping a well-rounded character and a lasting commitment to excellence.</div>
-          <span class="e-badge">Grade 7 – Grade 10</span>
-        </div>
-        <div class="e-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+        <article class="ed-card ed-now-card">
+          <div class="ed-top">
+            <div class="ed-logo"><img src="/School%20Logos/DLSL_Official_logo.png" alt="De La Salle Lipa" loading="lazy"></div>
+            <div class="ed-yrs">2023<span>—</span>2027</div>
+          </div>
+          <div class="ed-tag">College · Bachelor of Science in Information Technology</div>
+          <h3 class="ed-name">De La Salle Lipa</h3>
+          <div class="ed-place">Lipa City, Batangas · CALABARZON</div>
+          <p class="ed-desc">Pursuing BSIT at a university known for rigorous IT programs and holistic formation — and building real systems along the way, from the Barangay Safety capstone to commissioned desktop apps.</p>
+          <div class="ed-prog" id="edProg" data-start="2023-08-01" data-end="2027-05-31">
+            <div class="ed-prog-head"><span>Degree progress</span><b><span id="edPct">0</span>%</b></div>
+            <div class="ed-prog-bar"><i id="edBar"></i></div>
+            <div class="ed-prog-years"><span>1st</span><span>2nd</span><span>3rd</span><span class="on">4th</span></div>
+          </div>
+          <div class="ed-foot">
+            <span class="e-badge">BSIT · Class of 2027</span>
+            <span class="ed-status ed-live"><i></i>Currently 4th year</span>
+          </div>
+        </article>
       </div>
-
-      <div class="e-item">
-        <div class="e-yr">2021<br>—<br>2023</div>
-        <div class="e-content">
-          <div class="e-tag">Senior High School</div>
-          <div class="e-name">San Guillermo Academy</div>
-          <div class="e-place">Talisay, Batangas — Private Institution</div>
-          <div class="e-desc">Completed the Senior High track with greater academic maturity and specialization — preparing for the transition into tertiary education with a focused, goal-oriented mindset.</div>
-          <span class="e-badge">Grade 11 – Grade 12</span>
-        </div>
-        <div class="e-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
-      </div>
-
-      <div class="e-item">
-        <div class="e-yr">2023<br>—<br>2027</div>
-        <div class="e-content">
-          <div class="e-tag">College Education — Ongoing</div>
-          <div class="e-name">De La Salle Lipa</div>
-          <div class="e-place">Lipa City, Batangas — CALABARZON Premier Institution</div>
-          <div class="e-desc">Currently pursuing BSIT at a university recognized for its rigorous IT programs and holistic formation. Developing competencies in web development, systems development, mobile apps, and data analytics through coursework and real-world project delivery.</div>
-          <span class="e-badge">BSIT — Present</span>
-        </div>
-        <div class="e-logo"><img src="/School%20Logos/DLSL_Official_logo.png" alt="De La Salle Lipa" loading="lazy"></div>
-      </div>
-
     </div>
   </div>
 </section>
 
 
 <!-- ════ SKILLS ════ -->
-<section id="skills">
+<section id="skills" data-glow="#2f8a7f,#dbb95e,#4a3a7a">
   <span class="bnum" aria-hidden="true">03</span>
   <div class="wrap">
     <div class="sl">Competencies &amp; Expertise</div>
     <div class="st"><span class="st-i">Skills</span></div>
+    <SkillProof />
     <div class="sk-grid">
 
       <div class="sk-card">
@@ -342,7 +333,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 </div>
 
 <!-- ════ PROJECTS ════ -->
-<section id="projects">
+<section id="projects" data-glow="#d0583a,#7a2f45,#dbb95e">
   <span class="bnum" aria-hidden="true">04</span>
   <div class="wrap">
     <div class="sl">Built Work</div>
@@ -394,7 +385,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 
 
 <!-- ════ CERTIFICATES ════ -->
-<section id="certs">
+<section id="certs" data-glow="#dbb95e,#4a3a7a,#1f6b65">
   <span class="bnum" aria-hidden="true">05</span>
   <div class="wrap">
     <div class="sl">Verified Credentials</div>

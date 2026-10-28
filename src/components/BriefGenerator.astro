@@ -1,0 +1,201 @@
+---
+/* "Describe your idea — get a plan": the AI drafts how Ian would build it, then the visitor
+   can send the brief straight to Ian's inbox. Lives in the footer, so it's on every page. */
+import { getCollection } from 'astro:content';
+import { profile } from '../data/profile';
+
+const projects = (await getCollection('projects')).map(p => ({ id: p.id, title: p.data.title }));
+const kinds = ['Website', 'Mobile app', 'Desktop system', 'Dashboard / data', 'Not sure'];
+const timelines = ['As soon as possible', 'In 1–3 months', 'Flexible'];
+---
+<div class="br" id="br">
+  <div class="br-head">
+    <div class="br-lbl">Project planner · AI</div>
+    <h3 class="br-title">Have an idea? <em>Get a plan in seconds.</em></h3>
+    <p class="br-sub">Describe what you need. Ian's AI drafts how he'd build it — the stack, the phases, and the closest thing he's already shipped. Like it? Send it to him in one click.</p>
+  </div>
+
+  <form class="br-form" id="brForm" autocomplete="off">
+    <textarea id="brNeed" rows="3" maxlength="600" required placeholder="e.g. An ordering system for my milk tea shop — customers order online, my staff see orders on a tablet, and I get daily sales reports."></textarea>
+    <div class="br-row">
+      <div class="br-group" data-group="kind">
+        {kinds.map((k, i) => <button type="button" class:list={['br-chip', { on: i === kinds.length - 1 }]} data-v={k}>{k}</button>)}
+      </div>
+      <div class="br-group" data-group="timeline">
+        {timelines.map((t, i) => <button type="button" class:list={['br-chip', { on: i === timelines.length - 1 }]} data-v={t}>{t}</button>)}
+      </div>
+    </div>
+    <div class="br-actions">
+      <span class="br-count"><span id="brCount">0</span>/600</span>
+      <button type="submit" class="br-go" id="brGo">Draft my plan <span aria-hidden="true">✦</span></button>
+    </div>
+  </form>
+
+  <div class="br-out" id="brOut" hidden aria-live="polite"></div>
+</div>
+<script type="application/json" id="brData" set:html={JSON.stringify({ projects, email: profile.contact.personalEmail })} />
+
+<script>
+  import { showToast } from '../scripts/core.js';
+
+  const { projects, email } = JSON.parse(document.getElementById('brData')!.textContent || '{}');
+  const form = document.getElementById('brForm') as HTMLFormElement;
+  const need = document.getElementById('brNeed') as HTMLTextAreaElement;
+  const out = document.getElementById('brOut') as HTMLElement;
+  const go = document.getElementById('brGo') as HTMLButtonElement;
+  const pick: Record<string, string> = { kind: 'Not sure', timeline: 'Flexible' };
+  type Brief = { fit: boolean; title: string; summary: string; stack: string[]; phases: { name: string; detail: string }[]; similar: { project: string; why: string }; questions: string[] };
+  let last: { idea: string; brief: Brief } | null = null;
+
+  need.addEventListener('input', () => { document.getElementById('brCount')!.textContent = String(need.value.length); });
+  document.querySelectorAll<HTMLElement>('#br .br-group').forEach(g => g.addEventListener('click', e => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('.br-chip');
+    if (!b) return;
+    g.querySelectorAll('.br-chip').forEach(x => x.classList.toggle('on', x === b));
+    pick[g.dataset.group!] = b.dataset.v!;
+  }));
+
+  const el = (tag: string, cls = '', text = '') => { const n = document.createElement(tag); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+
+  function render(b: Brief) {
+    out.innerHTML = '';
+    const card = el('div', 'br-card');
+    card.append(el('div', 'br-card-k', b.fit ? 'Draft plan · for discussion' : 'Hmm'), el('h4', 'br-card-t', b.title || 'Your project'), el('p', 'br-card-s', b.summary));
+    if (b.fit) {
+      const stack = el('div', 'br-stack');
+      b.stack.forEach(s => stack.append(el('span', 'proj-pill', s)));
+      const phases = el('ol', 'br-phases');
+      b.phases.forEach(p => { const li = el('li'); li.append(el('b', '', p.name), el('span', '', p.detail)); phases.append(li); });
+      const sim = el('div', 'br-sim');
+      const proj = projects.find((p: any) => p.title.toLowerCase() === b.similar.project.toLowerCase() || b.similar.project.toLowerCase().includes(p.title.toLowerCase()));
+      sim.append(el('span', 'br-sim-k', 'Closest thing Ian has built'));
+      const name = el(proj ? 'a' : 'b', 'br-sim-t', b.similar.project + (proj ? ' →' : ''));
+      if (proj) (name as HTMLAnchorElement).href = `/projects/${proj.id}/#demo`;
+      sim.append(name, el('span', 'br-sim-w', b.similar.why));
+      const qs = el('ul', 'br-qs');
+      b.questions.forEach(q => qs.append(el('li', '', q)));
+      card.append(el('div', 'br-h', 'Suggested stack'), stack, el('div', 'br-h', 'How it would go'), phases, sim, el('div', 'br-h', 'Ian would ask you'), qs);
+      const acts = el('div', 'br-card-acts');
+      const send = el('button', 'br-send', 'Send this brief to Ian →') as HTMLButtonElement;
+      send.type = 'button';
+      send.addEventListener('click', sendBrief);
+      const copy = el('button', 'br-copy', 'Copy') as HTMLButtonElement;
+      copy.type = 'button';
+      copy.addEventListener('click', () => navigator.clipboard?.writeText(asText()).then(() => showToast('Brief copied')).catch(() => {}));
+      acts.append(send, copy);
+      card.append(acts, el('p', 'br-fine', 'An AI first draft to start the conversation — not a quote. Ian will reply with the real details.'));
+    }
+    out.append(card);
+    out.hidden = false;
+  }
+
+  function asText() {
+    if (!last) return '';
+    const b = last.brief;
+    return [
+      `Hi Ian! I'd like to talk about a project.`, ``,
+      `MY IDEA`, last.idea, ``,
+      `Kind: ${pick.kind} · Timeline: ${pick.timeline}`, ``,
+      `AI DRAFT — ${b.title}`, b.summary, ``,
+      `Stack: ${b.stack.join(', ')}`,
+      ...b.phases.map((p, i) => `${i + 1}. ${p.name} — ${p.detail}`), ``,
+      `Similar to: ${b.similar.project}`, ``,
+      `Questions you might have for me:`, ...b.questions.map(q => `- ${q}`), ``,
+      `(sent from karveyportfolio.vercel.app)`,
+    ].join('\n');
+  }
+  function sendBrief() {
+    if (!last) return;
+    const subject = `Project inquiry: ${last.brief.title}`;
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(asText())}`;
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const idea = need.value.trim();
+    if (idea.length < 8) { need.focus(); showToast('Tell Ian a little more first'); return; }
+    go.disabled = true;
+    go.classList.add('busy');
+    out.hidden = false;
+    out.innerHTML = '<div class="br-card br-skel"><i></i><i></i><i></i><i></i><span>Drafting a plan from Ian\'s real stack…</span></div>';
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'brief', need: idea, kind: pick.kind, timeline: pick.timeline }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.brief) { last = { idea, brief: data.brief }; render(data.brief); }
+      else {
+        out.innerHTML = '';
+        out.append(el('div', 'br-card br-err', data.error || 'Something went wrong — please try again.'));
+      }
+    } catch {
+      out.innerHTML = '<div class="br-card br-err">Couldn\'t reach the planner — check your connection and try again.</div>';
+    }
+    go.disabled = false;
+    go.classList.remove('busy');
+  });
+
+  /* the terminal's `brief` command scrolls here */
+  (window as any).ikmBrief = (text?: string) => {
+    document.getElementById('br')!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (text) { need.value = text; need.dispatchEvent(new Event('input')); }
+    setTimeout(() => need.focus(), 600);
+  };
+</script>
+
+<style is:global>
+  .br{margin-top:clamp(40px,5vw,72px);padding:clamp(22px,3vw,40px);border:.7px solid rgba(219,185,94,.28);border-radius:8px;
+    background:radial-gradient(circle at 0% 0%,rgba(219,185,94,.10),transparent 55%),rgba(19,17,9,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .br-lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px}
+  .br-lbl::before{content:'';width:20px;height:.7px;background:var(--gold)}
+  .br-title{font-family:var(--serif);font-weight:900;font-size:clamp(26px,3.4vw,46px);line-height:1.02;letter-spacing:-.02em;color:var(--fg);margin:12px 0}
+  .br-title em{font-style:italic;font-weight:400;color:var(--fg2)}
+  .br-sub{font-family:var(--sans);font-size:13.5px;font-weight:300;line-height:1.75;color:var(--fg3);max-width:640px}
+  .br-form{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+  .br-form textarea{width:100%;resize:vertical;min-height:96px;padding:14px 16px;border-radius:4px;background:rgba(13,11,9,.75);border:.7px solid var(--brd2);color:var(--fg);font-family:var(--sans);font-size:14px;font-weight:300;line-height:1.6;outline:none}
+  .br-form textarea:focus{border-color:rgba(219,185,94,.55)}
+  .br-row{display:flex;flex-wrap:wrap;gap:10px 22px}
+  .br-group{display:flex;flex-wrap:wrap;gap:6px}
+  .br-chip{height:30px;padding:0 12px;border-radius:999px;border:.6px solid var(--brd2);background:none;color:var(--fg3);font-family:var(--sans);font-size:11.5px;cursor:pointer;transition:all .25s}
+  .br-chip:hover{color:var(--fg2);border-color:var(--fg3)}
+  .br-chip.on{color:#14110d;background:var(--gold);border-color:var(--gold)}
+  .br-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .br-count{font-family:var(--mono);font-size:9px;color:var(--fg3)}
+  .br-go{height:46px;padding:0 24px;border:none;border-radius:3px;background:var(--gold);color:#14110d;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:filter .3s,transform .3s}
+  .br-go:hover{filter:brightness(1.08);transform:translateY(-2px)}
+  .br-go.busy{opacity:.6;pointer-events:none}
+  .br-out{margin-top:22px}
+  .br-card{padding:clamp(18px,2.4vw,30px);border-radius:6px;background:rgba(13,11,9,.78);border:.6px solid var(--brd2);animation:brIn .5s cubic-bezier(.25,1,.5,1)}
+  @keyframes brIn{from{opacity:0;transform:translateY(12px)}}
+  .br-card-k{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+  .br-card-t{font-family:var(--serif);font-weight:900;font-size:clamp(22px,2.6vw,32px);color:var(--fg);margin:8px 0 10px;line-height:1.1}
+  .br-card-s{font-family:var(--sans);font-size:14px;font-weight:300;line-height:1.7;color:var(--fg2)}
+  .br-h{margin:20px 0 10px;font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg3)}
+  .br-stack{display:flex;flex-wrap:wrap;gap:6px}
+  .br-stack .proj-pill{color:var(--gold);border-color:rgba(219,185,94,.3)}
+  .br-phases{list-style:none;counter-reset:ph;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+  .br-phases li{counter-increment:ph;position:relative;padding:14px 14px 14px 46px;border:.6px solid var(--brd);border-radius:4px;background:rgba(28,24,20,.55);display:flex;flex-direction:column;gap:4px}
+  .br-phases li::before{content:counter(ph,decimal-leading-zero);position:absolute;left:14px;top:14px;font-family:var(--mono);font-size:10px;color:var(--gold)}
+  .br-phases b{font-family:var(--serif);font-size:15px;color:var(--fg)}
+  .br-phases span{font-family:var(--sans);font-size:12.5px;font-weight:300;line-height:1.6;color:var(--fg3)}
+  .br-sim{margin-top:18px;padding:14px 16px;border-left:2px solid var(--gold);background:rgba(219,185,94,.06);display:flex;flex-direction:column;gap:4px}
+  .br-sim-k{font-family:var(--mono);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg3)}
+  .br-sim-t{font-family:var(--serif);font-weight:700;font-size:18px;color:var(--gold);text-decoration:none}
+  a.br-sim-t:hover{text-decoration:underline;text-underline-offset:4px}
+  .br-sim-w{font-family:var(--sans);font-size:12.5px;font-weight:300;color:var(--fg2);line-height:1.6}
+  .br-qs{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .br-qs li{font-family:var(--sans);font-size:13px;font-weight:300;color:var(--fg2);padding-left:18px;position:relative}
+  .br-qs li::before{content:'?';position:absolute;left:0;color:var(--gold);font-family:var(--mono)}
+  .br-card-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .br-send{height:44px;padding:0 20px;border:none;border-radius:3px;background:var(--gold);color:#14110d;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  .br-copy{height:44px;padding:0 18px;border-radius:3px;border:.6px solid var(--brd2);background:none;color:var(--fg2);font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  .br-fine{margin-top:12px;font-family:var(--sans);font-size:11px;font-weight:300;color:var(--fg3)}
+  .br-err{color:#f0a59d;font-family:var(--sans);font-size:13px}
+  .br-skel{display:flex;flex-direction:column;gap:10px}
+  .br-skel i{height:12px;border-radius:3px;background:linear-gradient(90deg,var(--bg3) 0%,rgba(219,185,94,.18) 50%,var(--bg3) 100%);background-size:200% 100%;animation:brShim 1.2s linear infinite}
+  .br-skel i:nth-child(1){width:40%}.br-skel i:nth-child(2){width:85%}.br-skel i:nth-child(3){width:70%}.br-skel i:nth-child(4){width:55%}
+  .br-skel span{margin-top:6px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--fg3)}
+  @keyframes brShim{to{background-position:-200% 0}}
+  html:not(.touch) .br button{cursor:none}
+</style>

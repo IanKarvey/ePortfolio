@@ -1,8 +1,19 @@
+---
+import BriefGenerator from './BriefGenerator.astro';
+import LocalTime from './LocalTime.astro';
+---
 <!-- ════ FOOTER ════ -->
-<footer>
+<footer data-glow="#dbb95e,#b5532c,#7a2f45" id="contact">
   <div class="ft-cta">
     <div class="ft-cta-lbl">Get In Touch</div>
     <div class="ft-cta-head">INTERESTED?<br><span class="ft-cta-contact">contact me.</span></div>
+    <button type="button" class="h-avail ft-avail" data-open-recruiter>
+      <span class="h-avail-dot" aria-hidden="true"></span>
+      <span class="h-avail-t">Open to OJT &amp; Internship Opportunities</span>
+      <span class="h-avail-go">CV &amp; summary <span aria-hidden="true">→</span></span>
+    </button>
+
+    <BriefGenerator />
 
     <div class="ft-channels">
       <a href="https://www.facebook.com/IanKarveyM/" class="ft-ch" target="_blank" rel="noopener">
@@ -30,7 +41,10 @@
     <div class="ft-cta-rule"></div>
   </div>
   <div class="ft-lower">
-    <div class="ft-name">Ian Karvey L. Manimtim</div>
+    <div class="ft-id">
+      <div class="ft-name">Ian Karvey L. Manimtim</div>
+      <LocalTime />
+    </div>
     <div class="ft-meta">
       <p>BSIT &mdash; De La Salle Lipa</p>
       <p>Talisay, Batangas &mdash; Philippines</p>

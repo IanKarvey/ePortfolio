@@ -68,6 +68,28 @@ const data = JSON.stringify({ projects, profile });
       print({ t: profile.name, c: 'term-hi' });
       print(profile.headline);
       print({ t: '📍 ', c: 'term-dim' }, profile.location);
+      print({ t: '● ', c: 'term-ok' }, { t: profile.availability, c: 'term-ok' }, '  ', { t: 'recruiter', cmd: 'recruiter' });
+    }},
+    recruiter: { help: '30-second summary + CV', run: () => { print('opening recruiter mode…'); setTimeout(() => { close(); (window as any).ikmRecruiter?.(); }, 250); } },
+    cv: { help: 'download Ian\'s CV (PDF)', run: () => {
+      print({ t: '↓ ', c: 'term-gold' }, { t: 'Ian-Karvey-Manimtim-CV.pdf', href: '/Ian-Karvey-Manimtim-CV.pdf' }, { t: '   or view online: ', c: 'term-dim' }, { t: '/cv/', href: '/cv/' });
+    }},
+    proof: { help: 'proof <skill> — which project proves it', run: a => {
+      const fn = (window as any).ikmProof;
+      if (!fn) return print({ t: 'proof lives on the home page — ', c: 'term-dim' }, { t: 'goto skills', cmd: 'goto skills' });
+      if (!a) return print({ t: 'usage: proof <skill>   try: ', c: 'term-err' }, ...((window as any).ikmProofKeys?.() ?? []).slice(0, 6).map((k: string) => ({ t: k + ' ', cmd: `proof ${k}` })));
+      const t = fn(a);
+      if (!t) return print({ t: `no shipped project uses "${a}" yet`, c: 'term-err' });
+      print({ t: '✓ ', c: 'term-ok' }, `${t.label} — used in `, ...t.proofs.map((p: any, i: number) => ({ t: p.title + (i < t.proofs.length - 1 ? ', ' : ''), cmd: `open ${p.id}` })));
+      t.proofs.forEach((p: any) => print({ t: '  ' + p.title + ': ', c: 'term-dim' }, p.where));
+    }},
+    brief: { help: 'brief <idea> — get an AI plan for your project', run: a => {
+      print('opening the project planner…');
+      setTimeout(() => { close(); (window as any).ikmBrief?.(a); }, 250);
+    }},
+    time: { help: 'time & weather in Batangas', run: () => {
+      const fn = (window as any).ikmLocalTime;
+      print({ t: '🕘 ', c: 'term-gold' }, fn ? fn() : new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' }));
     }},
     projects: { help: 'list projects', run: () => {
       projects.forEach((p: any, i: number) => {
@@ -116,11 +138,12 @@ const data = JSON.stringify({ projects, profile });
     cd: { help: '_', run: a => commands.open.run(a.replace(/\/$/, '')) },
     clear: { help: 'clear the screen', run: () => { out.innerHTML = ''; } },
     exit: { help: 'close the terminal', run: () => close() },
+    hire: { help: '_', run: () => commands.recruiter.run('') },
     sudo: { help: '_', run: a => {
       if (/hire/.test(a)) {
         print({ t: '[sudo] password for recruiter: ********', c: 'term-dim' });
         print({ t: '✓ access granted. ', c: 'term-ok' }, 'Excellent decision. Opening contact channels…');
-        setTimeout(() => commands.contact.run(''), 400);
+        setTimeout(() => { commands.contact.run(''); commands.cv.run(''); }, 400);
       } else print({ t: `${a || 'sudo'}: permission denied — but `, c: 'term-err' }, { t: 'sudo hire ian', cmd: 'sudo hire ian' }, ' might work.');
     }},
     date: { help: '_', run: () => print(new Date().toString()) },

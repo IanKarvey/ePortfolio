@@ -1,0 +1,107 @@
+---
+/* Live visitors — Supabase Realtime presence + broadcast (no database tables involved).
+   Shows "N people here now" and, on desktop, other visitors' cursors on the same page.
+   Off until PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY are set (a separate Supabase project,
+   never the Barangay Safety one). */
+const url = import.meta.env.PUBLIC_SUPABASE_URL;
+const anon = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+const enabled = Boolean(url && anon);
+---
+{enabled && (
+  <>
+    <div class="lp" id="lp" hidden aria-live="polite"><i></i><span id="lpTxt"></span></div>
+    <div class="lp-layer" id="lpLayer" aria-hidden="true"></div>
+    <script type="application/json" id="lpCfg" set:html={JSON.stringify({ url, anon })} />
+  </>
+)}
+
+<script>
+  const cfgEl = document.getElementById('lpCfg');
+  if (cfgEl) start(JSON.parse(cfgEl.textContent || '{}'));
+
+  async function start({ url, anon }: { url: string; anon: string }) {
+    const { createClient } = await import('@supabase/supabase-js');
+    const sb = createClient(url, anon, { auth: { persistSession: false } });
+
+    const NAMES = ['Kalamansi', 'Mangga', 'Ube', 'Buko', 'Pandan', 'Langka', 'Bayabas', 'Saging', 'Sampalok', 'Pinya', 'Kamote', 'Atis'];
+    const COLORS = ['#dbb95e', '#e0574b', '#63ab33', '#5aa9e6', '#c58cf2', '#f0884c', '#3fc1b0'];
+    const me = {
+      id: crypto.randomUUID(),
+      name: NAMES[Math.floor(Math.random() * NAMES.length)],
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      path: location.pathname,
+    };
+    const fine = !document.documentElement.classList.contains('touch');
+    const pill = document.getElementById('lp')!;
+    const txt = document.getElementById('lpTxt')!;
+    const layer = document.getElementById('lpLayer')!;
+    const cursors = new Map<string, HTMLElement>();
+
+    const channel = sb.channel('portfolio-live', { config: { presence: { key: me.id }, broadcast: { self: false } } });
+
+    channel.on('presence', { event: 'sync' }, () => {
+      const state = channel.presenceState() as Record<string, { name: string; path: string }[]>;
+      const others = Object.keys(state).filter(k => k !== me.id);
+      const here = others.filter(k => state[k][0]?.path === me.path).length;
+      pill.hidden = others.length === 0;
+      txt.textContent = others.length === 1
+        ? `1 other person is here now${here ? ' — on this page' : ''}`
+        : `${others.length + 1} people here now${here ? ` · ${here} on this page` : ''}`;
+      /* drop cursors of visitors who left */
+      cursors.forEach((el, id) => { if (!state[id]) { el.remove(); cursors.delete(id); } });
+    });
+
+    channel.on('broadcast', { event: 'cur' }, ({ payload }) => {
+      if (payload.path !== me.path) { cursors.get(payload.id)?.remove(); cursors.delete(payload.id); return; }
+      let el = cursors.get(payload.id);
+      if (!el) {
+        el = document.createElement('div');
+        el.className = 'lp-cur';
+        el.style.setProperty('--c', payload.color);
+        el.innerHTML = '<svg width="16" height="18" viewBox="0 0 16 18"><path d="M1 1l13 7-6 1.6L5 16z" fill="currentColor" stroke="#0d0b09" stroke-width="1.2" stroke-linejoin="round"/></svg><span></span>';
+        el.querySelector('span')!.textContent = payload.name;
+        layer.appendChild(el);
+        cursors.set(payload.id, el);
+      }
+      /* positions are shared as fractions, so different screen sizes line up roughly */
+      const docH = document.documentElement.scrollHeight;
+      el.style.transform = `translate(${payload.x * window.innerWidth}px, ${payload.y * docH}px)`;
+      el.classList.add('on');
+      clearTimeout((el as any)._t);
+      (el as any)._t = setTimeout(() => el!.classList.remove('on'), 6000);
+    });
+
+    channel.subscribe(status => {
+      if (status === 'SUBSCRIBED') channel.track({ name: me.name, path: me.path });
+    });
+
+    if (fine) {
+      let lastSend = 0;
+      document.addEventListener('mousemove', e => {
+        const now = performance.now();
+        if (now - lastSend < 90) return;   // ~11 updates a second is plenty
+        lastSend = now;
+        channel.send({ type: 'broadcast', event: 'cur', payload: {
+          id: me.id, name: me.name, color: me.color, path: me.path,
+          x: e.clientX / window.innerWidth,
+          y: (e.clientY + window.scrollY) / document.documentElement.scrollHeight,
+        } });
+      });
+    }
+    window.addEventListener('pagehide', () => { channel.untrack(); sb.removeChannel(channel); });
+  }
+</script>
+
+<style is:global>
+  .lp{position:fixed;left:24px;bottom:80px;z-index:600;display:flex;align-items:center;gap:8px;
+    padding:7px 12px;border-radius:999px;background:rgba(28,24,20,.82);border:.6px solid var(--brd2);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--fg2);animation:lpIn .5s cubic-bezier(.25,1,.5,1)}
+  .lp i{width:7px;height:7px;border-radius:50%;background:#6fcf7f;box-shadow:0 0 8px #6fcf7f;animation:blink 2s ease-in-out infinite}
+  @keyframes lpIn{from{opacity:0;transform:translateY(8px)}}
+  .lp-layer{position:absolute;left:0;top:0;width:0;height:0;z-index:9990;pointer-events:none}
+  .lp-cur{position:absolute;left:0;top:0;color:var(--c);opacity:0;transition:transform .12s linear,opacity .4s;will-change:transform}
+  .lp-cur.on{opacity:1}
+  .lp-cur span{position:absolute;left:14px;top:14px;padding:2px 7px;border-radius:999px;background:var(--c);color:#0d0b09;font-family:var(--mono);font-size:9px;white-space:nowrap}
+  @media(max-width:680px){.lp{left:12px;bottom:12px}}
+</style>

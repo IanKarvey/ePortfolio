@@ -76,6 +76,7 @@ function heroEntrance() {
     .from('.h-photo img',  { scale: 1.18, duration: 2.2, ease: 'power3.out' }, .1)
     .from('#nav',          { y: -42, opacity: 0, duration: .85 }, 0)
     .from('#snav',         { opacity: 0, x: 12, duration: .7 }, .4)
+    .from('.h-avail',      { y: 14, opacity: 0, duration: .9 }, .2)
     .from('.h-hello-i',    { yPercent: 115, duration: .9 }, .3)
     .from('.h-fill-i',     { yPercent: 108, duration: 1.1 }, .44)
     .from('.h-stroke-i',   { yPercent: -108, duration: 1.1 }, .54)
@@ -132,16 +133,41 @@ ScrollTrigger.create({
     gsap.from('#education .st-i', { yPercent: 100, duration: 1.05, ease: 'expo.out', delay: .1 });
   },
 });
-document.querySelectorAll('.e-item').forEach((el, i) => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-    x: -36, opacity: 0, duration: .75, delay: i * .04, ease: 'power3.out',
+/* timeline: today's position on the 2021 → 2027 rail, and how far through the degree Ian is.
+   Both are computed from the real date, so the section stays accurate without edits. */
+const edProg = document.getElementById('edProg');
+if (edProg) {
+  const now = new Date();
+  const yearFrac = now.getFullYear() + (now - new Date(now.getFullYear(), 0, 1)) / 31557600000;
+  const railPct = Math.min(100, Math.max(0, ((yearFrac - 2021) / 6) * 100));
+  const start = new Date(edProg.dataset.start), end = new Date(edProg.dataset.end);
+  const degPct = Math.round(Math.min(1, Math.max(0, (now - start) / (end - start))) * 100);
+
+  gsap.set('#edNow', { left: railPct + '%' });
+  gsap.fromTo('#edFill', { width: '0%' }, {
+    width: railPct + '%', ease: 'none',
+    scrollTrigger: { trigger: '#ed', start: 'top 85%', end: 'top 35%', scrub: 1 },
   });
-  /* subtle ongoing scrub parallax on each year stamp */
-  gsap.to(el.querySelector('.e-yr'), {
-    y: -18,
-    ease: 'none',
-    scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
+  gsap.from('#edNow', { scale: 0, opacity: 0, duration: .6, ease: 'back.out(2)', scrollTrigger: { trigger: '#ed', start: 'top 40%', once: true } });
+  gsap.from('.ed-card', {
+    scrollTrigger: { trigger: '.ed-grid', start: 'top 85%', once: true },
+    y: 60, opacity: 0, duration: 1, stagger: .15, ease: 'power3.out',
+  });
+  ScrollTrigger.create({
+    trigger: edProg, start: 'top 90%', once: true,
+    onEnter() {
+      gsap.to('#edBar', { width: degPct + '%', duration: 1.6, ease: 'power3.out', delay: .3 });
+      gsap.to({ v: 0 }, { v: degPct, duration: 1.6, ease: 'power3.out', delay: .3,
+        onUpdate() { document.getElementById('edPct').textContent = Math.round(this.targets()[0].v); } });
+    },
+  });
+}
+/* cursor spotlight on the education cards */
+if (FINE) document.querySelectorAll('.ed-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    card.style.setProperty('--my', (e.clientY - r.top) + 'px');
   });
 });
 
@@ -370,21 +396,4 @@ if (FINE) document.querySelectorAll('.proj-item').forEach(projItem => {
   });
 });
 
-/* ── Education logo hover reveal ── */
-if (FINE) document.querySelectorAll('.e-item').forEach(item => {
-  const logo = item.querySelector('.e-logo');
-  if (!logo) return;
-  gsap.set(logo, { opacity: 0, scale: 0.3, rotation: -45, x: 60 });
-  item.addEventListener('mouseenter', () => {
-    gsap.killTweensOf([logo, item]);
-    const pad = logo.offsetWidth + 28;
-    gsap.to(item, { paddingRight: pad, duration: 0.6, ease: 'power3.out' });
-    gsap.to(logo, { opacity: 0.72, scale: 1, rotation: 0, x: 0, duration: 0.75, ease: 'back.out(1.6)' });
-  });
-  item.addEventListener('mouseleave', () => {
-    gsap.killTweensOf([logo, item]);
-    gsap.to(item, { paddingRight: 0, duration: 0.52, ease: 'power3.inOut' });
-    gsap.to(logo, { opacity: 0, scale: 0.3, rotation: 30, x: 60, duration: 0.38, ease: 'power3.in' });
-  });
-});
 

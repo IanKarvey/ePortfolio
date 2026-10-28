@@ -1,0 +1,65 @@
+---
+/* "It's 9:41 PM in Talisay, Batangas · 27°C, clear" — live Philippine time + current weather
+   from Open-Meteo (free, no key). Falls back to time only if the weather can't load. */
+---
+<div class="lt" id="lt">
+  <span class="lt-dot" aria-hidden="true"></span>
+  <span>It's <b id="ltTime">—</b> in Talisay, Batangas<span id="ltWx"></span></span>
+  <span class="lt-note" id="ltNote"></span>
+</div>
+
+<script>
+  const TZ = 'Asia/Manila';
+  const timeEl = document.getElementById('ltTime')!;
+  const wxEl = document.getElementById('ltWx')!;
+  const noteEl = document.getElementById('ltNote')!;
+  const fmt = new Intl.DateTimeFormat('en-PH', { timeZone: TZ, hour: 'numeric', minute: '2-digit', hour12: true });
+  const hourFmt = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hour12: false });
+
+  function tick() {
+    const now = new Date();
+    timeEl.textContent = fmt.format(now);
+    const h = +hourFmt.format(now);
+    noteEl.textContent =
+      h < 5 ? 'Ian is probably asleep — your message will be waiting for him in the morning ☕' :
+      h < 12 ? 'Good morning from Batangas ☀️' :
+      h < 18 ? 'Good afternoon from Batangas' :
+      'Good evening from Batangas 🌙';
+  }
+  tick();
+  setInterval(tick, 30000);
+
+  /* WMO weather codes → words */
+  const WX: [number[], string, string][] = [
+    [[0], 'clear', '☀️'], [[1], 'mostly clear', '🌤'], [[2], 'partly cloudy', '⛅'], [[3], 'overcast', '☁️'],
+    [[45, 48], 'foggy', '🌫'], [[51, 53, 55, 56, 57], 'drizzle', '🌦'], [[61, 63, 65, 66, 67, 80, 81, 82], 'raining', '🌧'],
+    [[95, 96, 99], 'thunderstorms', '⛈'],
+  ];
+  const lt = document.getElementById('lt')!;
+  let loaded = false;
+  const load = () => {
+    if (loaded) return;
+    loaded = true;
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=14.095&longitude=121.025&current=temperature_2m,weather_code,is_day&timezone=Asia%2FManila', { signal: AbortSignal.timeout(8000) })
+      .then(r => r.json())
+      .then(d => {
+        const c = d?.current;
+        if (!c) return;
+        const w = WX.find(([codes]) => codes.includes(c.weather_code));
+        const icon = w ? (c.is_day || !['☀️', '🌤'].includes(w[2]) ? w[2] : '🌙') : '';
+        wxEl.textContent = ` · ${Math.round(c.temperature_2m)}°C${w ? `, ${w[1]} ${icon}` : ''}`;
+        (window as any).ikmWeather = `${timeEl.textContent} in Talisay, Batangas${wxEl.textContent}`;
+      })
+      .catch(() => {});
+  };
+  /* only fetch the weather when the footer is about to be seen */
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) load(); }, { rootMargin: '400px' }).observe(lt);
+  (window as any).ikmLocalTime = () => { load(); return `${timeEl.textContent} in Talisay, Batangas${wxEl.textContent}`; };
+</script>
+
+<style is:global>
+  .lt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-family:var(--sans);font-size:13px;font-weight:300;color:var(--fg2);letter-spacing:.02em}
+  .lt b{font-weight:400;color:var(--fg)}
+  .lt-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);animation:blink 2.4s ease-in-out infinite}
+  .lt-note{flex-basis:100%;padding-left:19px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--fg3)}
+</style>
