@@ -103,7 +103,7 @@ const data = JSON.stringify({ projects, profile });
         const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: aiTurns.slice(-8) }) });
         const d = await res.json().catch(() => ({}));
         wait.remove();
-        if (d.reply) { aiTurns.push({ role: 'model', text: d.reply }); d.reply.split('\n').forEach((l: string) => print({ t: '│ ', c: 'term-gold' }, l)); }
+        if (d.reply) { aiTurns.push({ role: 'model', text: d.reply }); d.reply.replace(/\*\*(.+?)\*\*/g, '$1').split('\n').forEach((l: string) => print({ t: '│ ', c: 'term-gold' }, l.replace(/^\s*\*\s+/, '- '))); }
         else { aiTurns.pop(); print({ t: d.error || 'no answer', c: 'term-err' }); }
       } catch { wait.remove(); aiTurns.pop(); print({ t: 'network error', c: 'term-err' }); }
     }},
