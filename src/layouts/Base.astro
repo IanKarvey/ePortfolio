@@ -1,0 +1,100 @@
+---
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import ChatWidget from '../components/ChatWidget.astro';
+import Terminal from '../components/Terminal.astro';
+
+interface Props { title?: string; description?: string; image?: string; }
+const {
+  title = 'Ian Karvey L. Manimtim — Portfolio',
+  description = 'BSIT student at De La Salle Lipa — Web Developer, Systems Developer & Mobile Engineer based in Talisay, Batangas, Philippines.',
+  image = '/Picture%20of%20Me/ian-professional-1200.jpg',
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const onHome = Astro.url.pathname === '/';
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title}</title>
+<meta name="description" content={description}>
+<meta name="author" content="Ian Karvey L. Manimtim">
+<meta name="theme-color" content="#0d0b09">
+<link rel="canonical" href={canonical}>
+<meta property="og:type" content="website">
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:site_name" content="IKM Portfolio">
+<meta property="og:url" content={canonical}>
+<meta property="og:image" content={ogImage}>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content={title}>
+<meta name="twitter:description" content={description}>
+<meta name="twitter:image" content={ogImage}>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d0b09'/%3E%3Ctext x='16' y='23' text-anchor='middle' fill='%23c9a84c' font-family='Georgia,serif' font-size='15' font-weight='bold'%3EIK%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;1,100;1,300;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script is:inline>
+  /* flag touch / reduced-motion before first paint so CSS can adapt */
+  (function(d){
+    if (!matchMedia('(hover:hover) and (pointer:fine)').matches) d.classList.add('touch');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('reduce');
+  })(document.documentElement);
+</script>
+<slot name="head" />
+</head>
+<body>
+
+<slot name="top" />
+
+<div class="grain" aria-hidden="true"></div>
+<div id="prog"></div>
+<div class="cur" id="cur"></div>
+<div class="cdot" id="cdot"></div>
+
+<nav id="nav">
+  <a href={onHome ? '#hero' : '/'} class="n-logo"><span class="n-logo-e">e</span>Portfolio</a>
+  <ul class="n-links" id="navLinks">
+    <li><a href="/#about">About</a></li>
+    <li><a href="/#education">Education</a></li>
+    <li><a href="/#skills">Skills</a></li>
+    <li><a href="/#projects">Projects</a></li>
+    <li><a href="/#certs">Certificates</a></li>
+  </ul>
+  <div class="n-tools">
+    <button class="n-tool" type="button" data-open-terminal aria-label="Open terminal (Ctrl+K)" title="Terminal — Ctrl+K">
+      <span class="n-tool-k">&gt;_</span>
+    </button>
+    <button class="n-tool n-tool-ai" type="button" data-open-chat aria-label="Ask Ian's AI">
+      <span class="n-tool-dot"></span>Ask AI
+    </button>
+    <button class="n-ham" id="ham" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<slot />
+
+<Footer />
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<button id="totop" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M8 13V3M3 8l5-5 5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<ChatWidget />
+<Terminal />
+
+<script>
+  import '../scripts/core.js';
+</script>
+</body>
+</html>

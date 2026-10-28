@@ -1,0 +1,523 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base>
+<link slot="head" rel="preload" as="image" href="/Picture%20of%20Me/ian-casual-1080.jpg" imagesrcset="/Picture%20of%20Me/ian-casual-640.jpg 640w, /Picture%20of%20Me/ian-casual-1080.jpg 1080w" imagesizes="(max-width:680px) 100vw, 38vw">
+
+<div slot="top" id="preloader" aria-hidden="true">
+  <div class="pl-glow"></div>
+  <div class="pl-inner">
+    <div class="pl-letters">
+      <span class="pl-l" id="plI">I</span>
+      <span class="pl-l" id="plK">K</span>
+      <span class="pl-l" id="plM">M</span>
+    </div>
+    <div class="pl-bar"><div class="pl-fill" id="plFill"></div></div>
+    <div class="pl-label" id="plLabel">Ian Karvey L. Manimtim &nbsp;·&nbsp; 2026</div>
+  </div>
+</div>
+
+<div id="snav">
+  <div class="snd act" data-target="#hero"></div>
+  <div class="snd" data-target="#about"></div>
+  <div class="snd" data-target="#education"></div>
+  <div class="snd" data-target="#skills"></div>
+  <div class="snd" data-target="#projects"></div>
+  <div class="snd" data-target="#certs"></div>
+</div>
+<!-- ════ HERO ════ -->
+<section id="hero">
+  <div class="h-glow"></div>
+  <div class="h-noise"></div>
+  <div class="h-photo" id="hPhoto">
+    <div class="h-photo-in">
+      <img class="h-photo-base" src="/Picture%20of%20Me/ian-casual-1080.jpg"
+           srcset="/Picture%20of%20Me/ian-casual-640.jpg 640w, /Picture%20of%20Me/ian-casual-1080.jpg 1080w"
+           sizes="(max-width:680px) 100vw, 38vw" alt="Ian Karvey L. Manimtim" fetchpriority="high">
+      <img class="h-photo-color" src="/Picture%20of%20Me/ian-casual-1080.jpg"
+           srcset="/Picture%20of%20Me/ian-casual-640.jpg 640w, /Picture%20of%20Me/ian-casual-1080.jpg 1080w"
+           sizes="(max-width:680px) 100vw, 38vw" alt="" aria-hidden="true">
+    </div>
+  </div>
+  <div class="h-vert">Portfolio · 2026</div>
+
+  <div class="h-inner">
+    <div class="h-hello"><span class="h-hello-i">Hello, I'm</span></div>
+    <div class="h-name">
+      <div class="h-fill"><span class="h-fill-i">IAN</span></div>
+      <div class="h-stroke"><span class="h-stroke-i">KARVEY.</span></div>
+      <div class="h-sub-name"><span class="h-sub-name-i">Manimtim</span></div>
+    </div>
+    <div class="h-rule"></div>
+    <div class="h-foot">
+      <div>
+        <p class="h-subtitle">Bachelor of Science in IT<br><em>De La Salle Lipa</em></p>
+        <div class="h-role"><span id="hRole"></span><span class="h-role-cur">|</span></div>
+      </div>
+      <div class="h-tags">
+        <span class="h-tag">Web Dev</span>
+        <span class="h-tag">Systems Dev</span>
+        <span class="h-tag">Mobile</span>
+        <span class="h-tag">UI/UX</span>
+        <span class="h-tag">Music</span>
+        <span class="h-tag">Dance</span>
+        <span class="h-tag">Visual Art</span>
+      </div>
+    </div>
+  </div>
+
+  <a href="#about" class="h-scrollhint" aria-label="Scroll to About">
+    <span>Scroll</span>
+    <div class="h-sline"></div>
+  </a>
+</section>
+
+
+<!-- ════ STRIP 1 (scroll-driven) ════ -->
+<div class="hscroll" aria-hidden="true">
+  <div class="hscroll-inner" id="hs1">
+    <span class="hs-word">Web Developer</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Systems Dev</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">UI / UX</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Mobile</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Batangas PH</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Visual Art</span>
+  </div>
+</div>
+
+
+<!-- ════ ABOUT ════ -->
+<section id="about">
+  <span class="bnum" aria-hidden="true">01</span>
+  <div class="wrap">
+    <div class="sl">Who I Am</div>
+    <div class="st">
+      <span class="st-i">About</span>
+      <span class="st-i">Me.</span>
+    </div>
+    <div class="a-grid">
+      <div>
+        <div class="a-photo">
+          <img src="/Picture%20of%20Me/ian-professional-1200.jpg"
+               srcset="/Picture%20of%20Me/ian-professional-700.jpg 700w, /Picture%20of%20Me/ian-professional-1200.jpg 1200w"
+               sizes="(max-width:900px) 92vw, 460px" alt="Ian Karvey L. Manimtim — professional portrait" loading="lazy">
+          <span class="a-photo-corner tl" aria-hidden="true"></span>
+          <span class="a-photo-corner tr" aria-hidden="true"></span>
+          <span class="a-photo-tag" aria-hidden="true">BSIT &middot; De La Salle Lipa</span>
+          <div class="a-photo-cap">Ian Karvey &middot; 2026</div>
+        </div>
+        <div class="a-info">
+          <div class="a-row">
+            <span class="a-lbl">Based</span>
+            <span class="a-val">Talisay, Batangas, PH</span>
+          </div>
+          <div class="a-row">
+            <span class="a-lbl">Study</span>
+            <span class="a-val">De La Salle Lipa</span>
+          </div>
+          <div class="a-row">
+            <span class="a-lbl">Track</span>
+            <span class="a-val">BSIT — 4th Year</span>
+          </div>
+          <div class="a-row">
+            <span class="a-lbl">Focus</span>
+            <span class="a-val">Web &amp; Systems Dev</span>
+          </div>
+        </div>
+      </div>
+      <div class="a-paras">
+        <p class="a-p lead">I build systems that are as thoughtful as they are functional — bridging technical rigor with genuine empathy for the end user.</p>
+        <p class="a-p">My name is Ian Karvey L. Manimtim, currently pursuing a Bachelor of Science in Information Technology at De La Salle Lipa — one of CALABARZON's distinguished institutions known for strong academic standards and commitment to producing competent technology professionals.</p>
+        <p class="a-p">Born and raised in Quiling, Talisay, Batangas. The values from growing up in a tight-knit community continue to shape how I approach work and relationships — with deep respect, accountability, and a collaborative spirit.</p>
+        <p class="a-p">My primary focus lies in Web Development and Systems Development. Outside of technology, I create music, engage in dance, and explore visual art — pursuits that sharpen my eye for design and naturally complement my frontend work.</p>
+      </div>
+    </div>
+    <div class="a-stats">
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="5">0</span>
+        <span class="a-stat-l">Certificates</span>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="3">0</span>
+        <span class="a-stat-l">Years Studied</span>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="6">0</span>
+        <span class="a-stat-l">Skill Areas</span>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="3">0</span>
+        <span class="a-stat-l">Projects Shipped</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ STRIP 2 (scroll-driven, reverse) ════ -->
+<div class="hscroll" aria-hidden="true">
+  <div class="hscroll-inner" id="hs2">
+    <span class="hs-word">San Guillermo</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">De La Salle</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">CALABARZON</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">BSIT 2027</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">4th Year</span>
+  </div>
+</div>
+
+
+<!-- ════ EDUCATION ════ -->
+<section id="education">
+  <span class="bnum" aria-hidden="true">02</span>
+  <div class="wrap">
+    <div class="sl">Academic Journey</div>
+    <div class="st"><span class="st-i">Education</span></div>
+    <div class="e-list">
+
+      <div class="e-item">
+        <div class="e-yr">2008<br>—<br>2010</div>
+        <div class="e-content">
+          <div class="e-tag">Early Childhood Education</div>
+          <div class="e-name">San Guillermo Academy</div>
+          <div class="e-place">Talisay, Batangas — <em style="color:var(--gold);font-style:italic">"Where Leaders Are Born"</em></div>
+          <div class="e-desc">Began formal schooling through Kinder 1 and Kinder 2 — the very first steps of an academic journey spanning over a decade within the same institution, cultivating early social skills and a genuine love for learning.</div>
+          <span class="e-badge">Kinder 1 – Kinder 2</span>
+        </div>
+        <div class="e-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+      </div>
+
+      <div class="e-item">
+        <div class="e-yr">2010<br>—<br>2016</div>
+        <div class="e-content">
+          <div class="e-tag">Elementary Education</div>
+          <div class="e-name">San Guillermo Academy</div>
+          <div class="e-place">Talisay, Batangas — Private Institution</div>
+          <div class="e-desc">Established a strong academic foundation through structured learning and active participation — building the discipline and curiosity that carried through to higher studies.</div>
+          <span class="e-badge">Grade 1 – Grade 6</span>
+        </div>
+        <div class="e-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+      </div>
+
+      <div class="e-item">
+        <div class="e-yr">2016<br>—<br>2021</div>
+        <div class="e-content">
+          <div class="e-tag">Junior High School</div>
+          <div class="e-name">San Guillermo Academy</div>
+          <div class="e-place">Talisay, Batangas — Private Institution</div>
+          <div class="e-desc">Deepened academic knowledge and critical thinking through various academic and extracurricular activities — shaping a well-rounded character and a lasting commitment to excellence.</div>
+          <span class="e-badge">Grade 7 – Grade 10</span>
+        </div>
+        <div class="e-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+      </div>
+
+      <div class="e-item">
+        <div class="e-yr">2021<br>—<br>2023</div>
+        <div class="e-content">
+          <div class="e-tag">Senior High School</div>
+          <div class="e-name">San Guillermo Academy</div>
+          <div class="e-place">Talisay, Batangas — Private Institution</div>
+          <div class="e-desc">Completed the Senior High track with greater academic maturity and specialization — preparing for the transition into tertiary education with a focused, goal-oriented mindset.</div>
+          <span class="e-badge">Grade 11 – Grade 12</span>
+        </div>
+        <div class="e-logo"><img src="/School%20Logos/San%20Guillermo%20Academy%20Logo.png" alt="San Guillermo Academy" loading="lazy"></div>
+      </div>
+
+      <div class="e-item">
+        <div class="e-yr">2023<br>—<br>2027</div>
+        <div class="e-content">
+          <div class="e-tag">College Education — Ongoing</div>
+          <div class="e-name">De La Salle Lipa</div>
+          <div class="e-place">Lipa City, Batangas — CALABARZON Premier Institution</div>
+          <div class="e-desc">Currently pursuing BSIT at a university recognized for its rigorous IT programs and holistic formation. Developing competencies in web development, systems development, mobile apps, and data analytics through coursework and real-world project delivery.</div>
+          <span class="e-badge">BSIT — Present</span>
+        </div>
+        <div class="e-logo"><img src="/School%20Logos/DLSL_Official_logo.png" alt="De La Salle Lipa" loading="lazy"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ SKILLS ════ -->
+<section id="skills">
+  <span class="bnum" aria-hidden="true">03</span>
+  <div class="wrap">
+    <div class="sl">Competencies &amp; Expertise</div>
+    <div class="st"><span class="st-i">Skills</span></div>
+    <div class="sk-grid">
+
+      <div class="sk-card">
+        <div class="sk-num">01</div>
+        <div class="sk-name">Mobile Application Development</div>
+        <div class="sk-text">Full-stack mobile development using Flutter — covering UI design through backend integration with continuous attention to usability.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Flutter</span><span class="sk-pill">Dart</span><span class="sk-pill">UI Design</span><span class="sk-pill">Backend Integration</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="82"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">02</div>
+        <div class="sk-name">Application &amp; Systems Dev</div>
+        <div class="sk-text">Functional systems via coursework and independent projects — experienced in C++ and Node.js with a growing foundation in software architecture.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">C++</span><span class="sk-pill">Node.js</span><span class="sk-pill">Software Architecture</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="75"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">03</div>
+        <div class="sk-name">Backend &amp; API Fundamentals</div>
+        <div class="sk-text">Node.js backend experience covering API queries, middleware, data aggregation, and error handling across real-world projects.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Node.js</span><span class="sk-pill">REST API</span><span class="sk-pill">Middleware</span><span class="sk-pill">Error Handling</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="70"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">04</div>
+        <div class="sk-name">Database &amp; Info Management</div>
+        <div class="sk-text">Relational databases for storing, organizing, and retrieving data — understanding how well-managed data forms the backbone of any reliable system.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">SQL</span><span class="sk-pill">PostgreSQL</span><span class="sk-pill">Supabase</span><span class="sk-pill">Row-Level Security</span><span class="sk-pill">Data Modelling</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="73"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">05</div>
+        <div class="sk-name">Data Analytics &amp; Automation</div>
+        <div class="sk-text">Power BI for visual reports and UiPath for automating repetitive workflows — identifying where technology removes friction from everyday processes.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Python</span><span class="sk-pill">Matplotlib</span><span class="sk-pill">Power BI</span><span class="sk-pill">UiPath</span><span class="sk-pill">RPA</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="65"></div></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-num">06</div>
+        <div class="sk-name">Digital Design &amp; Media</div>
+        <div class="sk-text">Adobe tools for clean, professional visual content — with a developed eye for layout, typography, and visual communication.</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Adobe Suite</span><span class="sk-pill">Typography</span><span class="sk-pill">Visual Design</span><span class="sk-pill">Layout</span>
+        </div>
+        <div class="sk-bar"><div class="sk-bar-fill" data-pct="86"></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ STRIP 3 (scroll-driven) ════ -->
+<div class="hscroll" aria-hidden="true">
+  <div class="hscroll-inner" id="hs3">
+    <span class="hs-word">Flutter</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Supabase</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Python</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Power BI</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Adobe Suite</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">UiPath</span>
+  </div>
+</div>
+
+<!-- ════ PROJECTS ════ -->
+<section id="projects">
+  <span class="bnum" aria-hidden="true">04</span>
+  <div class="wrap">
+    <div class="sl">Built Work</div>
+    <div class="st"><span class="st-i">Projects</span></div>
+    <div class="proj-list">
+      {projects.map((p, i) => (
+        <a class="proj-item" href={`/projects/${p.id}/`} style={`--accent:${p.data.accent}`}>
+          <div class="proj-meta">
+            <div class="proj-num">{String(i + 1).padStart(2, '0')}</div>
+            <div class="proj-type">{p.data.type}</div>
+          </div>
+          <div>
+            <div class="proj-name">{p.data.title}</div>
+            <div class="proj-desc">{p.data.summary}</div>
+            <div class="proj-stack">
+              {p.data.stack.slice(0, 8).map(s => <span class="proj-pill">{s}</span>)}
+            </div>
+            <div class="proj-badges">
+              <span class="proj-badge">Status — {p.data.status}</span>
+              <span class="proj-badge">Role — Sole Developer</span>
+              <span class="proj-badge">Year — {p.data.year}</span>
+            </div>
+            <span class="proj-cta">{p.data.demo ? 'Try the live demo' : 'Read the case study'} <span aria-hidden="true">&rarr;</span></span>
+          </div>
+          <div class="proj-logo" style={`background:${p.data.logoBg}`}><img src={encodeURI(p.data.logo)} alt={`${p.data.title} logo`} loading="lazy"></div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ STRIP 4 (scroll-driven, reverse) ════ -->
+<div class="hscroll" aria-hidden="true">
+  <div class="hscroll-inner" id="hs4">
+    <span class="hs-word">Barangay Safety</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">GMD Bakery</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Supabase</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Delivery Analyzer</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">Python</span>
+    <span class="hs-dot">·</span>
+    <span class="hs-word">PostgreSQL</span>
+  </div>
+</div>
+
+
+<!-- ════ CERTIFICATES ════ -->
+<section id="certs">
+  <span class="bnum" aria-hidden="true">05</span>
+  <div class="wrap">
+    <div class="sl">Verified Credentials</div>
+    <div class="st"><span class="st-i">Certificates</span></div>
+    <div class="cert-grid">
+
+      <div class="cert-card">
+        <svg class="cert-hex" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="40,3 77,24 77,68 40,89 3,68 3,24" stroke="#c9a84c" stroke-width="1.2"/>
+          <text x="40" y="44" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" font-size="9" font-family="DM Mono,monospace" letter-spacing="2">CISCO</text>
+          <text x="40" y="57" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" opacity=".5" font-size="6" font-family="DM Mono,monospace" letter-spacing="1.5">CERTIFIED</text>
+        </svg>
+        <div class="cert-issuer">Cisco Networking Academy</div>
+        <div class="cert-name">Cyber Threat Management</div>
+        <div class="cert-level">Intermediate Level</div>
+        <div class="cert-desc">Covers cybersecurity governance, network vulnerability assessment, risk management planning, and post-incident response procedures.</div>
+        <div class="cert-date">Issued · April 17, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">Risk Management</span>
+          <span class="cert-skill">Incident Response</span>
+          <span class="cert-skill">Governance</span>
+          <span class="cert-skill">Pen Testing</span>
+          <span class="cert-skill">Threat Analysis</span>
+        </div>
+        <a class="cert-link" href="https://www.credly.com/users/ian-karvey-manimtim" target="_blank" rel="noopener">View Badge &rarr;</a>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-hex" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="40,3 77,24 77,68 40,89 3,68 3,24" stroke="#c9a84c" stroke-width="1.2"/>
+          <text x="40" y="44" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" font-size="9" font-family="DM Mono,monospace" letter-spacing="2">CISCO</text>
+          <text x="40" y="57" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" opacity=".5" font-size="6" font-family="DM Mono,monospace" letter-spacing="1.5">CERTIFIED</text>
+        </svg>
+        <div class="cert-issuer">Cisco × OpenEDG Python Institute</div>
+        <div class="cert-name">Python Essentials 2</div>
+        <div class="cert-level">Intermediate Level</div>
+        <div class="cert-desc">Intermediate Python — modules, packages, exception handling, file processing, and object-oriented programming principles.</div>
+        <div class="cert-date">Issued · April 15, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">OOP</span>
+          <span class="cert-skill">Classes</span>
+          <span class="cert-skill">Inheritance</span>
+          <span class="cert-skill">Exceptions</span>
+          <span class="cert-skill">Modules</span>
+        </div>
+        <a class="cert-link" href="https://www.credly.com/users/ian-karvey-manimtim" target="_blank" rel="noopener">View Badge &rarr;</a>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-hex" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="40,3 77,24 77,68 40,89 3,68 3,24" stroke="#c9a84c" stroke-width="1.2"/>
+          <text x="40" y="44" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" font-size="9" font-family="DM Mono,monospace" letter-spacing="2">CISCO</text>
+          <text x="40" y="57" text-anchor="middle" dominant-baseline="middle" fill="#c9a84c" opacity=".5" font-size="6" font-family="DM Mono,monospace" letter-spacing="1.5">CERTIFIED</text>
+        </svg>
+        <div class="cert-issuer">Cisco × OpenEDG Python Institute</div>
+        <div class="cert-name">Python Essentials 1</div>
+        <div class="cert-level">Intermediate Level</div>
+        <div class="cert-desc">Foundational Python — syntax, semantics, the Standard Library, and algorithmic thinking for solving real-world problems in code.</div>
+        <div class="cert-date">Issued · April 7, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">Python Basics</span>
+          <span class="cert-skill">Algorithmic Thinking</span>
+          <span class="cert-skill">Procedural Programming</span>
+          <span class="cert-skill">Standard Library</span>
+        </div>
+        <a class="cert-link" href="https://www.credly.com/users/ian-karvey-manimtim" target="_blank" rel="noopener">View Badge &rarr;</a>
+      </div>
+
+    </div>
+
+    <!-- Image-based certificates -->
+    <div class="cert-grid cert-grid--docs">
+
+      <div class="cert-card">
+        <div class="cert-img-wrap">
+          <img src="/Certificates/ACCENTURE.png" alt="Accenture Certificate of Achievement" loading="lazy">
+        </div>
+        <div class="cert-issuer">Accenture</div>
+        <div class="cert-name">Skills to Succeed Academy</div>
+        <div class="cert-level">Certificate of Achievement</div>
+        <div class="cert-desc">Successfully completed 58 learning modules within the Accenture Skills to Succeed Academy — building career-ready skills and a strong foundation for the job-seeking journey.</div>
+        <div class="cert-date">Issued · March 4, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">58 Modules</span>
+          <span class="cert-skill">Career Skills</span>
+          <span class="cert-skill">Job Readiness</span>
+          <span class="cert-skill">Professional Dev</span>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-img-wrap">
+          <img src="/Certificates/JPCS.png" alt="JPCS Certificate of Participation" loading="lazy">
+        </div>
+        <div class="cert-issuer">JPCS — De La Salle Chapter</div>
+        <div class="cert-name">DevRoutes: Learning How to Learn with Roadmaps</div>
+        <div class="cert-level">Certificate of Participation</div>
+        <div class="cert-desc">Participated in a seminar on career roadmapping — covering self-assessment, goal setting, certification milestones, and IT role exploration across Cybersecurity, Web Dev, Cloud, and DevOps.</div>
+        <div class="cert-date">Issued · January 29, 2026</div>
+        <div class="cert-skills">
+          <span class="cert-skill">Roadmapping</span>
+          <span class="cert-skill">Career Planning</span>
+          <span class="cert-skill">IT Roles</span>
+          <span class="cert-skill">Goal Setting</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <div class="lb-backdrop" id="lbBackdrop"></div>
+  <div class="lb-inner">
+    <img id="lbImg" src="" alt="">
+    <button class="lb-close" id="lbClose">&times;</button>
+  </div>
+</div>
+</Base>
+
+<script>
+  import '../scripts/home.js';
+</script>

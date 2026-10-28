@@ -1,0 +1,547 @@
+---
+/* Barangay Safety — two-sided demo: a resident's phone and the barangay hall dashboard.
+   Everything is simulated in the browser with sample data; no request ever reaches the real system. */
+const categories = [
+  ['🚨', 'Theft / Robbery'], ['🔥', 'Fire'], ['🚗', 'Vehicular Accident'], ['🩺', 'Medical Emergency'],
+  ['🌊', 'Flooding'], ['📢', 'Noise Disturbance'], ['👁', 'Suspicious Activity'], ['⚠️', 'Other'],
+];
+---
+<div class="bd-steps" id="bdSteps" aria-label="Demo steps">
+  <span class="on" data-s="0"><b>1</b> Sign in as a resident</span>
+  <span data-s="1"><b>2</b> Report an incident</span>
+  <span data-s="2"><b>3</b> Respond from the hall</span>
+  <span data-s="3"><b>4</b> Resolve it</span>
+  <button type="button" class="bd-reset" id="bdReset">↺ Reset demo</button>
+</div>
+
+<div class="bd" id="bd">
+  <!-- ── Resident phone ── -->
+  <div class="bd-phone-wrap">
+    <div class="bd-phone">
+      <div class="bd-screen">
+        <div class="bd-status"><span>9:41</span><span class="bd-island"></span><span>●●● 5G</span></div>
+
+        <div class="bd-view" data-view="login">
+          <div class="bd-login">
+            <img src="/App%20Logo/Barangay%20Safety.png" alt="" class="bd-logo">
+            <h4>Barangay Safety</h4>
+            <p>Report incidents. Get help faster.</p>
+            <label>Email<input type="text" value="resident@demo.account" readonly></label>
+            <label>Password<input type="password" value="demodemo" readonly></label>
+            <button type="button" class="bd-primary" data-go="home">Sign in with demo account</button>
+            <small>Sample resident · Barangay 3, Lipa City</small>
+          </div>
+        </div>
+
+        <div class="bd-view" data-view="home" hidden>
+          <div class="bd-appbar"><span>Magandang araw, <b>Juan</b> 👋</span><span class="bd-bell">🔔</span></div>
+          <button type="button" class="bd-sos" data-go="category">
+            <span class="bd-sos-ring"></span>
+            <span class="bd-sos-t">Report an<br>incident</span>
+          </button>
+          <div class="bd-section">My reports</div>
+          <div class="bd-mine" id="bdMine"><div class="bd-empty">No reports yet.</div></div>
+        </div>
+
+        <div class="bd-view" data-view="category" hidden>
+          <div class="bd-appbar"><button type="button" class="bd-back" data-go="home">‹</button><span>What happened?</span><span></span></div>
+          <div class="bd-cats">
+            {categories.map(([icon, name]) => (
+              <button type="button" class="bd-cat" data-cat={name}><span>{icon}</span>{name}</button>
+            ))}
+          </div>
+        </div>
+
+        <div class="bd-view" data-view="details" hidden>
+          <div class="bd-appbar"><button type="button" class="bd-back" data-go="category">‹</button><span id="bdCatTitle">Details</span><span></span></div>
+          <div class="bd-form">
+            <div class="bd-label">Location <em>tap the map to move the pin</em></div>
+            <div class="bd-pick" id="bdPick"></div>
+            <div class="bd-gps" id="bdGps">📍 Barangay 3 · GPS ±8 m</div>
+            <div class="bd-label">Severity</div>
+            <div class="bd-sev" id="bdSev">
+              <button type="button" data-sev="4">Critical</button>
+              <button type="button" data-sev="3" class="on">High</button>
+              <button type="button" data-sev="2">Medium</button>
+              <button type="button" data-sev="1">Low</button>
+            </div>
+            <div class="bd-label">What's going on?</div>
+            <textarea id="bdDesc" rows="2" maxlength="140">Two men tried to break into a parked motorcycle near the sari-sari store.</textarea>
+            <button type="button" class="bd-photo" id="bdPhoto">📷 Attach photo</button>
+            <button type="button" class="bd-primary" id="bdSubmit">Send report</button>
+          </div>
+        </div>
+
+        <div class="bd-view" data-view="track" hidden>
+          <div class="bd-appbar"><button type="button" class="bd-back" data-go="home">‹</button><span>Report <b id="bdRid"></b></span><span></span></div>
+          <div class="bd-track">
+            <div class="bd-track-cat" id="bdTrackCat"></div>
+            <div class="bd-wait" id="bdWait">Waiting for a response · <b id="bdWaitT">0</b> min</div>
+            <ol class="bd-timeline" id="bdTimeline">
+              <li class="done" data-k="sent"><b>Report sent</b><span>Barangay hall notified instantly</span></li>
+              <li data-k="alert"><b>Officials alerted</b><span>Escalates if nobody acts</span></li>
+              <li data-k="resp"><b>Help is on the way</b><span>An official is responding</span></li>
+              <li data-k="done"><b>Resolved</b><span>Case closed by the hall</span></li>
+            </ol>
+          </div>
+          <div class="bd-sheet" id="bdSheet" hidden>
+            <b>No response yet</b>
+            <p>If you are in danger, call for help now:</p>
+            <a>📞 911 · National Emergency</a><a>🚒 BFP Lipa</a><a>🚓 PNP Lipa</a>
+            <button type="button" id="bdSheetClose">Keep waiting</button>
+          </div>
+        </div>
+
+        <div class="bd-push" id="bdPush" hidden><span class="bd-push-app">BARANGAY SAFETY · now</span><b id="bdPushT"></b><span id="bdPushB"></span></div>
+      </div>
+    </div>
+    <div class="bd-cap">Resident app</div>
+  </div>
+
+  <!-- ── Barangay hall dashboard ── -->
+  <div class="bd-hall">
+    <div class="bd-hall-head">
+      <div>
+        <div class="bd-hall-t">Barangay Hall · Command view</div>
+        <div class="bd-hall-s">Signed in as <b>Demo Captain</b> · officials@demo.account</div>
+      </div>
+      <div class="bd-clock" title="Demo clock — 1 second = 1 minute"><span class="bd-clock-dot"></span><span id="bdClock">Demo clock · 1 s = 1 min</span></div>
+    </div>
+    <div class="bd-map" id="bdMap" aria-label="Incident map"></div>
+    <div class="bd-esc" id="bdEsc" hidden>
+      <div class="bd-esc-head"><span>Auto-escalation</span><b id="bdEscState">Unanswered</b></div>
+      <div class="bd-esc-bar"><i id="bdEscFill"></i>
+        <span style="left:33.3%">5m · Tier 1</span><span style="left:66.6%">10m · Tier 2</span><span style="left:100%">15m · Tier 3</span>
+      </div>
+    </div>
+    <ul class="bd-queue" id="bdQueue"></ul>
+    <ol class="bd-log" id="bdLog" aria-live="polite" data-lenis-prevent></ol>
+  </div>
+</div>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const SCALE = 1000;   // 1 real second = 1 demo minute
+  const HALLS = [
+    { name: 'Barangay 1', lat: 13.941946, lng: 121.157097 },
+    { name: 'Barangay 2', lat: 13.943443, lng: 121.158837 },
+    { name: 'Barangay 3', lat: 13.943112, lng: 121.160564 },
+    { name: 'Barangay 7', lat: 13.936218, lng: 121.160714 },
+    { name: 'Barangay 10', lat: 13.942557, lng: 121.167828 },
+  ];
+  const SEV = { 4: 'Critical', 3: 'High', 2: 'Medium', 1: 'Low' } as Record<number, string>;
+  const nearest = (lat: number, lng: number) =>
+    HALLS.reduce((b, h) => (Math.hypot(h.lat - lat, h.lng - lng) < Math.hypot(b.lat - lat, b.lng - lng) ? h : b));
+
+  /* ── maps ── */
+  const dot = (cls: string) => L.divIcon({ className: '', html: `<span class="bd-pin ${cls}"></span>`, iconSize: [18, 18], iconAnchor: [9, 9] });
+  const hallMap = L.map('bdMap', { zoomControl: false, attributionControl: true, scrollWheelZoom: false }).setView([13.9405, 121.1615], 15);
+  /* OpenStreetMap tiles; the hall map darkens them with a CSS filter (.bd-map .leaflet-tile-pane) */
+  const OSM = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  L.tileLayer(OSM, { attribution: '&copy; OpenStreetMap contributors', maxZoom: 19 }).addTo(hallMap);
+  HALLS.forEach(h => L.marker([h.lat, h.lng], { icon: dot('hall') }).addTo(hallMap).bindTooltip(h.name, { direction: 'top' }));
+
+  let pickMap: L.Map | null = null;
+  let pickMarker: L.Marker;
+  let pick = { lat: 13.9427, lng: 121.1612 };
+  function initPick() {
+    if (pickMap) { setTimeout(() => pickMap!.invalidateSize(), 50); return; }
+    pickMap = L.map('bdPick', { zoomControl: false, attributionControl: false, scrollWheelZoom: false }).setView([pick.lat, pick.lng], 16);
+    L.tileLayer(OSM, { maxZoom: 19 }).addTo(pickMap);
+    pickMarker = L.marker([pick.lat, pick.lng], { icon: dot('me') }).addTo(pickMap);
+    pickMap.on('click', (e: L.LeafletMouseEvent) => {
+      pick = { lat: e.latlng.lat, lng: e.latlng.lng };
+      pickMarker.setLatLng(e.latlng);
+      $('bdGps').textContent = `📍 ${nearest(pick.lat, pick.lng).name} · pin moved`;
+    });
+  }
+
+  /* ── sample history so the hall isn't empty ── */
+  type Rep = { id: string; cat: string; sev: number; lat: number; lng: number; hall: string; status: 'pending' | 'responding' | 'resolved'; t0: number; resp?: number; mine?: boolean; marker?: L.Marker };
+  let reports: Rep[] = [];
+  function seed() {
+    reports = [
+      { id: 'BS-0412', cat: 'Vehicular Accident', sev: 3, lat: 13.9419, lng: 121.1665, hall: 'Barangay 10', status: 'responding', t0: 0, resp: 4 },
+      { id: 'BS-0409', cat: 'Noise Disturbance', sev: 1, lat: 13.9371, lng: 121.1596, hall: 'Barangay 7', status: 'resolved', t0: 0, resp: 6 },
+    ];
+    reports.forEach(r => { r.marker = L.marker([r.lat, r.lng], { icon: dot(r.status) }).addTo(hallMap); });
+  }
+
+  /* ── phone navigation ── */
+  let view = 'login';
+  function go(v: string) {
+    view = v;
+    document.querySelectorAll<HTMLElement>('.bd-view').forEach(el => { el.hidden = el.dataset.view !== v; });
+    if (v === 'details') initPick();
+    if (v === 'home') renderMine();
+    step(v === 'login' ? 0 : current && current.status === 'pending' ? 2 : current && current.status === 'responding' ? 3 : 1);
+  }
+  function step(n: number) {
+    document.querySelectorAll<HTMLElement>('#bdSteps [data-s]').forEach(s => {
+      const i = +s.dataset.s!;
+      s.classList.toggle('on', i === n);
+      s.classList.toggle('done', i < n);
+    });
+  }
+  document.getElementById('bd')!.addEventListener('click', e => {
+    const g = (e.target as HTMLElement).closest<HTMLElement>('[data-go]');
+    if (g) go(g.dataset.go!);
+  });
+
+  let category = '';
+  let sev = 3;
+  let photo = false;
+  document.querySelectorAll<HTMLElement>('.bd-cat').forEach(b => b.addEventListener('click', () => {
+    category = b.dataset.cat!;
+    $('bdCatTitle').textContent = category;
+    go('details');
+  }));
+  $('bdSev').addEventListener('click', e => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-sev]');
+    if (!b) return;
+    sev = +b.dataset.sev!;
+    $('bdSev').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  });
+  $('bdPhoto').addEventListener('click', () => {
+    photo = !photo;
+    $('bdPhoto').textContent = photo ? '✓ photo.jpg attached · checked for duplicates' : '📷 Attach photo';
+    $('bdPhoto').classList.toggle('on', photo);
+  });
+
+  /* ── submitting a report starts the escalation clock ── */
+  let current: Rep | null = null;
+  let tick = 0;
+  let tierShown = 0;
+  $('bdSubmit').addEventListener('click', () => {
+    if (current && current.status !== 'resolved') { go('track'); return; }
+    const hall = nearest(pick.lat, pick.lng);
+    current = {
+      id: 'BS-' + String(Math.floor(1000 + Math.random() * 8999)),
+      cat: category, sev, lat: pick.lat, lng: pick.lng, hall: hall.name,
+      status: 'pending', t0: Date.now(), mine: true,
+    };
+    current.marker = L.marker([current.lat, current.lng], { icon: dot('pending new') }).addTo(hallMap);
+    reports.unshift(current);
+    hallMap.flyTo([current.lat, current.lng], 16, { duration: 1.2 });
+    tierShown = 0;
+    log(`New report ${current.id} · ${current.cat} (${SEV[sev]}) at ${hall.name}${photo ? ' · photo attached' : ''}`, 'new');
+    $('bdRid').textContent = current.id;
+    $('bdTrackCat').textContent = `${current.cat} · ${SEV[sev]} · ${hall.name}`;
+    resetTimeline();
+    $('bdEsc').hidden = false;
+    $('bdEscState').textContent = 'Unanswered';
+    go('track');
+    renderQueue();
+    clearInterval(tick);
+    tick = window.setInterval(update, 200);
+  });
+
+  const mins = (r: Rep) => (Date.now() - r.t0) / SCALE;
+  function update() {
+    if (!current || current.status !== 'pending') return;
+    const m = mins(current);
+    $('bdWaitT').textContent = String(Math.floor(m));
+    ($('bdEscFill') as HTMLElement).style.width = Math.min(m / 15, 1) * 100 + '%';
+    const tier = m >= 15 ? 3 : m >= 10 ? 2 : m >= 5 ? 1 : 0;
+    if (tier > tierShown) {
+      tierShown = tier;
+      if (tier === 1) {
+        log('Tier 1 · Secretary, Captain and staff alerted (working hours)', 't1');
+        push('Officials alerted', `${current.hall} hall has been notified. Stay safe.`);
+        mark('alert', 'Tier 1 · hall officials alerted');
+      }
+      if (tier === 2) {
+        log('Tier 2 · everyone at the hall alerted, tanods included', 't2');
+        push('Still waiting', 'Your report was escalated to every official on duty.');
+        mark('alert', 'Tier 2 · all officials and tanods alerted');
+      }
+      if (tier === 3) {
+        log('Tier 3 · flagged UNATTENDED — SuperAdmin alerted', 't3');
+        $('bdSheet').hidden = false;
+        mark('alert', 'Tier 3 · flagged unattended');
+      }
+      $('bdEscState').textContent = `Tier ${tier}`;
+      renderQueue();
+    }
+    renderQueueTimes();
+  }
+
+  /* ── hall side ── */
+  function renderQueue() {
+    const q = $('bdQueue');
+    q.innerHTML = '';
+    reports.forEach(r => {
+      const li = document.createElement('li');
+      li.className = `bd-q ${r.status}${r.mine ? ' mine' : ''}`;
+      const tier = r.status === 'pending' ? (mins(r) >= 15 ? 3 : mins(r) >= 10 ? 2 : mins(r) >= 5 ? 1 : 0) : 0;
+      li.innerHTML = `
+        <span class="bd-q-dot"></span>
+        <span class="bd-q-main"><b></b><small></small></span>
+        <span class="bd-q-side"><span class="bd-q-time" data-id="${r.id}"></span>${tier ? `<span class="bd-tier t${tier}">TIER ${tier}</span>` : ''}</span>`;
+      li.querySelector('b')!.textContent = `${r.cat}${r.mine ? ' · NEW' : ''}`;
+      li.querySelector('small')!.textContent = `${r.id} · ${r.hall} · ${SEV[r.sev]}`;
+      if (r.mine && r.status !== 'resolved') {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bd-act';
+        btn.textContent = r.status === 'pending' ? "I'm responding" : 'Mark resolved';
+        btn.addEventListener('click', () => (r.status === 'pending' ? respond(r) : resolve(r)));
+        li.appendChild(btn);
+      }
+      li.addEventListener('click', e => { if (!(e.target as HTMLElement).closest('button')) hallMap.flyTo([r.lat, r.lng], 17, { duration: .8 }); });
+      q.appendChild(li);
+    });
+    renderQueueTimes();
+  }
+  function renderQueueTimes() {
+    document.querySelectorAll<HTMLElement>('.bd-q-time').forEach(el => {
+      const r = reports.find(x => x.id === el.dataset.id)!;
+      el.textContent = r.status === 'pending' ? `${Math.floor(mins(r))} min waiting` : r.status === 'responding' ? `responding · ${r.resp} min` : `resolved · ${r.resp} min`;
+    });
+  }
+  function respond(r: Rep) {
+    r.status = 'responding';
+    r.resp = Math.max(1, Math.round(mins(r)));
+    r.marker!.setIcon(dot('responding'));
+    ($('bdEscFill') as HTMLElement).classList.add('stopped');
+    $('bdEscState').textContent = `Answered in ${r.resp} min`;
+    log(`Demo Captain is responding to ${r.id} · response time ${r.resp} min · resident notified`, 'ok');
+    push('Help is on the way 🚓', 'Demo Captain is responding to your report.');
+    mark('resp', `Demo Captain is responding · ${r.resp} min`);
+    $('bdWait').textContent = `Answered in ${r.resp} min`;
+    $('bdSheet').hidden = true;
+    renderQueue();
+    step(3);
+  }
+  function resolve(r: Rep) {
+    r.status = 'resolved';
+    r.marker!.setIcon(dot('resolved'));
+    log(`${r.id} resolved and closed · logged to the audit trail`, 'ok');
+    push('Report resolved ✓', 'Thank you for keeping the barangay safe.');
+    mark('done', 'Closed by the barangay hall');
+    $('bdWait').textContent = 'Resolved';
+    renderQueue();
+    step(4);
+  }
+
+  /* ── phone helpers ── */
+  function resetTimeline() {
+    $('bdTimeline').querySelectorAll('li').forEach(li => li.classList.toggle('done', li.dataset.k === 'sent'));
+    $('bdWait').innerHTML = 'Waiting for a response · <b id="bdWaitT">0</b> min';
+  }
+  function mark(k: string, text: string) {
+    const li = $('bdTimeline').querySelector<HTMLElement>(`[data-k="${k}"]`)!;
+    li.classList.add('done');
+    li.querySelector('span')!.textContent = text;
+  }
+  let pushTimer = 0;
+  function push(t: string, b: string) {
+    $('bdPushT').textContent = t;
+    $('bdPushB').textContent = b;
+    const p = $('bdPush');
+    p.hidden = false;
+    p.classList.remove('in'); void p.offsetWidth; p.classList.add('in');
+    clearTimeout(pushTimer);
+    pushTimer = window.setTimeout(() => { p.hidden = true; }, 3800);
+  }
+  $('bdSheetClose').addEventListener('click', () => { $('bdSheet').hidden = true; });
+  function renderMine() {
+    const box = $('bdMine');
+    const mine = reports.filter(r => r.mine);
+    box.innerHTML = mine.length ? '' : '<div class="bd-empty">No reports yet.</div>';
+    mine.forEach(r => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = `bd-mine-i ${r.status}`;
+      b.innerHTML = '<b></b><span></span>';
+      b.querySelector('b')!.textContent = r.cat;
+      b.querySelector('span')!.textContent = `${r.id} · ${r.status === 'pending' ? 'waiting' : r.status}`;
+      b.addEventListener('click', () => go('track'));
+      box.appendChild(b);
+    });
+  }
+
+  function log(text: string, kind = '') {
+    const li = document.createElement('li');
+    li.className = kind;
+    const t = document.createElement('time');
+    t.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    li.append(t, document.createTextNode(text));
+    $('bdLog').prepend(li);
+  }
+
+  function reset() {
+    clearInterval(tick);
+    reports.forEach(r => r.marker?.remove());
+    current = null; category = ''; sev = 3; photo = false;
+    $('bdPhoto').textContent = '📷 Attach photo'; $('bdPhoto').classList.remove('on');
+    $('bdSev').querySelectorAll<HTMLElement>('button').forEach(x => x.classList.toggle('on', x.dataset.sev === '3'));
+    ($('bdEscFill') as HTMLElement).style.width = '0'; ($('bdEscFill') as HTMLElement).classList.remove('stopped');
+    $('bdEsc').hidden = true; $('bdSheet').hidden = true; $('bdPush').hidden = true;
+    $('bdLog').innerHTML = '';
+    seed();
+    renderQueue();
+    log('Dashboard ready · 2 earlier reports today', '');
+    hallMap.setView([13.9405, 121.1615], 15);
+    go('login');
+  }
+  $('bdReset').addEventListener('click', reset);
+  reset();
+
+  /* the map container may have been measured before fonts/layout settled */
+  new ResizeObserver(() => { hallMap.invalidateSize(); pickMap?.invalidateSize(); }).observe($('bd'));
+</script>
+
+<style is:global>
+  .bd-steps{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:22px}
+  .bd-steps span{display:flex;align-items:center;gap:8px;padding:7px 12px 7px 8px;border:.6px solid var(--brd2);border-radius:999px;font-family:var(--sans);font-size:11px;font-weight:300;color:var(--fg3);transition:all .35s}
+  .bd-steps b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:.6px solid currentColor;font-family:var(--mono);font-size:9px;font-weight:400}
+  .bd-steps span.on{color:var(--fg);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+  .bd-steps span.on b{background:var(--accent);border-color:var(--accent);color:#fff}
+  .bd-steps span.done{color:var(--fg2)}
+  .bd-steps span.done b{background:var(--fg3);color:var(--bg);border-color:var(--fg3)}
+  .bd-reset{margin-left:auto;background:none;border:.6px solid var(--brd2);color:var(--fg3);font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;border-radius:2px;cursor:pointer}
+  .bd-reset:hover{color:var(--gold);border-color:var(--gold)}
+
+  .bd{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,40px);align-items:start}
+  .bd-phone-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .bd-phone{width:300px;height:620px;padding:10px;border-radius:46px;background:linear-gradient(145deg,#2a2622,#0c0b09);box-shadow:0 0 0 1.5px #3a342d,0 40px 90px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.04)}
+  .bd-screen{position:relative;width:100%;height:100%;border-radius:37px;overflow:hidden;background:#f6f5f2;color:#1b1b1f;font-family:'Josefin Sans',system-ui,sans-serif;font-variation-settings:normal}
+  .bd-status{display:flex;justify-content:space-between;align-items:center;padding:12px 24px 6px;font-size:11px;font-weight:600;color:#1b1b1f}
+  .bd-island{width:84px;height:24px;border-radius:14px;background:#0c0b09}
+  .bd-view{position:absolute;inset:42px 0 0;overflow-y:auto;scrollbar-width:none}
+  .bd-cap{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg3)}
+
+  .bd-login{display:flex;flex-direction:column;align-items:center;padding:40px 24px 20px;text-align:center}
+  .bd-logo{width:76px;height:76px;border-radius:20px;box-shadow:0 10px 30px rgba(224,87,75,.25)}
+  .bd-login h4{font-family:var(--serif);font-size:22px;font-weight:900;margin:14px 0 4px;color:#1b1b1f}
+  .bd-login p{font-size:12px;color:#6b6b75;margin-bottom:24px}
+  .bd-login label{width:100%;text-align:left;font-size:10px;font-weight:600;color:#6b6b75;margin-bottom:10px;display:flex;flex-direction:column;gap:5px}
+  .bd-login input{height:40px;border-radius:10px;border:1px solid #e2e0da;background:#fff;padding:0 12px;font:inherit;font-size:13px;color:#1b1b1f;font-weight:400}
+  .bd-login small{margin-top:12px;font-size:10px;color:#8a8a94}
+  .bd-primary{width:100%;height:46px;border:none;border-radius:12px;background:#e0574b;color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;box-shadow:0 8px 20px rgba(224,87,75,.3);transition:transform .2s,filter .2s}
+  .bd-primary:hover{filter:brightness(1.06)}
+  .bd-primary:active{transform:scale(.98)}
+
+  .bd-appbar{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;padding:10px 14px;font-size:13px;font-weight:600;color:#1b1b1f}
+  .bd-appbar > span:first-child:not(:only-child){grid-column:1/3}
+  .bd-appbar span:nth-child(2){text-align:center}
+  .bd-back{width:32px;height:32px;border-radius:50%;border:none;background:#ecebe6;font-size:20px;line-height:1;cursor:pointer;color:#1b1b1f}
+  .bd-bell{justify-self:end}
+  .bd-sos{position:relative;display:grid;place-items:center;width:190px;height:190px;margin:22px auto 26px;border-radius:50%;border:none;background:radial-gradient(circle at 35% 30%,#f07a6f,#d9443a);color:#fff;font:inherit;cursor:pointer;box-shadow:0 18px 40px rgba(224,87,75,.4)}
+  .bd-sos-ring{position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(224,87,75,.35);animation:bdRing 2s ease-out infinite}
+  @keyframes bdRing{from{transform:scale(.9);opacity:1}to{transform:scale(1.15);opacity:0}}
+  .bd-sos-t{font-size:19px;font-weight:700;line-height:1.15}
+  .bd-section{padding:0 18px 8px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#8a8a94}
+  .bd-mine{padding:0 14px 20px;display:flex;flex-direction:column;gap:8px}
+  .bd-empty{font-size:12px;color:#8a8a94;padding:14px;text-align:center;border:1px dashed #dcdad3;border-radius:12px}
+  .bd-mine-i{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border-radius:12px;border:1px solid #e7e5df;background:#fff;font:inherit;cursor:pointer;text-align:left}
+  .bd-mine-i b{font-size:13px;color:#1b1b1f}
+  .bd-mine-i span{font-size:11px;color:#8a8a94}
+  .bd-cats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 14px 20px}
+  .bd-cat{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px 12px;border-radius:14px;border:1px solid #e7e5df;background:#fff;font:inherit;font-size:12px;font-weight:600;color:#1b1b1f;cursor:pointer;text-align:left;transition:border-color .2s,transform .2s}
+  .bd-cat span{font-size:22px}
+  .bd-cat:hover{border-color:#e0574b;transform:translateY(-2px)}
+  .bd-form{padding:4px 14px 20px;display:flex;flex-direction:column}
+  .bd-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6b6b75;margin:10px 0 6px}
+  .bd-label em{font-style:normal;font-weight:400;text-transform:none;letter-spacing:0;color:#9a9aa3}
+  .bd-pick{height:150px;border-radius:12px;overflow:hidden;border:1px solid #e2e0da}
+  .bd-gps{font-size:11px;color:#3a7d44;margin-top:6px}
+  .bd-sev{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+  .bd-sev button{height:32px;border-radius:8px;border:1px solid #e2e0da;background:#fff;font:inherit;font-size:10.5px;font-weight:600;color:#55555f;cursor:pointer}
+  .bd-sev button.on{background:#1b1b1f;color:#fff;border-color:#1b1b1f}
+  .bd-form textarea{border-radius:10px;border:1px solid #e2e0da;padding:10px;font:inherit;font-size:12px;resize:none;color:#1b1b1f;background:#fff}
+  .bd-photo{margin-top:8px;height:38px;border-radius:10px;border:1px dashed #c9c6bd;background:#fff;font:inherit;font-size:11.5px;color:#55555f;cursor:pointer}
+  .bd-photo.on{border-style:solid;border-color:#3a7d44;color:#3a7d44;background:#eef7ef}
+
+  .bd-track{padding:6px 18px 20px}
+  .bd-track-cat{font-size:12px;color:#6b6b75;margin-bottom:10px}
+  .bd-wait{padding:12px 14px;border-radius:12px;background:#fff4e5;color:#9a5b00;font-size:12.5px;margin-bottom:16px}
+  .bd-timeline{list-style:none;position:relative;padding-left:24px}
+  .bd-timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:#e2e0da}
+  .bd-timeline li{position:relative;padding-bottom:16px;display:flex;flex-direction:column;gap:2px}
+  .bd-timeline li::before{content:'';position:absolute;left:-23px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #cfcdc6;transition:all .3s}
+  .bd-timeline li.done::before{background:#3a7d44;border-color:#3a7d44;box-shadow:0 0 0 4px #e3f1e5}
+  .bd-timeline b{font-size:13px;color:#9a9aa3;transition:color .3s}
+  .bd-timeline li.done b{color:#1b1b1f}
+  .bd-timeline span{font-size:11px;color:#9a9aa3}
+  .bd-sheet{position:absolute;left:10px;right:10px;bottom:10px;padding:18px;border-radius:18px;background:#fff;box-shadow:0 -10px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:6px;animation:bdUp .35s cubic-bezier(.25,1,.5,1)}
+  .bd-sheet b{font-size:15px;color:#c0392b}
+  .bd-sheet p{font-size:12px;color:#55555f;margin-bottom:4px}
+  .bd-sheet a{padding:10px 12px;border-radius:10px;background:#f6f5f2;font-size:12.5px;color:#1b1b1f}
+  .bd-sheet button{margin-top:4px;height:38px;border-radius:10px;border:none;background:#1b1b1f;color:#fff;font:inherit;font-size:12px;cursor:pointer}
+  @keyframes bdUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+  .bd-push{position:absolute;top:44px;left:10px;right:10px;z-index:5;padding:11px 14px;border-radius:18px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:2px}
+  .bd-push.in{animation:bdDrop .45s cubic-bezier(.25,1,.5,1)}
+  @keyframes bdDrop{from{transform:translateY(-120%);opacity:0}to{transform:none;opacity:1}}
+  .bd-push-app{font-size:9px;font-weight:600;letter-spacing:.08em;color:#8a8a94}
+  .bd-push b{font-size:13px;color:#1b1b1f}
+  .bd-push span:last-child{font-size:12px;color:#55555f}
+
+  .bd-hall{border:.7px solid var(--brd2);border-radius:6px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column}
+  .bd-hall-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border-bottom:.6px solid var(--brd)}
+  .bd-hall-t{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--fg)}
+  .bd-hall-s{font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;color:var(--fg3);margin-top:3px}
+  .bd-hall-s b{color:var(--fg2);font-weight:400}
+  .bd-clock{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg3)}
+  .bd-clock-dot{width:6px;height:6px;border-radius:50%;background:#6fcf7f;box-shadow:0 0 8px #6fcf7f}
+  .bd-map{height:300px;background:#11100d}
+  .bd-map .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) grayscale(.55) brightness(.78) contrast(.92)}
+  .bd-map .leaflet-control-attribution{background:rgba(13,11,9,.7);color:var(--fg3);font-size:8px}
+  .bd-map .leaflet-control-attribution a{color:var(--fg3)}
+  .bd-map .leaflet-tooltip{background:var(--bg3);color:var(--fg2);border:.6px solid var(--brd2);font-family:var(--mono);font-size:9px;box-shadow:none}
+  .bd-pin{display:block;width:14px;height:14px;margin:2px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .bd-pin.hall{width:10px;height:10px;margin:4px;background:#8a7d68;border-color:#14110d}
+  .bd-pin.me{background:#e0574b}
+  .bd-pin.pending{background:#e0574b}
+  .bd-pin.new{animation:bdPulse 1.4s ease-out infinite}
+  .bd-pin.responding{background:#f0b44c}
+  .bd-pin.resolved{background:#5fbf72}
+  @keyframes bdPulse{0%{box-shadow:0 0 0 0 rgba(224,87,75,.7)}100%{box-shadow:0 0 0 18px rgba(224,87,75,0)}}
+  .bd-esc{padding:14px 16px 26px;border-bottom:.6px solid var(--brd)}
+  .bd-esc[hidden]{display:none}
+  .bd-esc-head{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);margin-bottom:10px}
+  .bd-esc-head b{color:var(--accent);font-weight:400}
+  .bd-esc-bar{position:relative;height:6px;border-radius:3px;background:var(--bg3)}
+  .bd-esc-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:3px;background:linear-gradient(90deg,#f0b44c,#e0574b);transition:width .2s linear}
+  .bd-esc-bar i.stopped{background:#5fbf72}
+  .bd-esc-bar span{position:absolute;top:12px;transform:translateX(-100%);font-family:var(--mono);font-size:7.5px;letter-spacing:.06em;color:var(--fg3);white-space:nowrap}
+  .bd-esc-bar span::before{content:'';position:absolute;right:0;top:-12px;width:1px;height:10px;background:var(--brd2)}
+  .bd-queue{list-style:none}
+  .bd-q{display:grid;grid-template-columns:10px 1fr auto;gap:4px 12px;align-items:center;padding:12px 16px;border-bottom:.6px solid var(--brd);cursor:pointer;transition:background .3s}
+  .bd-q:hover{background:var(--bg2)}
+  .bd-q.mine{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+  .bd-q-dot{width:9px;height:9px;border-radius:50%}
+  .bd-q.pending .bd-q-dot{background:#e0574b;box-shadow:0 0 8px #e0574b}
+  .bd-q.responding .bd-q-dot{background:#f0b44c}
+  .bd-q.resolved .bd-q-dot{background:#5fbf72}
+  .bd-q-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .bd-q-main b{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--fg)}
+  .bd-q-main small{font-family:var(--mono);font-size:8.5px;color:var(--fg3)}
+  .bd-q-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+  .bd-q-time{font-family:var(--mono);font-size:8.5px;color:var(--fg3);white-space:nowrap}
+  .bd-tier{font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;padding:2px 6px;border-radius:2px}
+  .bd-tier.t1{background:rgba(240,180,76,.15);color:#f0b44c}
+  .bd-tier.t2{background:rgba(240,130,76,.18);color:#f0884c}
+  .bd-tier.t3{background:rgba(224,87,75,.2);color:#ff7a6e;animation:blink 1s steps(1) infinite}
+  .bd-act{grid-column:2/4;justify-self:start;margin-top:6px;height:34px;padding:0 16px;border-radius:2px;border:none;background:var(--accent);color:#fff;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;animation:bdPulseBtn 1.8s ease-in-out infinite}
+  @keyframes bdPulseBtn{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 22%,transparent)}}
+  .bd-log{list-style:none;max-height:170px;overflow-y:auto;padding:10px 16px 14px;font-family:var(--mono);font-size:9.5px;line-height:1.6;color:var(--fg3)}
+  .bd-log li{display:flex;gap:10px;padding:3px 0}
+  .bd-log time{color:#5d5446;flex-shrink:0}
+  .bd-log li.new{color:var(--fg)}
+  .bd-log li.t1{color:#f0b44c}
+  .bd-log li.t2{color:#f0884c}
+  .bd-log li.t3{color:#ff7a6e}
+  .bd-log li.ok{color:#7fd08a}
+  html:not(.touch) .bd button,html:not(.touch) .bd-q,html:not(.touch) .bd-reset,html:not(.touch) .bd .leaflet-container{cursor:none}
+  html.reduce .bd-sos-ring,html.reduce .bd-pin.new,html.reduce .bd-act{animation:none}
+  @media(max-width:900px){
+    .bd{grid-template-columns:1fr}
+    .bd-phone{width:min(300px,86vw);height:600px}
+    .bd-reset{margin-left:0}
+  }
+</style>

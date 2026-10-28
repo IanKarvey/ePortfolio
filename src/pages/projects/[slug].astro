@@ -1,0 +1,241 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import BarangayDemo from '../../components/demos/BarangayDemo.astro';
+import BakeryDemo from '../../components/demos/BakeryDemo.astro';
+import DeliveryDemo from '../../components/demos/DeliveryDemo.astro';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return all.map((p, i) => ({ params: { slug: p.id }, props: { project: p, next: all[(i + 1) % all.length], index: i } }));
+}
+
+const { project, next, index } = Astro.props;
+const d = project.data;
+const { Content } = await render(project);
+const demos = { barangay: BarangayDemo, bakery: BakeryDemo, delivery: DeliveryDemo };
+const Demo = d.demo ? demos[d.demo] : null;
+const meta = [
+  ['Role', d.role],
+  ...(d.client ? [['Client', d.client]] : []),
+  ['Platform', d.platform],
+  ['Status', d.status],
+  ['Year', String(d.year)],
+];
+---
+<Base title={`${d.title} — Ian Karvey L. Manimtim`} description={d.tagline} image={d.logo}>
+<main class="pp" style={`--accent:${d.accent}`}>
+
+  <header class="pp-hero">
+    <a href="/#projects" class="pp-back"><span aria-hidden="true">&larr;</span> All projects</a>
+    <div class="pp-hero-grid">
+      <div>
+        <div class="sl pp-kicker">{String(index + 1).padStart(2, '0')} · {d.type}</div>
+        <h1 class="pp-title"><span class="pp-title-i">{d.title}</span></h1>
+        <p class="pp-tagline">{d.tagline}</p>
+        <div class="pp-ctas">
+          {Demo && <a href="#demo" class="pp-btn pp-btn-main">Try the live demo <span aria-hidden="true">&darr;</span></a>}
+          <a href="#how" class="pp-btn">How it works</a>
+        </div>
+      </div>
+      <div class="pp-badge" style={`background:${d.logoBg}`}>
+        <img src={encodeURI(d.logo)} alt={`${d.title} logo`}>
+      </div>
+    </div>
+    <dl class="pp-meta">
+      {meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+    </dl>
+  </header>
+
+  <section class="pp-stats" aria-label="Key numbers">
+    {d.stats.map(s => (
+      <div class="pp-stat" data-reveal>
+        <span class="pp-stat-n">{s.value}</span>
+        <span class="pp-stat-l">{s.label}</span>
+      </div>
+    ))}
+  </section>
+
+  {Demo && (
+    <section class="pp-demo" id="demo">
+      <div class="pp-wrap">
+        <div class="sl">Hands-on</div>
+        <h2 class="pp-h2">Try it yourself.</h2>
+        <p class="pp-note"><span class="pp-note-dot"></span>Demo account with sample data. Nothing here touches real records, and everything resets when you reload.</p>
+        <Demo />
+      </div>
+    </section>
+  )}
+
+  <section class="pp-story">
+    <div class="pp-wrap pp-prose" data-reveal>
+      <Content />
+    </div>
+  </section>
+
+  <section class="pp-feats">
+    <div class="pp-wrap">
+      <div class="sl">What it does</div>
+      <h2 class="pp-h2">Features.</h2>
+      <div class="pp-feat-grid">
+        {d.features.map((f, i) => (
+          <article class="pp-feat" data-reveal>
+            <span class="pp-feat-n">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="pp-arch" id="how">
+    <div class="pp-wrap">
+      <div class="sl">Under the hood</div>
+      <h2 class="pp-h2">How it works.</h2>
+      <p class="pp-arch-hint">Click a layer to see what it does.</p>
+      <div class="arch" data-arch>
+        <ol class="arch-flow">
+          {d.architecture.map((a, i) => (
+            <li>
+              <button type="button" class:list={['arch-node', { on: i === 0 }]} data-i={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+                <span class="arch-n">{String(i + 1).padStart(2, '0')}</span>
+                <span class="arch-name">{a.name}</span>
+                <span class="arch-tech">{a.tech}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+        <div class="arch-detail" aria-live="polite">
+          {d.architecture.map((a, i) => (
+            <div class="arch-panel" data-i={i} hidden={i !== 0}>
+              <div class="arch-panel-tech">{a.tech}</div>
+              <h3>{a.name}</h3>
+              <p>{a.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="pp-stack">
+        {d.stack.map(s => <span class="proj-pill">{s}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <a class="pp-next" href={`/projects/${next.id}/`} style={`--accent:${next.data.accent}`}>
+    <span class="pp-next-l">Next project</span>
+    <span class="pp-next-t">{next.data.title} <span aria-hidden="true">&rarr;</span></span>
+  </a>
+</main>
+</Base>
+
+<script>
+  import { gsap, REDUCE } from '../../scripts/core.js';
+
+  if (!REDUCE) {
+    gsap.from('.pp-title-i', { yPercent: 105, duration: 1.1, ease: 'expo.out', delay: .1 });
+    gsap.from('.pp-tagline, .pp-ctas, .pp-back', { y: 18, opacity: 0, duration: .8, stagger: .08, ease: 'power3.out', delay: .35 });
+    gsap.from('.pp-badge', { scale: .6, rotation: -12, opacity: 0, duration: 1, ease: 'back.out(1.6)', delay: .3 });
+    gsap.from('.pp-meta > div', { y: 14, opacity: 0, duration: .6, stagger: .06, ease: 'power3.out', delay: .55 });
+  }
+
+  /* architecture explorer: click a layer → show its panel; a pulse travels down the flow on hover/selection */
+  document.querySelectorAll<HTMLElement>('[data-arch]').forEach(arch => {
+    const nodes = [...arch.querySelectorAll<HTMLButtonElement>('.arch-node')];
+    const panels = [...arch.querySelectorAll<HTMLElement>('.arch-panel')];
+    const select = (i: number) => {
+      nodes.forEach((n, j) => { n.classList.toggle('on', j === i); n.setAttribute('aria-pressed', String(j === i)); n.classList.toggle('lit', j <= i); });
+      panels.forEach((p, j) => { p.hidden = j !== i; });
+      if (!REDUCE) gsap.fromTo(panels[i], { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: .45, ease: 'power3.out' });
+    };
+    nodes.forEach((n, i) => n.addEventListener('click', () => select(i)));
+    select(0);
+  });
+</script>
+
+<style is:global>
+  .pp{--accent:var(--gold)}
+  .pp-wrap{max-width:var(--w);margin:0 auto;padding:0 var(--g)}
+  .pp-hero{max-width:var(--w);margin:0 auto;padding:calc(var(--nav) + clamp(40px,7vw,90px)) var(--g) clamp(40px,5vw,64px)}
+  .pp-back{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg3);text-decoration:none;margin-bottom:clamp(28px,4vw,48px);transition:color .3s,gap .3s}
+  .pp-back:hover{color:var(--gold);gap:12px}
+  .pp-hero-grid{display:grid;grid-template-columns:1fr auto;gap:clamp(24px,5vw,72px);align-items:end}
+  .pp-kicker{color:var(--accent)}
+  .pp-kicker::before{background:var(--accent)}
+  .pp-title{overflow:hidden;font-family:var(--serif);font-weight:900;font-size:clamp(48px,9vw,132px);line-height:.9;letter-spacing:-.035em;color:var(--fg);margin:6px 0 clamp(16px,2vw,24px)}
+  .pp-title-i{display:block}
+  .pp-tagline{font-family:var(--serif);font-style:italic;font-size:clamp(17px,2vw,24px);line-height:1.45;color:var(--fg2);max-width:700px}
+  .pp-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:clamp(22px,3vw,34px)}
+  .pp-btn{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 22px;border-radius:2px;border:.7px solid var(--brd2);color:var(--fg2);text-decoration:none;font-family:var(--sans);font-size:10px;letter-spacing:.2em;text-transform:uppercase;transition:color .3s,border-color .3s,background .3s,transform .3s}
+  .pp-btn:hover{color:var(--fg);border-color:var(--fg3)}
+  .pp-btn-main{background:var(--accent);border-color:var(--accent);color:#120f0b;font-weight:600}
+  .pp-btn-main:hover{color:#120f0b;transform:translateY(-2px);filter:brightness(1.08)}
+  .pp-badge{width:clamp(110px,15vw,200px);aspect-ratio:1;border-radius:clamp(18px,2.5vw,30px);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);border:.7px solid var(--brd2)}
+  .pp-badge img{width:100%;height:100%;object-fit:contain;padding:8%;display:block}
+  .pp-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:clamp(36px,5vw,64px);border-top:.6px solid var(--brd2)}
+  .pp-meta div{padding:16px 16px 0 0}
+  .pp-meta dt{font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg3);margin-bottom:6px}
+  .pp-meta dd{font-family:var(--sans);font-size:13px;font-weight:300;color:var(--fg2);line-height:1.5}
+
+  .pp-stats{max-width:var(--w);margin:0 auto clamp(56px,7vw,100px);padding:0 var(--g);display:grid;grid-template-columns:repeat(4,1fr)}
+  .pp-stat{padding:clamp(18px,2.4vw,30px) 12px;border:.6px solid var(--brd);margin:-.3px;text-align:center}
+  .pp-stat-n{display:block;font-family:var(--serif);font-weight:900;font-size:clamp(34px,5vw,64px);line-height:1;color:var(--accent);letter-spacing:-.03em}
+  .pp-stat-l{display:block;margin-top:8px;font-family:var(--mono);font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg3)}
+
+  .pp-h2{font-family:var(--serif);font-weight:900;font-size:clamp(40px,6vw,80px);line-height:.9;letter-spacing:-.03em;color:var(--fg);margin:4px 0 clamp(18px,2.5vw,30px)}
+  .pp-demo{padding:clamp(64px,8vw,110px) 0;background:var(--bg2);border-top:.6px solid var(--brd);border-bottom:.6px solid var(--brd)}
+  .pp-note{display:flex;align-items:center;gap:10px;font-family:var(--sans);font-size:12.5px;font-weight:300;color:var(--fg3);margin-bottom:clamp(28px,3.5vw,44px)}
+  .pp-note-dot{flex-shrink:0;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+
+  .pp-story{padding:clamp(64px,8vw,110px) 0}
+  .pp-prose{max-width:820px}
+  .pp-prose h2{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin:clamp(36px,4vw,52px) 0 14px;display:flex;align-items:center;gap:10px}
+  .pp-prose h2::before{content:'';width:20px;height:.7px;background:var(--accent)}
+  .pp-prose h2:first-child{margin-top:0}
+  .pp-prose p{font-family:var(--serif);font-size:clamp(18px,2vw,24px);line-height:1.55;color:var(--fg2)}
+  .pp-prose em{color:var(--fg)}
+
+  .pp-feats{padding:0 0 clamp(64px,8vw,110px)}
+  .pp-feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--brd);border:1px solid var(--brd)}
+  .pp-feat{background:var(--bg);padding:clamp(22px,2.6vw,34px);transition:background .4s}
+  .pp-feat:hover{background:var(--bg3)}
+  .pp-feat-n{font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:var(--accent)}
+  .pp-feat h3{font-family:var(--serif);font-weight:700;font-size:clamp(17px,1.6vw,21px);color:var(--fg);margin:12px 0 10px;line-height:1.2}
+  .pp-feat p{font-family:var(--sans);font-size:12.5px;font-weight:300;line-height:1.8;color:var(--fg3)}
+
+  .pp-arch{padding:clamp(64px,8vw,110px) 0;background:var(--bg2);border-top:.6px solid var(--brd)}
+  .pp-arch-hint{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);margin:-8px 0 24px}
+  .arch{display:grid;grid-template-columns:minmax(260px,.9fr) 1.1fr;gap:clamp(20px,4vw,56px);align-items:start}
+  .arch-flow{list-style:none;position:relative}
+  .arch-flow li{position:relative;padding-bottom:14px}
+  .arch-flow li:not(:last-child)::after{content:'';position:absolute;left:27px;top:56px;bottom:0;width:1px;background:var(--brd2)}
+  .arch-node{width:100%;display:grid;grid-template-columns:42px 1fr;grid-template-rows:auto auto;column-gap:14px;align-items:center;text-align:left;padding:12px 16px 12px 8px;background:var(--bg);border:.7px solid var(--brd2);border-radius:3px;color:inherit;cursor:pointer;transition:border-color .3s,background .3s,transform .35s cubic-bezier(.25,1,.5,1)}
+  html:not(.touch) .arch-node{cursor:none}
+  .arch-node:hover{border-color:var(--fg3);transform:translateX(4px)}
+  .arch-n{grid-row:span 2;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:10px;color:var(--fg3);border:.7px solid var(--brd2);transition:all .35s}
+  .arch-name{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--fg2)}
+  .arch-tech{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;color:var(--fg3)}
+  .arch-node.lit .arch-n{border-color:var(--accent);color:var(--accent)}
+  .arch-node.on{border-color:var(--accent);background:var(--bg3);transform:translateX(8px)}
+  .arch-node.on .arch-n{background:var(--accent);color:#120f0b}
+  .arch-node.on .arch-name{color:var(--fg)}
+  .arch-detail{position:sticky;top:calc(var(--nav) + 24px);min-height:220px;padding:clamp(24px,3vw,40px);border:.7px solid var(--brd2);border-radius:3px;background:radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 60%),var(--bg)}
+  .arch-panel-tech{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  .arch-panel h3{font-family:var(--serif);font-weight:900;font-size:clamp(26px,3vw,40px);color:var(--fg);margin:10px 0 14px;line-height:1}
+  .arch-panel p{font-family:var(--sans);font-size:14px;font-weight:300;line-height:1.85;color:var(--fg2)}
+  .pp-stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:clamp(32px,4vw,52px)}
+
+  .pp-next{display:block;padding:clamp(56px,8vw,110px) var(--g);text-align:center;text-decoration:none;border-top:.6px solid var(--brd);transition:background .4s}
+  .pp-next:hover{background:var(--bg2)}
+  .pp-next-l{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg3);margin-bottom:12px}
+  .pp-next-t{font-family:var(--serif);font-weight:900;font-size:clamp(34px,6vw,84px);letter-spacing:-.03em;color:var(--fg);transition:color .3s}
+  .pp-next:hover .pp-next-t{color:var(--accent)}
+
+  @media(max-width:760px){
+    .pp-hero-grid{grid-template-columns:1fr}
+    .pp-badge{order:-1;width:88px;border-radius:18px}
+    .pp-stats{grid-template-columns:repeat(2,1fr)}
+    .arch{grid-template-columns:1fr}
+    .arch-detail{position:static}
+  }
+</style>

@@ -1,0 +1,297 @@
+---
+/* GMD Bakery Planner — a browser recreation of the desktop app's core loop with sample data:
+   take an order → see the bake list change → watch sales update. Prices are the app's own menu. */
+---
+<div class="bk" id="bk">
+  <div class="bk-bar">
+    <span class="bk-dots"><i></i><i></i><i></i></span>
+    <span class="bk-title">GMD Bakery — Order and Production Planner</span>
+    <span class="bk-file">orders.csv · saved</span>
+  </div>
+  <div class="bk-head">
+    <img src="/projects/gmd-bakery-badge.jpg" alt="GMD Bakery logo" class="bk-logo">
+    <div>
+      <div class="bk-brand">GMD Bakery</div>
+      <div class="bk-sub">Home of the Special Mamon de Tabla</div>
+    </div>
+  </div>
+  <div class="bk-tabs" role="tablist">
+    <button type="button" role="tab" class="on" data-tab="order">Add Order <kbd>Ctrl+1</kbd></button>
+    <button type="button" role="tab" data-tab="plan">Production Plan <kbd>Ctrl+4</kbd></button>
+    <button type="button" role="tab" data-tab="sales">Sales &amp; Charts <kbd>Ctrl+7</kbd></button>
+  </div>
+
+  <div class="bk-pane" data-pane="order">
+    <form class="bk-form" id="bkForm">
+      <label>Customer<input id="bkCust" list="bkCusts" value="Maria Santos" required></label>
+      <datalist id="bkCusts"></datalist>
+      <label>Product<select id="bkProd"></select></label>
+      <label class="bk-sm">Quantity<input id="bkQty" type="number" min="1" max="500" value="24" required></label>
+      <label class="bk-sm">Price each<input id="bkPrice" readonly></label>
+      <div class="bk-when">
+        <span>Needed on</span>
+        <div class="bk-chips" id="bkWhen"></div>
+      </div>
+      <div class="bk-total">Total <b id="bkTotal">₱0</b></div>
+      <button class="bk-btn" type="submit">Save order <kbd>Enter</kbd></button>
+    </form>
+    <div class="bk-orders">
+      <div class="bk-h">Latest orders <span>yellow = still pending</span></div>
+      <table><thead><tr><th>Customer</th><th>Product</th><th>Qty</th><th>Needed</th><th></th></tr></thead><tbody id="bkRows"></tbody></table>
+    </div>
+  </div>
+
+  <div class="bk-pane" data-pane="plan" hidden>
+    <div class="bk-h">What to bake <span>needed − already in stock</span></div>
+    <div class="bk-chips" id="bkDays"></div>
+    <table class="bk-plan"><thead><tr><th>Product</th><th>Needed</th><th>In stock</th><th>Still to bake</th><th></th></tr></thead><tbody id="bkPlan"></tbody></table>
+    <p class="bk-hint">Tip: press <b>+ Baked 12</b> to record a batch — the plan updates instantly, just like the Inventory tab.</p>
+  </div>
+
+  <div class="bk-pane" data-pane="sales" hidden>
+    <div class="bk-cards">
+      <div><span>Total sales</span><b id="bkSales">₱0</b><small id="bkPending"></small></div>
+      <div><span>Orders</span><b id="bkCount">0</b><small id="bkPcs"></small></div>
+      <div><span>Most ordered</span><b id="bkTop">—</b><small id="bkTopN"></small></div>
+    </div>
+    <div class="bk-h">Quantity per product</div>
+    <div class="bk-chart" id="bkChart"></div>
+  </div>
+</div>
+
+<script>
+  import { showToast } from '../../scripts/core.js';
+
+  const PRODUCTS: Record<string, number> = {
+    'Pandesal': 5, 'Ensaymada': 25, 'Spanish Bread': 12, 'Cheese Bread': 15, 'Pan de Coco': 12,
+    'Monay': 8, 'Cinnamon Roll': 35, 'Chocolate Cake (slice)': 60, 'Egg Pie (slice)': 40, 'Brownies': 30,
+  };
+  const CUSTOMERS = ['Maria Santos', 'Juan Dela Cruz', 'Ana Reyes', 'Carlo Garcia', 'Liza Mendoza', 'Paolo Cruz', 'Grace Bautista', 'Mark Ramos', 'Joy Villanueva', 'Ben Aquino'];
+  const DAYS = ['Today', 'Tomorrow', 'In 2 days'];
+  type Order = { cust: string; prod: string; qty: number; day: number; done: boolean; fresh?: boolean };
+
+  const peso = (n: number) => '₱' + n.toLocaleString('en-PH');
+  const $ = (id: string) => document.getElementById(id)!;
+  const root = $('bk');
+
+  /* sample orders + stock, the way the app ships with sample data */
+  let orders: Order[] = [
+    { cust: 'Juan Dela Cruz', prod: 'Pandesal', qty: 60, day: 0, done: true },
+    { cust: 'Ana Reyes', prod: 'Ensaymada', qty: 12, day: 0, done: false },
+    { cust: 'Carlo Garcia', prod: 'Spanish Bread', qty: 24, day: 0, done: false },
+    { cust: 'Liza Mendoza', prod: 'Pandesal', qty: 40, day: 1, done: false },
+    { cust: 'Paolo Cruz', prod: 'Chocolate Cake (slice)', qty: 8, day: 1, done: false },
+    { cust: 'Grace Bautista', prod: 'Cheese Bread', qty: 30, day: 1, done: false },
+    { cust: 'Mark Ramos', prod: 'Egg Pie (slice)', qty: 10, day: 2, done: false },
+    { cust: 'Joy Villanueva', prod: 'Pan de Coco', qty: 18, day: 2, done: false },
+  ];
+  const stock: Record<string, number> = { 'Pandesal': 30, 'Ensaymada': 6, 'Spanish Bread': 24, 'Cheese Bread': 10 };
+  let when = 1;
+  let planDay = 0;
+
+  $('bkCusts').innerHTML = CUSTOMERS.map(c => `<option value="${c}">`).join('');
+  $('bkProd').innerHTML = Object.keys(PRODUCTS).map(p => `<option>${p}</option>`).join('');
+  const prodSel = $('bkProd') as HTMLSelectElement;
+  const qtyIn = $('bkQty') as HTMLInputElement;
+  function price() {
+    const p = PRODUCTS[prodSel.value];
+    ($('bkPrice') as HTMLInputElement).value = peso(p);
+    $('bkTotal').textContent = peso(p * (+qtyIn.value || 0));
+  }
+  prodSel.addEventListener('change', price);
+  qtyIn.addEventListener('input', price);
+
+  function chips(el: HTMLElement, active: number, label: (i: number) => string, onPick: (i: number) => void) {
+    el.innerHTML = '';
+    DAYS.forEach((_, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'bk-chip' + (i === active ? ' on' : '');
+      b.textContent = label(i);
+      b.addEventListener('click', () => onPick(i));
+      el.appendChild(b);
+    });
+  }
+  const needed = (day: number) => {
+    const m: Record<string, number> = {};
+    orders.filter(o => o.day === day && !o.done).forEach(o => { m[o.prod] = (m[o.prod] || 0) + o.qty; });
+    return m;
+  };
+
+  function renderOrders() {
+    chips($('bkWhen'), when, i => DAYS[i], i => { when = i; renderOrders(); });
+    const rows = $('bkRows');
+    rows.innerHTML = '';
+    orders.slice(0, 6).forEach(o => {
+      const tr = document.createElement('tr');
+      tr.className = (o.done ? '' : 'pending') + (o.fresh ? ' fresh' : '');
+      [o.cust, o.prod, String(o.qty), DAYS[o.day]].forEach(t => { const td = document.createElement('td'); td.textContent = t; tr.appendChild(td); });
+      const td = document.createElement('td');
+      if (!o.done) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'bk-mini'; b.textContent = 'Mark completed';
+        b.addEventListener('click', () => {
+          o.done = true;
+          stock[o.prod] = Math.max(0, (stock[o.prod] || 0) - o.qty);
+          renderAll();
+        });
+        td.appendChild(b);
+      } else td.innerHTML = '<span class="bk-ok">✓ done</span>';
+      tr.appendChild(td);
+      rows.appendChild(tr);
+      o.fresh = false;
+    });
+  }
+
+  function renderPlan() {
+    chips($('bkDays'), planDay, i => {
+      const pcs = Object.values(needed(i)).reduce((a, b) => a + b, 0);
+      return `${DAYS[i]} · ${pcs} pcs`;
+    }, i => { planDay = i; renderPlan(); });
+    const n = needed(planDay);
+    const body = $('bkPlan');
+    body.innerHTML = '';
+    const names = Object.keys(n);
+    if (!names.length) { body.innerHTML = '<tr><td colspan="5" class="bk-empty">Nothing pending for this day 🎉</td></tr>'; return; }
+    names.forEach(p => {
+      const have = stock[p] || 0;
+      const bake = Math.max(0, n[p] - have);
+      const tr = document.createElement('tr');
+      if (bake) tr.className = 'pending';
+      tr.innerHTML = `<td></td><td>${n[p]}</td><td>${have}</td><td><b>${bake || '✓ covered'}</b></td><td></td>`;
+      tr.cells[0].textContent = p;
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'bk-mini'; b.textContent = '+ Baked 12';
+      b.addEventListener('click', () => { stock[p] = (stock[p] || 0) + 12; renderPlan(); });
+      tr.cells[4].appendChild(b);
+      body.appendChild(tr);
+    });
+  }
+
+  function renderSales() {
+    const total = orders.reduce((a, o) => a + o.qty * PRODUCTS[o.prod], 0);
+    const pend = orders.filter(o => !o.done).reduce((a, o) => a + o.qty * PRODUCTS[o.prod], 0);
+    const qty: Record<string, number> = {};
+    const freq: Record<string, number> = {};
+    orders.forEach(o => { qty[o.prod] = (qty[o.prod] || 0) + o.qty; freq[o.prod] = (freq[o.prod] || 0) + 1; });
+    const top = Object.entries(freq).sort((a, b) => b[1] - a[1])[0];
+    $('bkSales').textContent = peso(total);
+    $('bkPending').textContent = `${peso(pend)} still pending`;
+    $('bkCount').textContent = String(orders.length);
+    $('bkPcs').textContent = `${orders.reduce((a, o) => a + o.qty, 0)} pieces`;
+    $('bkTop').textContent = top ? top[0] : '—';
+    $('bkTopN').textContent = top ? `in ${top[1]} orders` : '';
+    const max = Math.max(...Object.values(qty), 1);
+    $('bkChart').innerHTML = '';
+    Object.entries(qty).sort((a, b) => b[1] - a[1]).forEach(([p, q]) => {
+      const row = document.createElement('div');
+      row.className = 'bk-row';
+      row.innerHTML = `<span></span><div class="bk-track"><i style="width:0"></i></div><b>${q}</b>`;
+      row.querySelector('span')!.textContent = p;
+      $('bkChart').appendChild(row);
+      requestAnimationFrame(() => requestAnimationFrame(() => { (row.querySelector('i') as HTMLElement).style.width = (q / max) * 100 + '%'; }));
+    });
+  }
+  const renderAll = () => { renderOrders(); renderPlan(); renderSales(); };
+
+  $('bkForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const cust = ($('bkCust') as HTMLInputElement).value.trim() || 'Walk-in';
+    const qty = Math.max(1, Math.min(500, +qtyIn.value || 1));
+    orders.unshift({ cust, prod: prodSel.value, qty, day: when, done: false, fresh: true });
+    planDay = when;
+    renderAll();
+    showToast(`Order saved — ${qty} × ${prodSel.value} for ${DAYS[when].toLowerCase()}`);
+    ($('bkCust') as HTMLInputElement).value = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
+  });
+
+  function tab(name: string) {
+    root.querySelectorAll<HTMLElement>('[data-tab]').forEach(b => { const on = b.dataset.tab === name; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+    root.querySelectorAll<HTMLElement>('[data-pane]').forEach(p => { p.hidden = p.dataset.pane !== name; });
+    if (name === 'sales') renderSales();
+  }
+  root.querySelectorAll<HTMLElement>('[data-tab]').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab!)));
+  /* the real app's shortcuts, active while the demo is on screen */
+  let visible = false;
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(root);
+  document.addEventListener('keydown', e => {
+    if (!visible || !e.ctrlKey) return;
+    const map: Record<string, string> = { '1': 'order', '4': 'plan', '7': 'sales' };
+    if (map[e.key]) { e.preventDefault(); tab(map[e.key]); }
+  });
+
+  price();
+  renderAll();
+</script>
+
+<style is:global>
+  .bk{--g1:#175f27;--g2:#63ab33;--soft:#e7f1e1;--ink:#15231a;--mut:#6b7568;--line:#e4e2d8;
+    background:#f5f4ee;color:var(--ink);border-radius:10px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.5);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:13px;font-variation-settings:normal;max-width:980px}
+  .bk-bar{display:flex;align-items:center;gap:14px;padding:9px 14px;background:#e9e7df;border-bottom:1px solid var(--line)}
+  .bk-dots{display:flex;gap:6px}.bk-dots i{width:11px;height:11px;border-radius:50%;background:#d3d0c6}
+  .bk-title{flex:1;text-align:center;font-size:12px;color:var(--mut)}
+  .bk-file{font-size:11px;color:var(--g1)}
+  .bk-head{display:flex;align-items:center;gap:14px;padding:16px 20px;background:#fff;border-bottom:1px solid var(--line)}
+  .bk-logo{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--line)}
+  .bk-brand{font-size:19px;font-weight:700;color:var(--g1)}
+  .bk-sub{font-size:12px;color:var(--mut)}
+  .bk-tabs{display:flex;gap:2px;padding:0 14px;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto}
+  .bk-tabs button{position:relative;padding:12px 14px;background:none;border:none;font:inherit;font-size:13px;color:var(--mut);cursor:pointer;white-space:nowrap}
+  .bk-tabs button.on{color:var(--ink);font-weight:600}
+  .bk-tabs button.on::after{content:'';position:absolute;left:10px;right:10px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--g2)}
+  .bk kbd{font-family:inherit;font-size:10px;color:#9aa296;margin-left:4px}
+  .bk-pane{padding:20px}
+  .bk-pane[data-pane="order"]{display:grid;grid-template-columns:300px 1fr;gap:20px}
+  .bk-pane[hidden]{display:none!important}
+  .bk-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;padding:18px;background:#fff;border:1px solid var(--line);border-radius:10px}
+  .bk-form label{grid-column:span 2;display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:#3f4d3f}
+  .bk-form label.bk-sm{grid-column:span 1}
+  .bk-form input,.bk-form select{height:36px;padding:0 10px;border:1px solid #d6d4c9;border-radius:7px;background:#fff;font:inherit;font-weight:400;color:var(--ink);min-width:0}
+  .bk-form input:focus,.bk-form select:focus{outline:2px solid var(--g2);outline-offset:1px}
+  .bk-form input[readonly]{background:#f5f4ee;color:var(--mut)}
+  .bk-when{grid-column:span 2;display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3f4d3f}
+  .bk-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .bk-chip{height:32px;padding:0 12px;border-radius:16px;border:1px solid #d6d4c9;background:#fff;font:inherit;font-size:12px;color:var(--ink);cursor:pointer}
+  .bk-chip.on{background:var(--g1);border-color:var(--g1);color:#fff}
+  .bk-total{grid-column:span 2;display:flex;justify-content:space-between;align-items:baseline;padding-top:8px;border-top:1px dashed var(--line);color:var(--mut)}
+  .bk-total b{font-size:22px;color:var(--g1)}
+  .bk-btn{grid-column:span 2;height:42px;border:none;border-radius:8px;background:var(--g1);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+  .bk-btn:hover{background:#114a1e}
+  .bk-btn kbd{color:#a9d39a}
+  .bk-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-weight:700;margin-bottom:10px;color:var(--ink)}
+  .bk-h span{font-size:11px;font-weight:400;color:var(--mut)}
+  .bk table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .bk th{text-align:left;font-size:11px;font-weight:600;color:var(--mut);padding:9px 10px;background:#fafaf6;border-bottom:1px solid var(--line)}
+  .bk td{padding:9px 10px;border-bottom:1px solid #efede6}
+  .bk tr.pending td{background:#fff8dc}
+  .bk tr.fresh td{animation:bkFresh 1.6s ease-out}
+  @keyframes bkFresh{from{background:#cfe9c2}}
+  .bk-mini{height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--g2);background:#fff;color:var(--g1);font:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
+  .bk-mini:hover{background:var(--soft)}
+  .bk-ok{font-size:11px;color:var(--g1)}
+  .bk-plan{margin-top:12px}
+  .bk-plan b{color:var(--g1)}
+  .bk-plan tr.pending b{color:#9a5b00}
+  .bk-empty{text-align:center;color:var(--mut);padding:24px!important}
+  .bk-hint{margin-top:12px;font-size:12px;color:var(--mut)}
+  .bk-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+  .bk-cards div{padding:14px 16px;background:#fff;border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;gap:3px;min-width:0}
+  .bk-cards span{font-size:11px;color:var(--mut)}
+  .bk-cards b{font-size:20px;color:var(--g1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bk-cards small{font-size:11px;color:var(--mut)}
+  .bk-chart{display:flex;flex-direction:column;gap:7px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:10px}
+  .bk-row{display:grid;grid-template-columns:150px 1fr 40px;gap:10px;align-items:center;font-size:12px}
+  .bk-track{height:16px;background:#f0efe8;border-radius:4px;overflow:hidden}
+  .bk-track i{display:block;height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:4px;transition:width .9s cubic-bezier(.25,1,.5,1)}
+  .bk-row b{text-align:right;color:var(--g1)}
+  html:not(.touch) .bk button,html:not(.touch) .bk select{cursor:none}
+  @media(max-width:760px){
+    .bk-pane[data-pane="order"]{grid-template-columns:1fr}
+    .bk-file,.bk kbd{display:none}
+    .bk-cards{grid-template-columns:1fr}
+    .bk-row{grid-template-columns:100px 1fr 34px}
+    .bk-orders{overflow-x:auto}
+    .bk-pane{padding:14px}
+  }
+</style>

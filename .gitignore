@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+
+# secrets — the Gemini key lives here locally and in Vercel's environment settings, never in git
+.env
+.env.*
+
+# personal document with private details (birth date, phone) — not for the public repo
+Ian_Karvey_Manimtim_CV.md

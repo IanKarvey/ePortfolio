@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <rect width="160" height="160" rx="28" fill="#14110d"/>
+  <rect x="1" y="1" width="158" height="158" rx="27" fill="none" stroke="#dbb95e" stroke-opacity=".35"/>
+  <!-- parcel -->
+  <path d="M48 62 80 46l32 16v36L80 114 48 98z" fill="none" stroke="#dbb95e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M48 62l32 16 32-16M80 78v36" fill="none" stroke="#dbb95e" stroke-width="4" stroke-linejoin="round"/>
+  <!-- retry arrow -->
+  <path d="M118 112a26 26 0 0 1-38 14" fill="none" stroke="#f4efe6" stroke-width="4" stroke-linecap="round"/>
+  <path d="m84 118-6 9 10 3" fill="none" stroke="#f4efe6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
