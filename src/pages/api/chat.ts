@@ -80,9 +80,11 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const key = (typeof process !== 'undefined' && process.env?.GEMINI_API_KEY) || import.meta.env.GEMINI_API_KEY;
   if (!key) return json({ error: 'The AI assistant is not configured yet.' }, 503);
 
-  /* only this site's own pages may call the endpoint */
+  /* only this site's own pages may call the endpoint. On Vercel, request.url is an internal
+     address, so compare against the host the browser actually asked for. */
   const origin = request.headers.get('origin');
-  if (origin && new URL(origin).host !== new URL(request.url).host) return json({ error: 'Forbidden' }, 403);
+  const ownHosts = [request.headers.get('x-forwarded-host'), request.headers.get('host'), new URL(request.url).host];
+  if (origin && !ownHosts.includes(new URL(origin).host)) return json({ error: 'Forbidden' }, 403);
 
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || clientAddress || 'unknown';
   if (rateLimited(ip)) return json({ error: "You've asked a lot of questions in a short time — try again in a few minutes, or email Ian directly." }, 429);
