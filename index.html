@@ -11,16 +11,28 @@
 <meta property="og:title" content="Ian Karvey L. Manimtim — Portfolio">
 <meta property="og:description" content="BSIT student at De La Salle Lipa — Web Developer, Systems Developer & Mobile Engineer based in Talisay, Batangas, Philippines.">
 <meta property="og:site_name" content="IKM Portfolio">
+<meta property="og:url" content="https://karveyportfolio.vercel.app/">
+<meta property="og:image" content="https://karveyportfolio.vercel.app/Picture%20of%20Me/ian-professional-1200.jpg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ian Karvey L. Manimtim — Portfolio">
 <meta name="twitter:description" content="BSIT student at De La Salle Lipa — Web Developer, Systems Developer & Mobile Engineer.">
+<meta name="twitter:image" content="https://karveyportfolio.vercel.app/Picture%20of%20Me/ian-professional-1200.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d0b09'/%3E%3Ctext x='16' y='23' text-anchor='middle' fill='%23c9a84c' font-family='Georgia,serif' font-size='15' font-weight='bold'%3EIK%3C/text%3E%3C/svg%3E">
+<link rel="preload" as="image" href="Picture%20of%20Me/ian-casual-1080.jpg" imagesrcset="Picture%20of%20Me/ian-casual-640.jpg 640w, Picture%20of%20Me/ian-casual-1080.jpg 1080w" imagesizes="(max-width:680px) 100vw, 38vw">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;1,100;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;1,100;1,300;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script>
+  /* flag touch / reduced-motion before first paint so CSS can adapt */
+  (function(d){
+    if (!matchMedia('(hover:hover) and (pointer:fine)').matches) d.classList.add('touch');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('reduce');
+  })(document.documentElement);
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:auto}
@@ -36,7 +48,9 @@ html{scroll-behavior:auto}
   --gold2: #f0d478;
   --brd:   rgba(244,239,230,.07);
   --brd2:  rgba(244,239,230,.13);
-  --serif: 'Cooper BT','Cooper Black','Playfair Display',Georgia,serif;
+  /* Cooper only exists on machines with MS Office — Fraunces (soft axis) is the closest
+     web-hosted match, so phones and Macs no longer drop to a thin didone */
+  --serif: 'Cooper BT','Cooper Black','Fraunces',Georgia,serif;
   --sans:  'ITC Avant Garde Gothic','Avant Garde','Josefin Sans','Century Gothic',Futura,sans-serif;
   --mono:  'DM Mono','Courier New',monospace;
   --g:     clamp(20px,5vw,80px);
@@ -49,9 +63,12 @@ body{
   color:var(--fg);
   font-family:var(--sans);
   -webkit-font-smoothing:antialiased;
-  cursor:none;
+  font-variation-settings:"SOFT" 100,"WONK" 0;
   overflow-x:hidden;
 }
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
 
 /* ── SCROLL PROGRESS ── */
 #prog{
@@ -78,6 +95,13 @@ body{
   pointer-events:none;z-index:9999;
   transform:translate(-50%,-50%);will-change:transform;
 }
+/* custom cursor only for real mice — on phones it sat stuck at the top-left corner */
+.cur,.cdot{opacity:0}
+.cur{transition:width .32s cubic-bezier(.25,1,.5,1),height .32s,border-color .32s,background .32s,opacity .3s}
+.cdot{transition:opacity .3s}
+.cur.live,.cdot.live{opacity:1}
+html:not(.touch) body{cursor:none}
+html.touch .cur,html.touch .cdot{display:none}
 
 /* ── NAV ── */
 #nav{
@@ -87,7 +111,7 @@ body{
   padding:0 var(--g);z-index:500;
   transition:background .5s,backdrop-filter .5s,-webkit-backdrop-filter .5s;
 }
-#nav.on{
+#nav.on,#nav.menu{
   background:rgba(13,11,9,.85);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--brd);
@@ -114,8 +138,8 @@ body{
   width:0;height:.7px;background:var(--gold);
   transition:width .4s cubic-bezier(.25,1,.5,1);
 }
-.n-links a:hover{color:var(--fg)}
-.n-links a:hover::after{width:100%}
+.n-links a:hover,.n-links a.act{color:var(--fg)}
+.n-links a:hover::after,.n-links a.act::after{width:100%}
 
 /* ── SIDE NAV ── */
 #snav{
@@ -133,9 +157,10 @@ body{
 
 /* ── HERO ── */
 #hero{
-  position:relative;min-height:100vh;
+  position:relative;min-height:100vh;min-height:100svh;
   display:flex;flex-direction:column;justify-content:flex-end;
-  padding:var(--nav) var(--g) clamp(48px,7vh,80px);
+  /* bottom padding reserves a lane for the scroll hint so it never sits on the tags */
+  padding:var(--nav) var(--g) clamp(104px,14vh,140px);
   overflow:hidden;
 }
 .h-glow{
@@ -190,18 +215,31 @@ body{
 .h-sub-name-i{display:block}
 .h-photo{
   position:absolute;right:0;top:0;height:100%;
-  width:clamp(240px,36vw,520px);z-index:0;pointer-events:none;
+  width:clamp(300px,38vw,640px);z-index:0;pointer-events:none;
+  overflow:hidden;
 }
+/* oversized inner layer gives the scroll parallax room without exposing an edge */
+.h-photo-in{position:absolute;left:0;right:0;top:-8%;height:116%}
 .h-photo img{
-  width:100%;height:100%;object-fit:cover;object-position:center 15%;
+  position:absolute;inset:0;
+  width:100%;height:100%;object-fit:cover;object-position:50% 38%;
   display:block;
-  filter:grayscale(100%) brightness(.42) contrast(1.18);
 }
+.h-photo-base{filter:grayscale(100%) brightness(.55) contrast(1.12)}
+/* colour layer revealed by a cursor-following spotlight (desktop only) */
+.h-photo-color{
+  filter:brightness(.92) saturate(1.05);
+  --mx:50%;--my:40%;--r:0px;
+  -webkit-mask-image:radial-gradient(circle var(--r) at var(--mx) var(--my),#000 0%,#000 35%,transparent 100%);
+          mask-image:radial-gradient(circle var(--r) at var(--mx) var(--my),#000 0%,#000 35%,transparent 100%);
+}
+html.touch .h-photo-color{display:none}
 .h-photo::before{
   content:'';position:absolute;inset:0;z-index:1;
   background:
-    linear-gradient(to right,var(--bg) 0%,rgba(13,11,9,.5) 40%,transparent 75%),
-    linear-gradient(to top,var(--bg) 0%,transparent 38%);
+    linear-gradient(to right,var(--bg) 0%,rgba(13,11,9,.55) 30%,transparent 65%),
+    linear-gradient(to top,var(--bg) 0%,transparent 40%),
+    linear-gradient(to bottom,rgba(13,11,9,.55) 0%,transparent 18%);
 }
 .h-rule{
   width:100%;height:.6px;margin:clamp(18px,2vw,30px) 0;
@@ -224,9 +262,10 @@ body{
 }
 .h-tag:hover{color:var(--gold);border-color:rgba(201,168,76,.4)}
 .h-scrollhint{
-  position:absolute;bottom:clamp(18px,3vh,38px);left:50%;
+  position:absolute;bottom:clamp(14px,2.4vh,26px);left:50%;
   transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:7px;z-index:2;
+  text-decoration:none;
 }
 .h-scrollhint span{
   font-family:var(--mono);font-size:7px;
@@ -462,15 +501,29 @@ body{
 /* ── PROFILE PHOTO ── */
 .a-photo{
   position:relative;width:100%;
-  aspect-ratio:1/1.15;overflow:hidden;
+  aspect-ratio:3/4;overflow:hidden;
   border:.6px solid var(--brd2);
+  /* the studio shot has a white backdrop — multiply turns it into warm paper instead of a glaring white block */
+  background:#d9cfbd;
 }
 .a-photo img{
-  width:100%;height:100%;object-fit:cover;object-position:top center;
-  display:block;filter:grayscale(20%) brightness(.82);
+  width:100%;height:100%;object-fit:cover;object-position:50% 20%;
+  display:block;mix-blend-mode:multiply;
+  filter:grayscale(35%) contrast(1.04);
   transition:filter .55s,transform .65s cubic-bezier(.25,1,.5,1);
 }
-.a-photo:hover img{filter:grayscale(0%) brightness(1);transform:scale(1.04)}
+.a-photo:hover img{filter:grayscale(0%) contrast(1.06);transform:scale(1.035)}
+.a-photo-corner{
+  position:absolute;width:18px;height:18px;z-index:2;pointer-events:none;
+  border-color:var(--gold);border-style:solid;border-width:0;
+}
+.a-photo-corner.tl{top:10px;left:10px;border-top-width:1px;border-left-width:1px}
+.a-photo-corner.tr{top:10px;right:10px;border-top-width:1px;border-right-width:1px}
+.a-photo-tag{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:2;
+  font-family:var(--mono);font-size:7px;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(13,11,9,.55);white-space:nowrap;
+}
 .a-photo-cap{
   position:absolute;bottom:0;left:0;right:0;
   padding:14px 16px 12px;
@@ -538,11 +591,14 @@ footer{
   .sk-grid,.cert-grid{grid-template-columns:1fr}
   .e-item{grid-template-columns:68px 1fr}
   .h-foot{flex-direction:column;align-items:flex-start}
+  .h-tags{justify-content:flex-start}
   .n-links{gap:18px}
 }
 @media print{
   #nav,.cur,.cdot,#snav,#prog,.h-scrollhint,.mq{display:none!important}
 }
+html.reduce .h-glow,html.reduce .pl-glow,html.reduce .h-sline{animation:none}
+html.reduce #preloader{display:none}
 
 /* ── PRELOADER ── */
 #preloader{
@@ -667,8 +723,30 @@ footer{
   .n-links.open{max-height:500px}
   .n-links li{width:100%;text-align:center}
   .n-links a{display:block;padding:18px;font-size:11px}
-  .e-logo{display:none}
+
+  /* hero: full-width photo across the top instead of a 240px strip stretched to
+     full height (that strip is what made the old portrait look zoomed in) */
+  #hero{padding-bottom:44px}
+  .h-photo{width:100%;height:66%}
+  .h-photo-in{top:-6%;height:112%}
+  .h-photo img{object-position:46% 30%}
+  .h-photo-base{filter:grayscale(55%) sepia(12%) brightness(.68) contrast(1.06)}
+  .h-photo::before{
+    background:
+      linear-gradient(to top,var(--bg) 0%,rgba(13,11,9,.75) 22%,transparent 58%),
+      linear-gradient(to bottom,rgba(13,11,9,.7) 0%,transparent 20%);
+  }
+  .h-vert{top:calc(var(--nav) + 20px)}
+  .h-scrollhint{display:none}
 }
+
+/* ── TOUCH: logos that were hover-only become small static badges ── */
+html.touch .e-logo,html.touch .proj-logo{
+  top:clamp(22px,3vw,40px);transform:none;
+  width:52px;height:52px;opacity:.8;
+}
+html.touch .proj-logo{top:clamp(40px,5vw,72px);border-radius:12px}
+html.touch .e-content,html.touch .proj-item > div:nth-child(2){padding-right:64px}
 @media(max-width:600px){
   .cert-grid--docs{grid-template-columns:1fr}
   .proj-item{grid-template-columns:1fr}
@@ -899,8 +977,15 @@ footer{padding:0;display:block;border-top:none}
 <section id="hero">
   <div class="h-glow"></div>
   <div class="h-noise"></div>
-  <div class="h-photo">
-    <img src="Picture%20of%20Me/Manimtim_Ian_Karvey_L..jpg" alt="Ian Karvey L. Manimtim">
+  <div class="h-photo" id="hPhoto">
+    <div class="h-photo-in">
+      <img class="h-photo-base" src="Picture%20of%20Me/ian-casual-1080.jpg"
+           srcset="Picture%20of%20Me/ian-casual-640.jpg 640w, Picture%20of%20Me/ian-casual-1080.jpg 1080w"
+           sizes="(max-width:680px) 100vw, 38vw" alt="Ian Karvey L. Manimtim" fetchpriority="high">
+      <img class="h-photo-color" src="Picture%20of%20Me/ian-casual-1080.jpg"
+           srcset="Picture%20of%20Me/ian-casual-640.jpg 640w, Picture%20of%20Me/ian-casual-1080.jpg 1080w"
+           sizes="(max-width:680px) 100vw, 38vw" alt="" aria-hidden="true">
+    </div>
   </div>
   <div class="h-vert">Portfolio · 2026</div>
 
@@ -929,10 +1014,10 @@ footer{padding:0;display:block;border-top:none}
     </div>
   </div>
 
-  <div class="h-scrollhint" aria-hidden="true">
+  <a href="#about" class="h-scrollhint" aria-label="Scroll to About">
     <span>Scroll</span>
     <div class="h-sline"></div>
-  </div>
+  </a>
 </section>
 
 
@@ -966,7 +1051,12 @@ footer{padding:0;display:block;border-top:none}
     <div class="a-grid">
       <div>
         <div class="a-photo">
-          <img src="Picture%20of%20Me/Manimtim_Ian_Karvey_L..jpg" alt="Ian Karvey L. Manimtim" loading="lazy">
+          <img src="Picture%20of%20Me/ian-professional-1200.jpg"
+               srcset="Picture%20of%20Me/ian-professional-700.jpg 700w, Picture%20of%20Me/ian-professional-1200.jpg 1200w"
+               sizes="(max-width:900px) 92vw, 460px" alt="Ian Karvey L. Manimtim — professional portrait" loading="lazy">
+          <span class="a-photo-corner tl" aria-hidden="true"></span>
+          <span class="a-photo-corner tr" aria-hidden="true"></span>
+          <span class="a-photo-tag" aria-hidden="true">BSIT &middot; De La Salle Lipa</span>
           <div class="a-photo-cap">Ian Karvey &middot; 2026</div>
         </div>
         <div class="a-info">
@@ -980,7 +1070,7 @@ footer{padding:0;display:block;border-top:none}
           </div>
           <div class="a-row">
             <span class="a-lbl">Track</span>
-            <span class="a-val">BSIT — 3rd Year</span>
+            <span class="a-val">BSIT — 4th Year</span>
           </div>
           <div class="a-row">
             <span class="a-lbl">Focus</span>
@@ -1028,7 +1118,7 @@ footer{padding:0;display:block;border-top:none}
     <span class="hs-dot">·</span>
     <span class="hs-word">BSIT 2027</span>
     <span class="hs-dot">·</span>
-    <span class="hs-word">3rd Year</span>
+    <span class="hs-word">4th Year</span>
   </div>
 </div>
 
@@ -1433,17 +1523,42 @@ footer{padding:0;display:block;border-top:none}
 <script>
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-/* ── Cursor ── */
+const FINE   = !document.documentElement.classList.contains('touch');
+const REDUCE = document.documentElement.classList.contains('reduce');
+
+/* ── Smooth scroll (Lenis drives the wheel, GSAP's ticker drives Lenis) ── */
+const lenis = (window.Lenis && !REDUCE) ? new Lenis({ duration: 1.15, smoothWheel: true }) : null;
+if (lenis) {
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+}
+function scrollToTarget(target) {
+  if (lenis) lenis.scrollTo(target, { offset: target === 0 ? 0 : -62, duration: 1.3 });
+  else gsap.to(window, { scrollTo: { y: target, offsetY: 62 }, duration: REDUCE ? 0 : 1.1, ease: 'power3.inOut' });
+}
+
+/* ── Cursor (mouse only) ── */
 const $cur  = document.getElementById('cur');
 const $cdot = document.getElementById('cdot');
-document.addEventListener('mousemove', e => {
-  gsap.to($cdot, { x: e.clientX, y: e.clientY, duration: .07, ease: 'none' });
-  gsap.to($cur,  { x: e.clientX, y: e.clientY, duration: .28, ease: 'power2.out' });
-});
-document.querySelectorAll('a, .h-tag, .sk-card, .e-item, .cert-card').forEach(el => {
-  el.addEventListener('mouseenter', () => $cur.classList.add('hov'));
-  el.addEventListener('mouseleave', () => $cur.classList.remove('hov'));
-});
+if (FINE) {
+  const curX = gsap.quickTo($cur, 'x', { duration: .28, ease: 'power2.out' });
+  const curY = gsap.quickTo($cur, 'y', { duration: .28, ease: 'power2.out' });
+  const dotX = gsap.quickTo($cdot, 'x', { duration: .07, ease: 'none' });
+  const dotY = gsap.quickTo($cdot, 'y', { duration: .07, ease: 'none' });
+  document.addEventListener('mousemove', e => {
+    curX(e.clientX); curY(e.clientY); dotX(e.clientX); dotY(e.clientY);
+    if (!$cur.classList.contains('live')) {
+      gsap.set([$cur, $cdot], { x: e.clientX, y: e.clientY });
+      $cur.classList.add('live'); $cdot.classList.add('live');
+    }
+  });
+  document.documentElement.addEventListener('mouseleave', () => { $cur.classList.remove('live'); $cdot.classList.remove('live'); });
+  document.querySelectorAll('a, button, .h-tag, .sk-card, .e-item, .cert-card').forEach(el => {
+    el.addEventListener('mouseenter', () => $cur.classList.add('hov'));
+    el.addEventListener('mouseleave', () => $cur.classList.remove('hov'));
+  });
+}
 
 /* ── Scroll progress bar ── */
 ScrollTrigger.create({
@@ -1462,13 +1577,12 @@ ScrollTrigger.create({
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
-    gsap.to(window, { scrollTo: { y: a.getAttribute('href'), offsetY: 62 }, duration: 1.1, ease: 'power3.inOut' });
+    const href = a.getAttribute('href');
+    scrollToTarget(href === '#hero' ? 0 : href);
   });
 });
 document.querySelectorAll('.snd').forEach(d => {
-  d.addEventListener('click', () => {
-    gsap.to(window, { scrollTo: { y: d.dataset.target, offsetY: 62 }, duration: 1.1, ease: 'power3.inOut' });
-  });
+  d.addEventListener('click', () => scrollToTarget(d.dataset.target === '#hero' ? 0 : d.dataset.target));
 });
 
 /* ── Side-dot active on scroll ── */
@@ -1479,8 +1593,11 @@ document.querySelectorAll('.snd').forEach(d => {
     onEnterBack: () => activeDot(i),
   });
 });
+const navAnchors = document.querySelectorAll('.n-links a');
 function activeDot(i) {
   document.querySelectorAll('.snd').forEach((d, j) => d.classList.toggle('act', j === i));
+  /* nav links skip #hero, so they're offset by one */
+  navAnchors.forEach((a, j) => a.classList.toggle('act', j === i - 1));
 }
 
 /* ── Scramble ── */
@@ -1500,28 +1617,35 @@ function scramble(el, delay) {
 }
 
 /* ── Preloader ── */
-document.body.style.overflow = 'hidden';
+if (REDUCE) {
+  gsap.set('#preloader', { display: 'none' });
+  heroEntrance().progress(1);
+} else {
+  document.body.style.overflow = 'hidden';
+  if (lenis) lenis.stop();
 
-/* gentle float while bar loads */
-const plFloat = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut' } });
-plFloat
-  .to('#plI', { y: -10, duration: 1.9 }, 0)
-  .to('#plK', { y: -15, duration: 2.3 }, 0.4)
-  .to('#plM', { y: -10, duration: 1.7 }, 0.75);
+  /* gentle float while bar loads */
+  const plFloat = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut' } });
+  plFloat
+    .to('#plI', { y: -10, duration: 1.9 }, 0)
+    .to('#plK', { y: -15, duration: 2.3 }, 0.4)
+    .to('#plM', { y: -10, duration: 1.7 }, 0.75);
 
-gsap.timeline({
-  onComplete() { document.body.style.overflow = ''; heroEntrance(); }
-})
-.to('#plFill', { width: '100%', duration: 1.15, ease: 'power2.inOut' })
-.call(() => { plFloat.kill(); })
-.to('.pl-inner', { opacity: 0, y: -18, duration: 0.55, ease: 'power2.inOut' }, '+=0.15')
-.to('#preloader', { opacity: 0, duration: 0.45, ease: 'power2.in' }, '+=0.05')
-.set('#preloader', { display: 'none' });
+  gsap.timeline({
+    onComplete() { document.body.style.overflow = ''; if (lenis) lenis.start(); heroEntrance(); }
+  })
+  .to('#plFill', { width: '100%', duration: 1.15, ease: 'power2.inOut' })
+  .call(() => { plFloat.kill(); })
+  .to('.pl-inner', { opacity: 0, y: -18, duration: 0.55, ease: 'power2.inOut' }, '+=0.15')
+  .to('#preloader', { opacity: 0, duration: 0.45, ease: 'power2.in' }, '+=0.05')
+  .set('#preloader', { display: 'none' });
+}
 
 /* ── HERO entrance (fires after preloader) ── */
 function heroEntrance() {
-  gsap.timeline({ defaults: { ease: 'expo.out' } })
-    .from('.h-photo',      { opacity: 0, scale: 1.06, duration: 1.6, ease: 'power2.out' }, 0)
+  return gsap.timeline({ defaults: { ease: 'expo.out' } })
+    .fromTo('#hPhoto',     { clipPath: 'inset(0% 0% 0% 100%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.5, ease: 'expo.inOut' }, 0)
+    .from('.h-photo img',  { scale: 1.18, duration: 2.2, ease: 'power3.out' }, .1)
     .from('#nav',          { y: -42, opacity: 0, duration: .85 }, 0)
     .from('#snav',         { opacity: 0, x: 12, duration: .7 }, .4)
     .from('.h-hello-i',    { yPercent: 115, duration: .9 }, .3)
@@ -1544,17 +1668,18 @@ function heroEntrance() {
 ].forEach(({ id, dir }) => {
   const el = document.querySelector(id);
   if (!el) return;
-  const vw = el.scrollWidth;
+  /* function values re-measure on refresh, so web-font swaps don't leave stale widths */
   gsap.fromTo(el,
-    { x: dir * vw * 0.12 },
+    { x: () => dir * el.scrollWidth * 0.12 },
     {
-      x: dir * -vw * 0.12,
+      x: () => dir * -el.scrollWidth * 0.12,
       ease: 'none',
       scrollTrigger: {
         trigger: el.closest('.hscroll'),
         start: 'top bottom',
         end: 'bottom top',
         scrub: 1.4,
+        invalidateOnRefresh: true,
       },
     }
   );
@@ -1668,12 +1793,30 @@ document.querySelectorAll('.cert-hex').forEach(h => {
   });
 });
 
-/* ── Hero photo parallax scrub ── */
-gsap.to('.h-photo img', {
-  y: 70,
+/* ── Hero photo parallax scrub (inner layer is oversized, so no edge is exposed) ── */
+gsap.to('.h-photo-in', {
+  yPercent: 6,
   ease: 'none',
   scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
 });
+
+/* ── Hero colour spotlight: cursor reveals the full-colour photo through the greyscale ── */
+const hPhoto = document.getElementById('hPhoto');
+const hColor = document.querySelector('.h-photo-color');
+if (FINE && hPhoto && hColor) {
+  const spot = { r: 0 };
+  const paintR = () => hColor.style.setProperty('--r', spot.r + 'px');
+  document.getElementById('hero').addEventListener('mousemove', e => {
+    const r = hColor.getBoundingClientRect();
+    hColor.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    hColor.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    const over = e.clientX >= hPhoto.getBoundingClientRect().left - 120;
+    gsap.to(spot, { r: over ? 230 : 0, duration: over ? .7 : .5, ease: 'power3.out', overwrite: true, onUpdate: paintR });
+  });
+  document.getElementById('hero').addEventListener('mouseleave', () => {
+    gsap.to(spot, { r: 0, duration: .5, ease: 'power3.out', overwrite: true, onUpdate: paintR });
+  });
+}
 
 /* ── Hero fill text subtle scrub (pulls away as you scroll off) ── */
 gsap.to('.h-fill-i', {
@@ -1687,8 +1830,8 @@ gsap.to('.h-stroke-i', {
   scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
 });
 
-/* ── 3D card tilt ── */
-document.querySelectorAll('.sk-card, .cert-card').forEach(card => {
+/* ── 3D card tilt (mouse only — on touch it left cards stuck tilted) ── */
+if (FINE) document.querySelectorAll('.sk-card, .cert-card').forEach(card => {
   card.addEventListener('mousemove', e => {
     const r = card.getBoundingClientRect();
     const mx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
@@ -1701,7 +1844,7 @@ document.querySelectorAll('.sk-card, .cert-card').forEach(card => {
 });
 
 /* ── Magnetic cursor on small elements ── */
-document.querySelectorAll('.h-tag, .proj-badge, .e-badge, .cert-link').forEach(el => {
+if (FINE) document.querySelectorAll('.h-tag, .proj-badge, .e-badge, .cert-link').forEach(el => {
   el.addEventListener('mousemove', e => {
     const r = el.getBoundingClientRect();
     const x = (e.clientX - r.left - r.width / 2) * 0.3;
@@ -1763,7 +1906,11 @@ document.querySelectorAll('.cert-img-wrap img').forEach(img => {
 });
 document.getElementById('lbClose').addEventListener('click', closeLb);
 document.getElementById('lbBackdrop').addEventListener('click', closeLb);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (lb.style.display === 'flex') closeLb();
+  if (navLinks && navLinks.classList.contains('open')) toggleMenu(false);
+});
 
 /* ── Copy email to clipboard + toast ── */
 gsap.set('#toast', { xPercent: -50, y: 20, opacity: 0 });
@@ -1771,14 +1918,16 @@ document.querySelectorAll('a[href^="mailto:"]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
     const email = a.getAttribute('href').replace('mailto:', '');
-    navigator.clipboard.writeText(email).then(() => {
+    /* clipboard is blocked on some mobile browsers — fall back to opening the mail app */
+    if (!navigator.clipboard) { window.location.href = a.href; return; }
+    navigator.clipboard.writeText(email).catch(() => { window.location.href = a.href; return Promise.reject(); }).then(() => {
       const t = document.getElementById('toast');
       t.textContent = 'Copied — ' + email;
       gsap.killTweensOf(t);
       gsap.timeline()
         .to(t, { opacity: 1, y: 0, duration: .3, ease: 'power2.out' })
         .to(t, { opacity: 0, y: 20, duration: .3, ease: 'power2.in', delay: 2.4 });
-    });
+    }).catch(() => {});
   });
 });
 
@@ -1789,9 +1938,7 @@ ScrollTrigger.create({
   onEnter:     () => gsap.to('#totop', { opacity: 1, y: 0, pointerEvents: 'auto', duration: .4, ease: 'power2.out' }),
   onLeaveBack: () => gsap.to('#totop', { opacity: 0, y: 10, pointerEvents: 'none', duration: .3 }),
 });
-document.getElementById('totop').addEventListener('click', () => {
-  gsap.to(window, { scrollTo: 0, duration: 1.2, ease: 'power3.inOut' });
-});
+document.getElementById('totop').addEventListener('click', () => scrollToTarget(0));
 
 /* ── About photo parallax ── */
 gsap.to('.a-photo', {
@@ -1822,23 +1969,25 @@ document.querySelectorAll('.sk-bar-fill').forEach(fill => {
 /* ── Mobile hamburger ── */
 const ham = document.getElementById('ham');
 const navLinks = document.getElementById('navLinks');
+function toggleMenu(open) {
+  ham.classList.toggle('open', open);
+  navLinks.classList.toggle('open', open);
+  ham.setAttribute('aria-expanded', open);
+  /* the glass bar must be on while the menu is open, even at the very top of the page */
+  document.getElementById('nav').classList.toggle('menu', open);
+  if (open) gsap.fromTo(navLinks.querySelectorAll('li'), { y: -14, opacity: 0 }, { y: 0, opacity: 1, stagger: .05, duration: .45, ease: 'power3.out', delay: .08 });
+}
 if (ham && navLinks) {
-  ham.addEventListener('click', () => {
-    ham.classList.toggle('open');
-    navLinks.classList.toggle('open');
-  });
-  navLinks.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      ham.classList.remove('open');
-      navLinks.classList.remove('open');
-    });
-  });
+  ham.setAttribute('aria-expanded', 'false');
+  ham.setAttribute('aria-controls', 'navLinks');
+  ham.addEventListener('click', () => toggleMenu(!navLinks.classList.contains('open')));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleMenu(false)));
 }
 
 /* ── Project logo hover reveal ── */
 const projLogo = document.querySelector('.proj-logo');
 const projItem = document.querySelector('.proj-item');
-if (projLogo && projItem) {
+if (FINE && projLogo && projItem) {
   gsap.set(projLogo, { opacity: 0, scale: 0.3, rotation: -40, x: 60 });
   projItem.addEventListener('mouseenter', () => {
     gsap.killTweensOf([projLogo, projItem]);
@@ -1854,7 +2003,7 @@ if (projLogo && projItem) {
 }
 
 /* ── Education logo hover reveal ── */
-document.querySelectorAll('.e-item').forEach(item => {
+if (FINE) document.querySelectorAll('.e-item').forEach(item => {
   const logo = item.querySelector('.e-logo');
   if (!logo) return;
   gsap.set(logo, { opacity: 0, scale: 0.3, rotation: -45, x: 60 });
@@ -1870,6 +2019,10 @@ document.querySelectorAll('.e-item').forEach(item => {
     gsap.to(logo, { opacity: 0, scale: 0.3, rotation: 30, x: 60, duration: 0.38, ease: 'power3.in' });
   });
 });
+
+/* ── Re-measure every trigger once web fonts and images have settled ── */
+if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
+window.addEventListener('load', () => ScrollTrigger.refresh());
 </script>
 </body>
 </html>
