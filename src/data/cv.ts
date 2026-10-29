@@ -16,18 +16,13 @@ export const cv = {
     ['Portfolio', 'karveyportfolio.vercel.app'],
   ],
 
-  summary:
-    'Fourth-year BSIT student majoring in System Development at De La Salle Lipa who builds complete systems end to end — from database design and security to the user interface. Sole developer of Barangay Safety, a Flutter and Supabase incident-reporting platform for barangays in Lipa City, and of two commissioned Python desktop applications for clients. Detail-oriented and quick to learn. Seeking a Full-Stack Developer or Software Developer OJT placement, while open to other software, systems, web or mobile roles.',
+  summary: profile.summary,
 
+  /* same groups as the website's Skills section — edit them in profile.ts */
   skills: [
-    ['Mobile Development', 'Flutter, Dart, Provider, maps and geolocation, push notifications'],
-    ['Backend & Database', 'Supabase, PostgreSQL, SQL, row-level security, pg_cron, Edge Functions, Node.js, REST APIs'],
-    ['Desktop & Data', 'Python, Tkinter, Matplotlib and CSV data handling'],
-    ['Web Development', 'HTML, CSS, JavaScript, Astro, Tailwind CSS, Next.js, Bootstrap, responsive design, Vercel and Firebase Hosting'],
-    ['Data, Tools & Design', 'Visual Studio, Git and GitHub, Adobe tools, UI/UX design and Figma'],
-    ['AI Tools', 'ChatGPT, Microsoft Copilot, Claude, Gemini (used for automation, SQL/query support, and system development)'],
-    ['Soft Skills & Languages', 'Quick learner, team player, detail-oriented, creative problem solver · Tagalog, English'],
-  ],
+    ...profile.skillGroups,
+    ['Soft Skills & Languages', `${profile.strengths.join(', ').toLowerCase().replace(/^./, c => c.toUpperCase())} · ${profile.languages.join(', ')}`],
+  ] as [string, string][],
 
   experience: [
     {
@@ -37,6 +32,7 @@ export const cv = {
         {
           title: 'GMD Bakery — Order and Production Planner',
           date: 'October 2026',
+          href: '/projects/gmd-bakery-planner/',
           points: [
             'Replaced handwritten order slips with a Python/Tkinter app for orders, inventory, daily sales, reports and Matplotlib charts.',
             'Built a production plan that computes, per day, the pieces still to bake after subtracting stock on hand, with a printable bake sheet.',
@@ -46,6 +42,7 @@ export const cv = {
         {
           title: 'Failed Delivery & Redelivery Pattern Analyzer',
           date: 'October 2026',
+          href: '/projects/failed-delivery-analyzer/',
           points: [
             'Built desktop and terminal versions on one shared engine that track delivery attempts and redeliveries, success rate by area, top failure reasons and trends, with four Matplotlib charts.',
             'Enforced data-integrity rules (e.g. no attempts after a successful delivery) and covered them with 79 automated tests.',

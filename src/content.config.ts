@@ -12,6 +12,7 @@ const projects = defineCollection({
     order: z.number(),                   // position on the home page (1 = first)
     type: z.string(),                    // e.g. "Capstone Project", "Client Commission"
     year: z.number(),
+    period: z.string().optional(),       // the dates shown on the CV, e.g. "September 2025 – October 2026"
     status: z.string(),
     role: z.string(),
     client: z.string().optional(),

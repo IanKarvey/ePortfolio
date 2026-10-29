@@ -5,6 +5,7 @@ summary: A desktop app that replaced handwritten order slips at GMD Bakery. It r
 order: 2
 type: Client Commission
 year: 2026
+period: October 2026
 status: Delivered
 role: Sole Developer
 client: GMD Bakery

@@ -20,7 +20,7 @@ const meta = [
   ...(d.client ? [['Client', d.client]] : []),
   ['Platform', d.platform],
   ['Status', d.status],
-  ['Year', String(d.year)],
+  [d.period ? 'Timeline' : 'Year', d.period ?? String(d.year)],
 ];
 ---
 <Base title={`${d.title} — Ian Karvey L. Manimtim`} description={d.tagline} image={d.logo}>

@@ -5,6 +5,7 @@ summary: A data tool for a delivery operation. It records every delivery attempt
 order: 3
 type: Client Commission
 year: 2026
+period: October 2026
 status: Delivered
 role: Sole Developer
 platform: Windows desktop · Terminal

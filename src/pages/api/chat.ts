@@ -29,7 +29,7 @@ async function buildFacts() {
   const projectText = projects.map(p => {
     const d = p.data;
     return [
-      `### ${d.title} (${d.type}, ${d.year}, status: ${d.status})`,
+      `### ${d.title} (${d.type}, ${d.period ?? d.year}, status: ${d.status})`,
       d.client ? `Client: ${d.client}` : '',
       `Role: ${d.role}. Platform: ${d.platform}.`,
       `Summary: ${d.summary}`,
@@ -47,12 +47,11 @@ Name: ${profile.name} (goes by ${profile.goesBy})
 Based in: ${profile.location}
 Headline: ${profile.headline}
 Availability: ${profile.availability}. ${profile.availabilityDetail}
-Career objective: ${profile.objective}
+Professional summary: ${profile.summary}
 Education:\n- ${profile.education.join('\n- ')}
 Certifications:\n- ${profile.certifications.join('\n- ')}
-Skills:\n- ${profile.skills.join('\n- ')}
+Skills:\n- ${profile.skillGroups.map(([k, v]) => `${k}: ${v}`).join('\n- ')}
 Strengths: ${profile.strengths.join(', ')}
-Interests outside tech: ${profile.interests.join(', ')}
 Languages: ${profile.languages.join(', ')}
 Contact: LinkedIn ${profile.contact.linkedin}; personal email ${profile.contact.personalEmail}; school email ${profile.contact.schoolEmail}; phone ${profile.contact.phone}; Facebook ${profile.contact.facebook}
 

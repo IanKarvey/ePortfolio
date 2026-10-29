@@ -2,7 +2,7 @@
 import { gsap, ScrollTrigger, FINE, REDUCE, lenis, scrollToTarget } from './core.js';
 
 /* ── Side-dot active on scroll ── */
-['#hero','#about','#education','#skills','#projects','#certs'].forEach((id, i) => {
+['#hero','#about','#education','#skills','#experience','#projects','#certs'].forEach((id, i) => {
   ScrollTrigger.create({
     trigger: id, start: 'top 55%', end: 'bottom 55%',
     onEnter:     () => activeDot(i),
@@ -186,6 +186,16 @@ document.querySelectorAll('.sk-card').forEach((el, i) => {
   });
 });
 
+/* ── Experience ── */
+ScrollTrigger.create({
+  trigger: '#experience', start: 'top 76%', once: true,
+  onEnter() {
+    scramble(document.querySelector('#experience .sl'));
+    gsap.from('#experience .st-i', { yPercent: 100, duration: 1, ease: 'expo.out', delay: .1 });
+    gsap.from('.xp-card', { y: 50, opacity: 0, duration: .9, stagger: .14, ease: 'power3.out', delay: .2 });
+  },
+});
+
 /* ── Projects ── */
 ScrollTrigger.create({
   trigger: '#projects', start: 'top 76%', once: true,
@@ -307,7 +317,7 @@ if (FINE) document.querySelectorAll('.h-tag, .proj-badge, .e-badge, .cert-link')
 });
 
 /* ── Typewriter role cycle ── */
-const roles = ['Web Developer','Systems Developer','Mobile Engineer','UI / UX Design','Visual Artist'];
+const roles = ['System Development Student', 'Aspiring Full-Stack Developer', 'Web & Mobile Development', 'UI / UX Design'];
 let ri = 0, ci = 0, del = false;
 const roleEl = document.getElementById('hRole');
 function typeRole() {
@@ -367,15 +377,6 @@ gsap.to('.a-photo', {
   scrollTrigger: { trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: 1.4 },
 });
 
-/* ── Skill level bars ── */
-document.querySelectorAll('.sk-bar-fill').forEach(fill => {
-  ScrollTrigger.create({
-    trigger: fill.closest('.sk-card'), start: 'top 88%', once: true,
-    onEnter() {
-      gsap.to(fill, { width: fill.dataset.pct + '%', duration: 1.2, ease: 'power2.out', delay: .1 });
-    },
-  });
-});
 
 
 /* ── Project logo hover reveal ── */

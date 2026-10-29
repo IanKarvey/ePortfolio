@@ -1,14 +1,16 @@
-/* Public facts about Ian — the AI chat answers only from these and the project files.
+/* Public facts about Ian, kept in line with his CV. The AI chat answers only from these and the
+   project files; the CV (src/data/cv.ts) reads its skill groups from here so they never drift.
    Deliberately excludes private CV fields (birth date, sex, marital status). */
 export const profile = {
   name: 'Ian Karvey L. Manimtim',
   goesBy: 'Ian',
   location: 'Talisay, Batangas, Philippines',
-  headline: 'BSIT student at De La Salle Lipa — web, mobile and systems developer.',
+  headline: 'BSIT student at De La Salle Lipa, majoring in System Development.',
   availability: 'Open to OJT & Internship Opportunities',
   availabilityDetail: 'Ian is actively looking for an OJT (on-the-job training) or internship placement as part of his BSIT degree at De La Salle Lipa (Class of 2027), and is happy to discuss schedules and requirements.',
-  objective:
-    'To build systems that are as thoughtful as they are functional — applying growing skills in web, mobile and systems development toward a reputed organization where he can contribute effectively, keep learning, and grow professionally.',
+  /* the CV's Professional Summary */
+  summary:
+    'Fourth-year BSIT student majoring in System Development at De La Salle Lipa who builds complete systems end to end — from database design and security to the user interface. Sole developer of Barangay Safety, a Flutter and Supabase incident-reporting platform for barangays in Lipa City, and of two commissioned Python desktop applications for clients. Detail-oriented and quick to learn. Seeking a Full-Stack Developer or Software Developer OJT placement, while open to other software, systems, web or mobile roles.',
   education: [
     'Bachelor of Science in Information Technology, Major in System Development — De La Salle Lipa, 2023–2027 (currently 4th year)',
     'Senior High School — San Guillermo Academy, 2021–2023 — awards: With Honors; Best in Research; With Honors in Work Immersion',
@@ -20,16 +22,16 @@ export const profile = {
     'Skills to Succeed Academy, 58 modules — Accenture (March 2026)',
     'DevRoutes: Learning How to Learn with Roadmaps — JPCS, De La Salle chapter (January 2026)',
   ],
-  skills: [
-    'Mobile development with Flutter and Dart',
-    'Backend and databases: Supabase, PostgreSQL, SQL, row-level security, Node.js, REST APIs',
-    'Python desktop apps with Tkinter, data analysis and Matplotlib charts',
-    'C++ and software architecture fundamentals',
-    'Data analytics and automation: Power BI, UiPath',
-    'Digital design with Adobe tools — layout, typography, visual design',
-  ],
+  /* the CV's Key Skills, group by group */
+  skillGroups: [
+    ['Mobile Development', 'Flutter, Dart, Provider, maps and geolocation, push notifications'],
+    ['Backend & Database', 'Supabase, PostgreSQL, SQL, row-level security, pg_cron, Edge Functions, Node.js, REST APIs, error handling'],
+    ['Desktop & Data', 'Python, C++, Tkinter, Matplotlib and CSV data handling'],
+    ['Web Development', 'HTML, CSS, JavaScript, Astro, Tailwind CSS, Next.js, Bootstrap, responsive design, Vercel and Firebase Hosting'],
+    ['Data, Tools & Design', 'Power BI, UiPath (RPA), Visual Studio, Git and GitHub, Adobe tools, UI/UX and visual design, layout and Figma'],
+    ['AI Tools', 'ChatGPT, Microsoft Copilot, Claude, Gemini (used for automation, SQL/query support, and system development)'],
+  ] as [string, string][],
   strengths: ['Quick learner', 'Team player', 'Detail-oriented', 'Creative problem solver'],
-  interests: ['Music', 'Dance', 'Visual art'],
   languages: ['Tagalog', 'English'],
   contact: {
     personalEmail: 'ianmanimtim07.4@gmail.com',

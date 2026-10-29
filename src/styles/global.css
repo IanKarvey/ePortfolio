@@ -801,8 +801,31 @@ html.touch .proj-item > div:nth-child(2){padding-right:64px}
   font-weight:900;color:var(--gold);letter-spacing:-.03em;line-height:1;
 }
 .a-stat-l{
-  display:block;font-family:var(--mono);font-size:7px;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--fg3);margin-top:5px;
+  display:block;font-family:var(--mono);font-size:8px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--fg2);margin-top:7px;
+}
+/* ── EXPERIENCE ── */
+#experience{position:relative;overflow:hidden}
+.xp{position:relative;z-index:1}
+.xp-role{font-family:var(--serif);font-weight:700;font-size:clamp(18px,2vw,24px);color:var(--fg);margin-bottom:clamp(16px,2vw,24px);display:flex;align-items:center;gap:12px}
+.xp-role::before{content:'';width:22px;height:1px;background:var(--gold);flex-shrink:0}
+.xp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(12px,1.6vw,20px)}
+.xp-card{display:flex;flex-direction:column;padding:clamp(20px,2.4vw,32px);border:.7px solid var(--brd2);border-radius:6px;background:var(--card);
+  transition:border-color .4s,transform .5s cubic-bezier(.25,1,.5,1)}
+.xp-card:hover{border-color:rgba(219,185,94,.35);transform:translateY(-4px)}
+.xp-date{align-self:flex-start;font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#14110d;background:var(--gold);padding:4px 9px;border-radius:2px}
+.xp-title{font-family:var(--serif);font-weight:900;font-size:clamp(20px,2.2vw,28px);line-height:1.1;color:var(--fg);margin:14px 0 12px}
+.xp-points{list-style:none;display:flex;flex-direction:column;gap:8px}
+.xp-points li{position:relative;padding-left:16px;font-family:var(--sans);font-size:13px;font-weight:300;line-height:1.7;color:var(--fg2)}
+.xp-points li::before{content:'';position:absolute;left:0;top:.75em;width:6px;height:1px;background:var(--gold)}
+.xp-link{margin-top:auto;padding-top:18px;font-family:var(--sans);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);text-decoration:none;transition:letter-spacing .3s}
+.xp-link:hover{letter-spacing:.24em}
+.sk-soft{position:relative;z-index:1;margin-top:18px;font-family:var(--sans);font-size:12.5px;font-weight:300;line-height:1.8;color:var(--fg3)}
+.sk-soft b{font-family:var(--mono);font-size:8.5px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-right:6px}
+.sk-soft span{margin:0 8px;color:var(--fg3)}
+.a-stat-s{
+  display:block;margin-top:5px;font-family:var(--sans);font-size:11px;font-weight:300;
+  line-height:1.45;color:var(--fg3);
 }
 
 /* ── SKILL LEVEL BAR ── */

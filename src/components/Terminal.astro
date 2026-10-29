@@ -108,7 +108,7 @@ const data = JSON.stringify({ projects, profile });
       if (!a || !p) return print({ t: 'usage: demo <project>', c: 'term-err' });
       print(`launching ${p.title} demo…`); setTimeout(() => location.href = `/projects/${p.id}/#demo`, 350);
     }},
-    skills: { help: 'what Ian works with', run: () => profile.skills.forEach((s: string) => print({ t: '▸ ', c: 'term-gold' }, s)) },
+    skills: { help: 'what Ian works with', run: () => profile.skillGroups.forEach(([k, v]: [string, string]) => print({ t: '▸ ', c: 'term-gold' }, { t: k + ': ', c: 'term-hi' }, v)) },
     education: { help: 'schools', run: () => profile.education.forEach((s: string) => print({ t: '▸ ', c: 'term-gold' }, s)) },
     certs: { help: 'certifications', run: () => profile.certifications.forEach((s: string) => print({ t: '✓ ', c: 'term-ok' }, s)) },
     contact: { help: 'ways to reach Ian', run: () => {
@@ -130,9 +130,9 @@ const data = JSON.stringify({ projects, profile });
         else { aiTurns.pop(); print({ t: d.error || 'no answer', c: 'term-err' }); }
       } catch { wait.remove(); aiTurns.pop(); print({ t: 'network error', c: 'term-err' }); }
     }},
-    goto: { help: 'goto <about|education|skills|projects|certs>', run: a => {
-      const id = ['about', 'education', 'skills', 'projects', 'certs'].find(s => s.startsWith(a.toLowerCase()));
-      if (!a || !id) return print({ t: 'usage: goto about|education|skills|projects|certs', c: 'term-err' });
+    goto: { help: 'goto <about|education|skills|experience|projects|certs>', run: a => {
+      const id = ['about', 'education', 'skills', 'experience', 'projects', 'certs'].find(s => s.startsWith(a.toLowerCase()));
+      if (!a || !id) return print({ t: 'usage: goto about|education|skills|experience|projects|certs', c: 'term-err' });
       close(); location.href = `/#${id}`;
     }},
     ls: { help: '_', run: () => print(...projects.map((p: any) => ({ t: p.id + '/  ', cmd: `open ${p.id}`, c: 'term-k' }))) },

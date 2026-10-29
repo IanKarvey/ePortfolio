@@ -10,7 +10,7 @@ import { profile } from '../data/profile';
 interface Props { title?: string; description?: string; image?: string; }
 const {
   title = 'Ian Karvey L. Manimtim — Portfolio',
-  description = 'BSIT student at De La Salle Lipa — Web Developer, Systems Developer & Mobile Engineer based in Talisay, Batangas, Philippines.',
+  description = 'Portfolio of Ian Karvey L. Manimtim — BSIT student majoring in System Development at De La Salle Lipa, from Talisay, Batangas. Open to OJT and internship opportunities.',
   image = '/Picture%20of%20Me/ian-professional-1200.jpg',
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -54,7 +54,7 @@ const onHome = Astro.url.pathname === '/';
   name: profile.name,
   url: Astro.site?.toString(),
   image: new URL('/Picture%20of%20Me/ian-professional-1200.jpg', Astro.site).toString(),
-  jobTitle: 'BSIT Student · Web, Mobile & Systems Developer',
+  jobTitle: 'BSIT Student — System Development',
   alumniOf: 'De La Salle Lipa',
   address: { '@type': 'PostalAddress', addressLocality: 'Talisay', addressRegion: 'Batangas', addressCountry: 'PH' },
   sameAs: [profile.contact.linkedin, profile.contact.facebook],
@@ -80,6 +80,7 @@ const onHome = Astro.url.pathname === '/';
     <li><a href="/#about">About</a></li>
     <li><a href="/#education">Education</a></li>
     <li><a href="/#skills">Skills</a></li>
+    <li><a href="/#experience">Experience</a></li>
     <li><a href="/#projects">Projects</a></li>
     <li><a href="/#certs">Certificates</a></li>
   </ul>

@@ -2,8 +2,26 @@
 import Base from '../layouts/Base.astro';
 import SkillProof from '../components/SkillProof.astro';
 import { getCollection } from 'astro:content';
+import { profile } from '../data/profile';
+import { cv } from '../data/cv';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+/* skill cards: the CV's groups, a one-line description each, and the items as pills */
+const skillText: Record<string, string> = {
+  'Mobile Development': 'Cross-platform apps in Flutter — used to build the resident and official apps of Barangay Safety.',
+  'Backend & Database': 'Secure data and server logic — row-level security, scheduled jobs and edge functions behind Barangay Safety.',
+  'Desktop & Data': 'Desktop applications with charts and dependable file-based data — delivered to two clients.',
+  'Web Development': 'Responsive websites and web dashboards, from static sites to deployed web apps.',
+  'Data, Tools & Design': 'Reports and automation with Power BI and UiPath, version control with Git, and interface design in Figma and Adobe tools.',
+  'AI Tools': 'Used for automation, SQL/query support, and system development.',
+};
+const skillCards = profile.skillGroups.map(([name, items]) => ({
+  name,
+  text: skillText[name] ?? '',
+  pills: items.replace(/\s*\([^)]*\)/, '').split(/,\s*|\s+and\s+/).map(s => s.trim()).filter(Boolean)
+    .map(s => (s.includes('_') ? s : s[0].toUpperCase() + s.slice(1))),   // "maps" → "Maps", but pg_cron stays
+}));
 ---
 <Base>
 <link slot="head" rel="preload" as="image" href="/Picture%20of%20Me/ian-casual-1080.jpg" imagesrcset="/Picture%20of%20Me/ian-casual-640.jpg 640w, /Picture%20of%20Me/ian-casual-1080.jpg 1080w" imagesizes="(max-width:680px) 100vw, 38vw">
@@ -26,6 +44,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
   <div class="snd" data-target="#about"></div>
   <div class="snd" data-target="#education"></div>
   <div class="snd" data-target="#skills"></div>
+  <div class="snd" data-target="#experience"></div>
   <div class="snd" data-target="#projects"></div>
   <div class="snd" data-target="#certs"></div>
 </div>
@@ -68,9 +87,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
         <span class="h-tag">Systems Dev</span>
         <span class="h-tag">Mobile</span>
         <span class="h-tag">UI/UX</span>
-        <span class="h-tag">Music</span>
-        <span class="h-tag">Dance</span>
-        <span class="h-tag">Visual Art</span>
+        <span class="h-tag">Database</span>
       </div>
     </div>
   </div>
@@ -85,17 +102,15 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 <!-- ════ STRIP 1 (scroll-driven) ════ -->
 <div class="hscroll" aria-hidden="true">
   <div class="hscroll-inner" id="hs1">
-    <span class="hs-word">Web Developer</span>
+    <span class="hs-word">Web Development</span>
     <span class="hs-dot">·</span>
-    <span class="hs-word">Systems Dev</span>
+    <span class="hs-word">System Development</span>
     <span class="hs-dot">·</span>
     <span class="hs-word">UI / UX</span>
     <span class="hs-dot">·</span>
     <span class="hs-word">Mobile</span>
     <span class="hs-dot">·</span>
     <span class="hs-word">Batangas PH</span>
-    <span class="hs-dot">·</span>
-    <span class="hs-word">Visual Art</span>
   </div>
 </div>
 
@@ -140,28 +155,33 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
         </div>
       </div>
       <div class="a-paras">
-        <p class="a-p lead">I build systems that are as thoughtful as they are functional — bridging technical rigor with genuine empathy for the end user.</p>
+        <p class="a-p lead">I'm a fourth-year BSIT student majoring in System Development who builds complete systems end to end — from database design and security to the user interface.</p>
         <p class="a-p">My name is Ian Karvey L. Manimtim, currently pursuing a Bachelor of Science in Information Technology at De La Salle Lipa — one of CALABARZON's distinguished institutions known for strong academic standards and commitment to producing competent technology professionals.</p>
         <p class="a-p">Born and raised in Quiling, Talisay, Batangas. The values from growing up in a tight-knit community continue to shape how I approach work and relationships — with deep respect, accountability, and a collaborative spirit.</p>
-        <p class="a-p">My primary focus lies in Web Development and Systems Development. Outside of technology, I create music, engage in dance, and explore visual art — pursuits that sharpen my eye for design and naturally complement my frontend work.</p>
+        <p class="a-p">I'm the sole developer of Barangay Safety, a Flutter and Supabase incident-reporting platform for barangays in Lipa City, and of two commissioned Python desktop applications for clients. Detail-oriented and quick to learn, I'm seeking a Full-Stack Developer or Software Developer OJT placement, while open to other software, systems, web or mobile roles.</p>
       </div>
     </div>
+    <!-- every number is something on the CV, with a caption saying exactly what it counts -->
     <div class="a-stats">
       <div class="a-stat">
+        <span class="a-stat-n" data-count="3">0</span>
+        <span class="a-stat-l">Systems built</span>
+        <span class="a-stat-s">Capstone + 2 client apps, all solo</span>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-n" data-count="2">0</span>
+        <span class="a-stat-l">Client commissions</span>
+        <span class="a-stat-s">Delivered October 2026</span>
+      </div>
+      <div class="a-stat">
         <span class="a-stat-n" data-count="5">0</span>
-        <span class="a-stat-l">Certificates</span>
+        <span class="a-stat-l">Certifications</span>
+        <span class="a-stat-s">Cisco · Python Institute · Accenture · JPCS</span>
       </div>
       <div class="a-stat">
         <span class="a-stat-n" data-count="3">0</span>
-        <span class="a-stat-l">Years Studied</span>
-      </div>
-      <div class="a-stat">
-        <span class="a-stat-n" data-count="6">0</span>
-        <span class="a-stat-l">Skill Areas</span>
-      </div>
-      <div class="a-stat">
-        <span class="a-stat-n" data-count="3">0</span>
-        <span class="a-stat-l">Projects Shipped</span>
+        <span class="a-stat-l">Senior High awards</span>
+        <span class="a-stat-s">With Honors · Best in Research · Work Immersion</span>
       </div>
     </div>
   </div>
@@ -253,69 +273,18 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
     <div class="sl">Competencies &amp; Expertise</div>
     <div class="st"><span class="st-i">Skills</span></div>
     <SkillProof />
+    <!-- the CV's Key Skills groups (src/data/profile.ts), one card each -->
     <div class="sk-grid">
-
-      <div class="sk-card">
-        <div class="sk-num">01</div>
-        <div class="sk-name">Mobile Application Development</div>
-        <div class="sk-text">Full-stack mobile development using Flutter — covering UI design through backend integration with continuous attention to usability.</div>
-        <div class="sk-pills">
-          <span class="sk-pill">Flutter</span><span class="sk-pill">Dart</span><span class="sk-pill">UI Design</span><span class="sk-pill">Backend Integration</span>
+      {skillCards.map((c, i) => (
+        <div class="sk-card">
+          <div class="sk-num">{String(i + 1).padStart(2, '0')}</div>
+          <div class="sk-name">{c.name}</div>
+          <div class="sk-text">{c.text}</div>
+          <div class="sk-pills">{c.pills.map(p => <span class="sk-pill">{p}</span>)}</div>
         </div>
-        <div class="sk-bar"><div class="sk-bar-fill" data-pct="82"></div></div>
-      </div>
-
-      <div class="sk-card">
-        <div class="sk-num">02</div>
-        <div class="sk-name">Application &amp; Systems Dev</div>
-        <div class="sk-text">Functional systems via coursework and independent projects — experienced in C++ and Node.js with a growing foundation in software architecture.</div>
-        <div class="sk-pills">
-          <span class="sk-pill">C++</span><span class="sk-pill">Node.js</span><span class="sk-pill">Software Architecture</span>
-        </div>
-        <div class="sk-bar"><div class="sk-bar-fill" data-pct="75"></div></div>
-      </div>
-
-      <div class="sk-card">
-        <div class="sk-num">03</div>
-        <div class="sk-name">Backend &amp; API Fundamentals</div>
-        <div class="sk-text">Node.js backend experience covering API queries, middleware, data aggregation, and error handling across real-world projects.</div>
-        <div class="sk-pills">
-          <span class="sk-pill">Node.js</span><span class="sk-pill">REST API</span><span class="sk-pill">Middleware</span><span class="sk-pill">Error Handling</span>
-        </div>
-        <div class="sk-bar"><div class="sk-bar-fill" data-pct="70"></div></div>
-      </div>
-
-      <div class="sk-card">
-        <div class="sk-num">04</div>
-        <div class="sk-name">Database &amp; Info Management</div>
-        <div class="sk-text">Relational databases for storing, organizing, and retrieving data — understanding how well-managed data forms the backbone of any reliable system.</div>
-        <div class="sk-pills">
-          <span class="sk-pill">SQL</span><span class="sk-pill">PostgreSQL</span><span class="sk-pill">Supabase</span><span class="sk-pill">Row-Level Security</span><span class="sk-pill">Data Modelling</span>
-        </div>
-        <div class="sk-bar"><div class="sk-bar-fill" data-pct="73"></div></div>
-      </div>
-
-      <div class="sk-card">
-        <div class="sk-num">05</div>
-        <div class="sk-name">Data Analytics &amp; Automation</div>
-        <div class="sk-text">Power BI for visual reports and UiPath for automating repetitive workflows — identifying where technology removes friction from everyday processes.</div>
-        <div class="sk-pills">
-          <span class="sk-pill">Python</span><span class="sk-pill">Matplotlib</span><span class="sk-pill">Power BI</span><span class="sk-pill">UiPath</span><span class="sk-pill">RPA</span>
-        </div>
-        <div class="sk-bar"><div class="sk-bar-fill" data-pct="65"></div></div>
-      </div>
-
-      <div class="sk-card">
-        <div class="sk-num">06</div>
-        <div class="sk-name">Digital Design &amp; Media</div>
-        <div class="sk-text">Adobe tools for clean, professional visual content — with a developed eye for layout, typography, and visual communication.</div>
-        <div class="sk-pills">
-          <span class="sk-pill">Adobe Suite</span><span class="sk-pill">Typography</span><span class="sk-pill">Visual Design</span><span class="sk-pill">Layout</span>
-        </div>
-        <div class="sk-bar"><div class="sk-bar-fill" data-pct="86"></div></div>
-      </div>
-
+      ))}
     </div>
+    <p class="sk-soft"><b>Also</b> {profile.strengths.join(' · ')} <span>·</span> <b>Languages</b> {profile.languages.join(', ')}</p>
   </div>
 </section>
 
@@ -331,15 +300,40 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
     <span class="hs-dot">·</span>
     <span class="hs-word">Power BI</span>
     <span class="hs-dot">·</span>
-    <span class="hs-word">Adobe Suite</span>
+    <span class="hs-word">Figma</span>
     <span class="hs-dot">·</span>
     <span class="hs-word">UiPath</span>
   </div>
 </div>
 
+<!-- ════ EXPERIENCE (from the CV) ════ -->
+<section id="experience" data-glow="#dbb95e,#1f6b65,#b5532c">
+  <span class="bnum" aria-hidden="true">04</span>
+  <div class="wrap">
+    <div class="sl">Work</div>
+    <div class="st"><span class="st-i">Experience</span></div>
+    {cv.experience.map(x => (
+      <div class="xp">
+        <div class="xp-role">{x.role}</div>
+        <div class="xp-grid">
+          {x.sub.map(s => (
+            <article class="xp-card">
+              <span class="xp-date">{s.date}</span>
+              <h3 class="xp-title">{s.title}</h3>
+              <ul class="xp-points">{s.points.map(p => <li>{p}</li>)}</ul>
+              {s.href && <a class="xp-link" href={s.href}>See the project and live demo <span aria-hidden="true">→</span></a>}
+            </article>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+
 <!-- ════ PROJECTS ════ -->
 <section id="projects" data-glow="#d0583a,#7a2f45,#dbb95e">
-  <span class="bnum" aria-hidden="true">04</span>
+  <span class="bnum" aria-hidden="true">05</span>
   <div class="wrap">
     <div class="sl">Built Work</div>
     <div class="st"><span class="st-i">Projects</span></div>
@@ -359,7 +353,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
             <div class="proj-badges">
               <span class="proj-badge">Status — {p.data.status}</span>
               <span class="proj-badge">Role — Sole Developer</span>
-              <span class="proj-badge">Year — {p.data.year}</span>
+              <span class="proj-badge">{p.data.period ?? `Year — ${p.data.year}`}</span>
             </div>
             <span class="proj-cta">{p.data.demo ? 'Try the live demo' : 'Read the case study'} <span aria-hidden="true">&rarr;</span></span>
           </div>
@@ -391,7 +385,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 
 <!-- ════ CERTIFICATES ════ -->
 <section id="certs" data-glow="#dbb95e,#4a3a7a,#1f6b65">
-  <span class="bnum" aria-hidden="true">05</span>
+  <span class="bnum" aria-hidden="true">06</span>
   <div class="wrap">
     <div class="sl">Verified Credentials</div>
     <div class="st"><span class="st-i">Certificates</span></div>
