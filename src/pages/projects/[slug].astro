@@ -36,6 +36,7 @@ const meta = [
         <div class="pp-ctas">
           {Demo && <a href="#demo" class="pp-btn pp-btn-main">Try the live demo <span aria-hidden="true">&darr;</span></a>}
           <a href="#how" class="pp-btn">How it works</a>
+          {d.repo && <a href={d.repo} class="pp-btn" target="_blank" rel="noopener">View code on GitHub <span aria-hidden="true">↗</span></a>}
         </div>
       </div>
       <div class="pp-badge" style={`background:${d.logoBg}`}>

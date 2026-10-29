@@ -13,6 +13,7 @@ const projects = defineCollection({
     type: z.string(),                    // e.g. "Capstone Project", "Client Commission"
     year: z.number(),
     period: z.string().optional(),       // the dates shown on the CV, e.g. "September 2025 – October 2026"
+    repo: z.string().url().optional(),   // public GitHub repository — the "View code" button appears only when set
     status: z.string(),
     role: z.string(),
     client: z.string().optional(),
