@@ -67,7 +67,7 @@ const data = JSON.stringify({ projects, profile });
     whoami: { help: 'who is Ian?', run: () => {
       print({ t: profile.name, c: 'term-hi' });
       print(profile.headline);
-      print({ t: '📍 ', c: 'term-dim' }, profile.location);
+      print({ t: 'based in ', c: 'term-dim' }, profile.location);
       print({ t: '● ', c: 'term-ok' }, { t: profile.availability, c: 'term-ok' }, '  ', { t: 'recruiter', cmd: 'recruiter' });
     }},
     recruiter: { help: '30-second summary + CV', run: () => { print('opening recruiter mode…'); setTimeout(() => { close(); (window as any).ikmRecruiter?.(); }, 250); } },
@@ -89,7 +89,7 @@ const data = JSON.stringify({ projects, profile });
     }},
     time: { help: 'time & weather in Batangas', run: () => {
       const fn = (window as any).ikmLocalTime;
-      print({ t: '🕘 ', c: 'term-gold' }, fn ? fn() : new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' }));
+      print({ t: '> ', c: 'term-gold' }, fn ? fn() : new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' }));
     }},
     projects: { help: 'list projects', run: () => {
       projects.forEach((p: any, i: number) => {

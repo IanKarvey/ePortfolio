@@ -233,22 +233,24 @@ html.touch .h-photo-color{display:none}
     linear-gradient(to bottom,rgba(13,11,9,.55) 0%,transparent 18%);
 }
 .h-rule{
-  width:100%;height:.6px;margin:clamp(18px,2vw,30px) 0;
+  /* spans the text column only, so it doesn't run into the photo */
+  width:100%;max-width:min(100%,640px);height:.6px;margin:clamp(18px,2vw,30px) 0;
   background:linear-gradient(90deg,var(--gold),rgba(201,168,76,.08));
   transform:scaleX(0);transform-origin:left;
 }
-.h-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+/* everything in the hero lines up on one left edge — the tags sit under the role, not floating mid-page */
+.h-foot{display:flex;flex-direction:column;align-items:flex-start;gap:clamp(14px,1.8vw,20px)}
 .h-subtitle{
   font-family:var(--serif);font-size:clamp(13px,1.3vw,16px);
   font-weight:400;font-style:italic;color:var(--fg3);
-  line-height:1.65;max-width:340px;
+  line-height:1.65;
 }
-.h-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.h-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start}
 .h-tag{
-  font-family:var(--sans);font-size:8px;font-weight:400;
+  font-family:var(--sans);font-size:9px;font-weight:400;
   letter-spacing:.14em;text-transform:uppercase;
-  color:var(--fg3);border:.7px solid var(--brd2);
-  border-radius:2px;padding:5px 10px;
+  color:var(--fg2);border:.7px solid var(--brd2);
+  border-radius:2px;padding:6px 11px;
   transition:color .3s,border-color .3s;
 }
 .h-tag:hover{color:var(--gold);border-color:rgba(201,168,76,.4)}

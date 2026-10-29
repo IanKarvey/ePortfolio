@@ -1,9 +1,16 @@
 ---
 /* Barangay Safety — two-sided demo: a resident's phone and the barangay hall dashboard.
    Everything is simulated in the browser with sample data; no request ever reaches the real system. */
+/* line icons (no emoji), drawn on a 24×24 grid */
 const categories = [
-  ['🚨', 'Theft / Robbery'], ['🔥', 'Fire'], ['🚗', 'Vehicular Accident'], ['🩺', 'Medical Emergency'],
-  ['🌊', 'Flooding'], ['📢', 'Noise Disturbance'], ['👁', 'Suspicious Activity'], ['⚠️', 'Other'],
+  ['<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', 'Theft / Robbery'],
+  ['<path d="M12 3c.8 3.5 5 5.2 5 10a5 5 0 0 1-10 0c0-2.6 1.4-4 2.3-6 1 1.2 1.7 2.4 2 3.8.8-1.8.9-4.6.7-7.8z"/>', 'Fire'],
+  ['<path d="M4 15l1.5-5a2 2 0 0 1 1.9-1.5h9.2a2 2 0 0 1 1.9 1.5L20 15v3H4z"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/>', 'Vehicular Accident'],
+  ['<path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z"/>', 'Medical Emergency'],
+  ['<path d="M3 9c2 0 2-2 4.5-2S10 9 12 9s2-2 4.5-2S19 9 21 9M3 15c2 0 2-2 4.5-2s2.5 2 4.5 2 2-2 4.5-2 2.5 2 4.5 2"/>', 'Flooding'],
+  ['<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>', 'Noise Disturbance'],
+  ['<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', 'Suspicious Activity'],
+  ['<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.01"/>', 'Other'],
 ];
 ---
 <div class="bd-steps" id="bdSteps" aria-label="Demo steps">
@@ -34,7 +41,7 @@ const categories = [
         </div>
 
         <div class="bd-view" data-view="home" hidden>
-          <div class="bd-appbar"><span>Magandang araw, <b>Juan</b> 👋</span><span class="bd-bell">🔔</span></div>
+          <div class="bd-appbar"><span>Magandang araw, <b>Juan</b></span><span class="bd-bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Notifications"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span></div>
           <button type="button" class="bd-sos" data-go="category">
             <span class="bd-sos-ring"></span>
             <span class="bd-sos-t">Report an<br>incident</span>
@@ -47,7 +54,7 @@ const categories = [
           <div class="bd-appbar"><button type="button" class="bd-back" data-go="home">‹</button><span>What happened?</span><span></span></div>
           <div class="bd-cats">
             {categories.map(([icon, name]) => (
-              <button type="button" class="bd-cat" data-cat={name}><span>{icon}</span>{name}</button>
+              <button type="button" class="bd-cat" data-cat={name}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icon} />{name}</button>
             ))}
           </div>
         </div>
@@ -57,7 +64,7 @@ const categories = [
           <div class="bd-form">
             <div class="bd-label">Location <em>tap the map to move the pin</em></div>
             <div class="bd-pick" id="bdPick"></div>
-            <div class="bd-gps" id="bdGps">📍 Barangay 3 · GPS ±8 m</div>
+            <div class="bd-gps" id="bdGps">Barangay 3 · GPS ±8 m</div>
             <div class="bd-label">Severity</div>
             <div class="bd-sev" id="bdSev">
               <button type="button" data-sev="4">Critical</button>
@@ -67,7 +74,7 @@ const categories = [
             </div>
             <div class="bd-label">What's going on?</div>
             <textarea id="bdDesc" rows="2" maxlength="140">Two men tried to break into a parked motorcycle near the sari-sari store.</textarea>
-            <button type="button" class="bd-photo" id="bdPhoto">📷 Attach photo</button>
+            <button type="button" class="bd-photo" id="bdPhoto">+ Attach photo</button>
             <button type="button" class="bd-primary" id="bdSubmit">Send report</button>
           </div>
         </div>
@@ -87,7 +94,7 @@ const categories = [
           <div class="bd-sheet" id="bdSheet" hidden>
             <b>No response yet</b>
             <p>If you are in danger, call for help now:</p>
-            <a>📞 911 · National Emergency</a><a>🚒 BFP Lipa</a><a>🚓 PNP Lipa</a>
+            <a>911 · National Emergency</a><a>BFP Lipa · Fire</a><a>PNP Lipa · Police</a>
             <button type="button" id="bdSheetClose">Keep waiting</button>
           </div>
         </div>
@@ -155,7 +162,7 @@ const categories = [
     pickMap.on('click', (e: L.LeafletMouseEvent) => {
       pick = { lat: e.latlng.lat, lng: e.latlng.lng };
       pickMarker.setLatLng(e.latlng);
-      $('bdGps').textContent = `📍 ${nearest(pick.lat, pick.lng).name} · pin moved`;
+      $('bdGps').textContent = `${nearest(pick.lat, pick.lng).name} · pin moved`;
     });
   }
 
@@ -207,7 +214,7 @@ const categories = [
   });
   $('bdPhoto').addEventListener('click', () => {
     photo = !photo;
-    $('bdPhoto').textContent = photo ? '✓ photo.jpg attached · checked for duplicates' : '📷 Attach photo';
+    $('bdPhoto').textContent = photo ? '✓ photo.jpg attached · checked for duplicates' : '+ Attach photo';
     $('bdPhoto').classList.toggle('on', photo);
   });
 
@@ -309,7 +316,7 @@ const categories = [
     ($('bdEscFill') as HTMLElement).classList.add('stopped');
     $('bdEscState').textContent = `Answered in ${r.resp} min`;
     log(`Demo Captain is responding to ${r.id} · response time ${r.resp} min · resident notified`, 'ok');
-    push('Help is on the way 🚓', 'Demo Captain is responding to your report.');
+    push('Help is on the way', 'Demo Captain is responding to your report.');
     mark('resp', `Demo Captain is responding · ${r.resp} min`);
     $('bdWait').textContent = `Answered in ${r.resp} min`;
     $('bdSheet').hidden = true;
@@ -377,7 +384,7 @@ const categories = [
     clearInterval(tick);
     reports.forEach(r => r.marker?.remove());
     current = null; category = ''; sev = 3; photo = false;
-    $('bdPhoto').textContent = '📷 Attach photo'; $('bdPhoto').classList.remove('on');
+    $('bdPhoto').textContent = '+ Attach photo'; $('bdPhoto').classList.remove('on');
     $('bdSev').querySelectorAll<HTMLElement>('button').forEach(x => x.classList.toggle('on', x.dataset.sev === '3'));
     ($('bdEscFill') as HTMLElement).style.width = '0'; ($('bdEscFill') as HTMLElement).classList.remove('stopped');
     $('bdEsc').hidden = true; $('bdSheet').hidden = true; $('bdPush').hidden = true;
@@ -443,7 +450,9 @@ const categories = [
   .bd-mine-i span{font-size:11px;color:#8a8a94}
   .bd-cats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 14px 20px}
   .bd-cat{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px 12px;border-radius:14px;border:1px solid #e7e5df;background:#fff;font:inherit;font-size:12px;font-weight:600;color:#1b1b1f;cursor:pointer;text-align:left;transition:border-color .2s,transform .2s}
-  .bd-cat span{font-size:22px}
+  .bd-cat svg{width:24px;height:24px;color:#e0574b}
+  .bd-bell{display:flex;color:#55555f}
+  .bd-gps::before{content:'';display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:#3a7d44;vertical-align:1px}
   .bd-cat:hover{border-color:#e0574b;transform:translateY(-2px)}
   .bd-form{padding:4px 14px 20px;display:flex;flex-direction:column}
   .bd-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6b6b75;margin:10px 0 6px}

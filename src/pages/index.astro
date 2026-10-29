@@ -19,7 +19,7 @@ const skillText: Record<string, string> = {
 const skillCards = profile.skillGroups.map(([name, items]) => ({
   name,
   text: skillText[name] ?? '',
-  pills: items.replace(/\s*\([^)]*\)/, '').split(/,\s*|\s+and\s+/).map(s => s.trim()).filter(Boolean)
+  pills: items.replace(/\s*\(used [^)]*\)/, '').split(/,\s*|\s+and\s+/).map(s => s.trim()).filter(Boolean)
     .map(s => (s.includes('_') ? s : s[0].toUpperCase() + s.slice(1))),   // "maps" → "Maps", but pg_cron stays
 }));
 ---
@@ -79,7 +79,7 @@ const skillCards = profile.skillGroups.map(([name, items]) => ({
     <div class="h-rule"></div>
     <div class="h-foot">
       <div>
-        <p class="h-subtitle">BS Information Technology<br><em>Major in System Development · De La Salle Lipa</em></p>
+        <p class="h-subtitle">BS Information Technology<br><em>Major in System Development</em><br><em>De La Salle Lipa</em></p>
         <div class="h-role"><span id="hRole"></span><span class="h-role-cur">|</span></div>
       </div>
       <div class="h-tags">

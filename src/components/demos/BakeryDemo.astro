@@ -152,7 +152,7 @@
     const body = $('bkPlan');
     body.innerHTML = '';
     const names = Object.keys(n);
-    if (!names.length) { body.innerHTML = '<tr><td colspan="5" class="bk-empty">Nothing pending for this day 🎉</td></tr>'; return; }
+    if (!names.length) { body.innerHTML = '<tr><td colspan="5" class="bk-empty">Nothing pending for this day — all orders covered</td></tr>'; return; }
     names.forEach(p => {
       const have = stock[p] || 0;
       const bake = Math.max(0, n[p] - have);
