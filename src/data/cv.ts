@@ -24,7 +24,7 @@ export const cv = {
     ['Backend & Database', 'Supabase, PostgreSQL, SQL, row-level security, pg_cron, Edge Functions, Node.js, REST APIs'],
     ['Desktop & Data', 'Python, Tkinter, Matplotlib and CSV data handling'],
     ['Web Development', 'HTML, CSS, JavaScript, Astro, Tailwind CSS, Next.js, Bootstrap, responsive design, Vercel and Firebase Hosting'],
-    ['Data, Tools & Design', 'Visual Studio, Git and GitHub, Adobe tools, UI/UX design'],
+    ['Data, Tools & Design', 'Visual Studio, Git and GitHub, Adobe tools, UI/UX design and Figma'],
     ['AI Tools', 'ChatGPT, Microsoft Copilot, Claude, Gemini (used for automation, SQL/query support, and system development)'],
     ['Soft Skills & Languages', 'Quick learner, team player, detail-oriented, creative problem solver · Tagalog, English'],
   ],
