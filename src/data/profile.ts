@@ -10,7 +10,7 @@ export const profile = {
   objective:
     'To build systems that are as thoughtful as they are functional — applying growing skills in web, mobile and systems development toward a reputed organization where he can contribute effectively, keep learning, and grow professionally.',
   education: [
-    'Bachelor of Science in Information Technology — De La Salle Lipa, 2023–2027 (currently 4th year)',
+    'Bachelor of Science in Information Technology, Major in System Development — De La Salle Lipa, 2023–2027 (currently 4th year)',
     'Senior High School — San Guillermo Academy, 2021–2023',
   ],
   certifications: [
@@ -30,9 +30,10 @@ export const profile = {
   ],
   strengths: ['Quick learner', 'Team player', 'Detail-oriented', 'Creative problem solver'],
   interests: ['Music', 'Dance', 'Visual art'],
-  languages: ['Filipino', 'English'],
+  languages: ['Tagalog', 'English'],
   contact: {
-    personalEmail: 'ianmanimtim07.3@gmail.com',
+    personalEmail: 'ianmanimtim07.4@gmail.com',
+    linkedin: 'https://www.linkedin.com/in/ian-karvey-manimtim/',
     schoolEmail: 'ian_karvey_manimtim@dlsl.edu.ph',
     phone: '+63 993 867 3884',
     facebook: 'https://www.facebook.com/IanKarveyM/',

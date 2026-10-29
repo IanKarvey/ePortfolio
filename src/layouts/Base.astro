@@ -5,6 +5,7 @@ import ChatWidget from '../components/ChatWidget.astro';
 import Terminal from '../components/Terminal.astro';
 import RecruiterMode from '../components/RecruiterMode.astro';
 import LivePresence from '../components/LivePresence.astro';
+import { profile } from '../data/profile';
 
 interface Props { title?: string; description?: string; image?: string; }
 const {
@@ -47,6 +48,17 @@ const onHome = Astro.url.pathname === '/';
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('reduce');
   })(document.documentElement);
 </script>
+<script type="application/ld+json" set:html={JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  url: Astro.site?.toString(),
+  image: new URL('/Picture%20of%20Me/ian-professional-1200.jpg', Astro.site).toString(),
+  jobTitle: 'BSIT Student · Web, Mobile & Systems Developer',
+  alumniOf: 'De La Salle Lipa',
+  address: { '@type': 'PostalAddress', addressLocality: 'Talisay', addressRegion: 'Batangas', addressCountry: 'PH' },
+  sameAs: [profile.contact.linkedin, profile.contact.facebook],
+})} />
 <slot name="head" />
 </head>
 <body>

@@ -7,7 +7,7 @@ import { profile } from '../data/profile';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const topSkills = ['Flutter', 'Dart', 'Supabase', 'PostgreSQL', 'Python', 'SQL', 'Node.js', 'UI/UX', 'Power BI'];
 const facts = [
-  ['4th year', 'BSIT · De La Salle Lipa'],
+  ['4th year', 'BSIT · System Development'],
   [String(projects.length), 'Projects shipped'],
   ['Solo', 'Developer on every project'],
   [String(profile.certifications.length), 'Certifications'],
@@ -32,6 +32,7 @@ const facts = [
         <div class="rm-cta">
           <a class="rm-btn rm-btn-main" href="/Ian-Karvey-Manimtim-CV.pdf" download>Download CV (PDF) ↓</a>
           <a class="rm-btn" href="/cv/">View CV online</a>
+          <a class="rm-btn rm-btn-li" href={profile.contact.linkedin} target="_blank" rel="noopener">LinkedIn ↗</a>
           <button type="button" class="rm-btn" id="rmCopy" data-email={profile.contact.personalEmail}>Copy email</button>
         </div>
       </div>
@@ -80,6 +81,7 @@ const facts = [
     <section class="rm-block rm-contact">
       <h3>Contact</h3>
       <div class="rm-links">
+        <a href={profile.contact.linkedin} target="_blank" rel="noopener">in LinkedIn</a>
         <a href={`mailto:${profile.contact.personalEmail}`}>✉ {profile.contact.personalEmail}</a>
         <a href={`mailto:${profile.contact.schoolEmail}`}>🎓 {profile.contact.schoolEmail}</a>
         <a href={`tel:${profile.contact.phone.replace(/\s/g, '')}`}>☎ {profile.contact.phone}</a>
@@ -156,6 +158,8 @@ const facts = [
   .rm-btn:hover{transform:translateY(-2px);background:#faf7f0}
   .rm-btn-main{background:#1b1813;border-color:#1b1813;color:#f3eee4}
   .rm-btn-main:hover{background:#000}
+  .rm-btn-li{background:#0a66c2;border-color:#0a66c2;color:#fff}
+  .rm-btn-li:hover{background:#004182}
   .rm-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e3dccd;border:1px solid #e3dccd;border-radius:6px;overflow:hidden}
   .rm-facts div{background:#faf7f0;padding:16px;display:flex;flex-direction:column;gap:4px}
   .rm-facts b{font-family:var(--serif);font-weight:900;font-size:28px;color:#9a7420;line-height:1}

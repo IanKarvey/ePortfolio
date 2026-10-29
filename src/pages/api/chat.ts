@@ -52,7 +52,7 @@ Skills:\n- ${profile.skills.join('\n- ')}
 Strengths: ${profile.strengths.join(', ')}
 Interests outside tech: ${profile.interests.join(', ')}
 Languages: ${profile.languages.join(', ')}
-Contact: personal email ${profile.contact.personalEmail}; school email ${profile.contact.schoolEmail}; phone ${profile.contact.phone}; Facebook ${profile.contact.facebook}
+Contact: LinkedIn ${profile.contact.linkedin}; personal email ${profile.contact.personalEmail}; school email ${profile.contact.schoolEmail}; phone ${profile.contact.phone}; Facebook ${profile.contact.facebook}
 
 ## Projects
 ${projectText}`;
