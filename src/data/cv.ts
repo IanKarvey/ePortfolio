@@ -24,8 +24,8 @@ export const cv = {
     ['Backend & Database', 'Supabase, PostgreSQL, SQL, row-level security, pg_cron, Edge Functions, Node.js, REST APIs'],
     ['Desktop & Data', 'Python, Tkinter, Matplotlib, CSV data handling, PyInstaller packaging, automated testing'],
     ['Web Development', 'HTML, CSS, JavaScript, Astro, responsive design, Vercel and Firebase Hosting'],
-    ['Data, Tools & Design', 'Power BI, UiPath (RPA), Git and GitHub, Adobe tools, UI/UX design'],
-    ['AI Integration', 'Gemini API — AI assistant and project planner built into a personal portfolio site'],
+    ['Data, Tools & Design', 'Visual Studio, Git and GitHub, Adobe tools, UI/UX design'],
+    ['AI Tools', 'ChatGPT, Microsoft Copilot, Claude, Gemini (used for automation, SQL/query support, and system development)'],
     ['Soft Skills & Languages', 'Quick learner, team player, detail-oriented, creative problem solver · Tagalog, English'],
   ],
 
@@ -57,9 +57,9 @@ export const cv = {
 
   projects: [
     {
-      title: 'Barangay Safety — Incident Reporting with Geo-Tagging and Interactive Maps (Capstone, Ongoing)',
+      title: 'Barangay Safety — Incident Reporting with Geo-Tagging and Interactive Maps (Capstone Project)',
       points: [
-        'Sole developer of a Flutter mobile app and web dashboard on Supabase (PostgreSQL) for five high-density barangays in Lipa City — about 53,000 lines of Dart, 27 database migrations and 32 test suites.',
+        'Sole developer of a Flutter mobile app and web dashboard on Supabase (PostgreSQL) for five high-density barangays in Lipa City.',
         'GPS geo-tagged incident reports with photos, live incident map, heatmaps and real-time responder tracking.',
         'Server-side auto-escalation of unanswered reports at 5, 10 and 15 minutes using pg_cron, with push alerts via Edge Functions and Firebase Cloud Messaging.',
         'Row-level security on every table, private photo storage with signed URLs, duplicate-photo detection, audit logs, and PDF/Excel exports.',

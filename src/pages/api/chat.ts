@@ -7,6 +7,8 @@ import { profile } from '../../data/profile';
 export const prerender = false;
 
 const MODELS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];   // first is fast + cheap; second is the fallback
+/* minimal thinking keeps answers fast, but the fallback model rejects "minimal" — it gets "low" */
+const THINKING: Record<string, string> = { 'gemini-3.5-flash-lite': 'minimal', 'gemini-3.8-flash': 'low' };
 const MAX_INPUT = 600;          // characters per visitor message
 const MAX_TURNS = 10;           // history sent to the model
 const RATE = { limit: 15, windowMs: 10 * 60 * 1000 };   // per IP, best-effort on serverless
@@ -108,9 +110,10 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 
 /* one call with retry + fallback model; returns the model's text or null */
-async function gemini(key: string, payload: object): Promise<string | null> {
+async function gemini(key: string, payload: { generationConfig: Record<string, unknown> } & Record<string, unknown>): Promise<string | null> {
   const deadline = Date.now() + 50000;   // stay inside the function's 60 s limit
   for (const model of MODELS) {
+    const body = { ...payload, generationConfig: { ...payload.generationConfig, thinkingConfig: { thinkingLevel: THINKING[model] ?? 'low' } } };
     for (let attempt = 0; attempt < 2; attempt++) {
       const left = deadline - Date.now();
       if (left < 3000) return null;
@@ -118,7 +121,7 @@ async function gemini(key: string, payload: object): Promise<string | null> {
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(body),
           signal: AbortSignal.timeout(Math.min(28000, left)),
         });
         if (res.status === 503 || res.status === 429 || res.status >= 500) continue;   // busy → retry, then next model
@@ -167,7 +170,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       systemInstruction: { parts: [{ text: await briefPrompt() }] },
       contents: [{ role: 'user', parts: [{ text: ask }] }],
       generationConfig: {
-        temperature: 0.4, maxOutputTokens: 1400, thinkingConfig: { thinkingLevel: 'minimal' },
+        temperature: 0.4, maxOutputTokens: 1400,
         responseMimeType: 'application/json', responseSchema: BRIEF_SCHEMA,
       },
     });
@@ -187,8 +190,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const reply = await gemini(key, {
     systemInstruction: { parts: [{ text: await chatPrompt() }] },
     contents: turns.map(t => ({ role: t.role, parts: [{ text: t.text }] })),
-    /* minimal thinking: answers come from the facts above, not reasoning — and it cuts latency a lot */
-    generationConfig: { temperature: 0.5, maxOutputTokens: 1024, thinkingConfig: { thinkingLevel: 'minimal' } },
+    generationConfig: { temperature: 0.5, maxOutputTokens: 1024 },
   });
   if (reply) return json({ reply });
   return json({ error: 'The assistant is busy right now. Please try again in a moment — or email Ian directly.' }, 502);

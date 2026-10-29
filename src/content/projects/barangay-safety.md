@@ -5,7 +5,7 @@ summary: A full-stack mobile safety platform for barangay-level emergency respon
 order: 1
 type: Capstone Project
 year: 2026
-status: Ongoing
+status: Completed
 role: Sole Developer — design, mobile, web, backend
 platform: Android · Web dashboard
 stack: [Flutter, Dart, Supabase, PostgreSQL, Row-Level Security, pg_cron, Edge Functions, Firebase Cloud Messaging, OpenStreetMap, Geolocator, Provider, fl_chart]
@@ -14,7 +14,7 @@ logoBg: '#ffffff'
 accent: '#e0574b'
 demo: barangay
 stats:
-  - { value: '53k', label: Lines of Dart }
+  - { value: '5', label: Barangays covered }
   - { value: '4', label: User roles }
   - { value: '27', label: Database migrations }
   - { value: '32', label: Test suites }
