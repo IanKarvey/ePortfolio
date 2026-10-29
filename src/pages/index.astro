@@ -68,7 +68,7 @@ const skillCards = profile.skillGroups.map(([name, items]) => ({
     <button type="button" class="h-avail" data-open-recruiter aria-label="Open to OJT and internship opportunities — view a 30-second summary">
       <span class="h-avail-dot" aria-hidden="true"></span>
       <span class="h-avail-t">Open to OJT &amp; Internship Opportunities</span>
-      <span class="h-avail-go">30-sec summary <span aria-hidden="true">→</span></span>
+      <span class="h-avail-go">From {profile.ojt.startShort.replace(', 2026', '')} · Summary <span aria-hidden="true">→</span></span>
     </button>
     <div class="h-hello"><span class="h-hello-i">Hello, I'm</span></div>
     <div class="h-name">
@@ -158,7 +158,9 @@ const skillCards = profile.skillGroups.map(([name, items]) => ({
         <p class="a-p lead">I'm an aspiring full-stack developer, driven to build software that solves real problems for real people.</p>
         <p class="a-p">My name is Ian Karvey L. Manimtim, currently pursuing a Bachelor of Science in Information Technology at De La Salle Lipa — one of CALABARZON's distinguished institutions known for strong academic standards and commitment to producing competent technology professionals.</p>
         <p class="a-p">Born and raised in Quiling, Talisay, Batangas. The values from growing up in a tight-knit community continue to shape how I approach work and relationships — with deep respect, accountability, and a collaborative spirit.</p>
-        <p class="a-p">I'm the sole developer of Barangay Safety, a Flutter and Supabase incident-reporting platform for barangays in Lipa City, and of two commissioned Python desktop applications for clients. Detail-oriented and quick to learn, I'm seeking a Full-Stack Developer or Software Developer OJT placement, while open to other software, systems, web or mobile roles.</p>
+        <p class="a-p">I've been a techy person since I was a child, always curious about how software works under the hood. Today I enjoy building apps and websites most, because they let me show my creativity in something people can actually use.</p>
+        <p class="a-p">That's why I built Barangay Safety on my own. Lipa is a big city with 70+ barangays, where incidents can get complicated, so I wanted to help its urban districts get quicker action. My two client projects, a bakery planner and a delivery analyzer, came through referrals from people who knew I build systems.</p>
+        <p class="a-p">During my OJT, I want to experience a new environment, see how software is built in the real world, and grow into the developer I aim to be. I'm available from <b>{profile.ojt.start}</b> for a <b>{profile.ojt.hours}-hour</b> OJT, as a Full-Stack or Software Developer, and open to other IT roles.</p>
       </div>
     </div>
     <!-- every number is something on the CV, with a caption saying exactly what it counts -->

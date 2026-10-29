@@ -47,6 +47,7 @@ Name: ${profile.name} (goes by ${profile.goesBy})
 Based in: ${profile.location}
 Headline: ${profile.headline}
 Availability: ${profile.availability}. ${profile.availabilityDetail}
+In Ian's own words: ${Object.entries(profile.story).filter(([k]) => k !== 'words').map(([, v]) => v).join(' ')} Friends describe him as ${profile.story.words.join(', ').toLowerCase()}.
 Professional summary: ${profile.summary}
 Education:\n- ${profile.education.join('\n- ')}
 Certifications:\n- ${profile.certifications.join('\n- ')}

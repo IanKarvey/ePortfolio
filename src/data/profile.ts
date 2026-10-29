@@ -7,10 +7,20 @@ export const profile = {
   location: 'Talisay, Batangas, Philippines',
   headline: 'BSIT student at De La Salle Lipa, majoring in System Development.',
   availability: 'Open to OJT & Internship Opportunities',
-  availabilityDetail: 'Ian is actively looking for an OJT (on-the-job training) or internship placement as part of his BSIT degree at De La Salle Lipa (Class of 2027), and is happy to discuss schedules and requirements.',
+  ojt: { start: 'December 1, 2026', startShort: 'Dec 1, 2026', hours: 486 },
+  availabilityDetail: 'Ian is actively looking for an OJT (on-the-job training) or internship placement as part of his BSIT degree at De La Salle Lipa (Class of 2027). He is available from December 1, 2026 for a 486-hour OJT.',
+  /* Ian's own story, in his words — used by the About section and the AI chat */
+  story: {
+    origin: 'Ian has been a techy person since childhood, always curious about how software works under the hood.',
+    enjoys: 'He enjoys building apps and websites most, because they let him show his creativity in something people can actually use.',
+    whyBarangaySafety: 'He chose Barangay Safety because Lipa is a big city with 70+ barangays, where incidents can get complicated; he wanted to help its urban districts get quicker action.',
+    clients: 'His two client commissions came through referrals from people who knew he builds systems.',
+    ojtGoal: 'During his OJT he wants to experience a new environment, see how software is built in the real world, learn from professionals, and grow into the developer he aims to be.',
+    words: ['Capable', 'Persistent', 'Thoughtful'],
+  },
   /* the CV's Professional Summary */
   summary:
-    'Aspiring full-stack developer and fourth-year BSIT student majoring in System Development at De La Salle Lipa, based in Talisay, Batangas. Driven to build software that solves real problems for real people — including Barangay Safety, an incident-reporting platform built solo with Flutter and Supabase for barangays in Lipa City, and two Python desktop applications delivered to clients. Detail-oriented, quick to learn and comfortable owning a project from start to finish. Seeking a Full-Stack or Software Developer OJT placement with opportunities to learn and grow, while open to other software, systems, web or mobile roles.',
+    'Aspiring full-stack developer and fourth-year BSIT student majoring in System Development at De La Salle Lipa. Curious about how software works since childhood, and now enjoys building apps and websites that turn creativity into something useful — including Barangay Safety, an incident-reporting platform built solo with Flutter and Supabase to help Lipa City\'s urban barangays respond faster, and two Python desktop applications for clients who came through referrals. Capable, persistent and thoughtful. Seeking a Full-Stack or Software Developer OJT, open to other IT roles, to gain real-world experience, learn and grow. Available December 1, 2026 for 486 hours.',
   education: [
     'Bachelor of Science in Information Technology, Major in System Development — De La Salle Lipa, 2023–2027 (currently 4th year)',
     'Senior High School — San Guillermo Academy, 2021–2023 — awards: With Honors; Best in Research; With Honors in Work Immersion',

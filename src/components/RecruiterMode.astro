@@ -29,9 +29,9 @@ const contacts = [
   { icon: icon.facebook, label: 'Facebook', href: profile.contact.facebook, ext: true },
 ];
 const facts = [
+  [profile.ojt.startShort.replace(', 2026', ''), `Available to start · ${profile.ojt.hours} hrs`],
   ['4th year', 'BSIT · System Development'],
-  [String(projects.length), 'Projects shipped'],
-  ['Solo', 'Developer on every project'],
+  [String(projects.length), 'Projects shipped, solo'],
   [String(profile.certifications.length), 'Certifications'],
 ];
 ---
@@ -47,7 +47,7 @@ const facts = [
     <section class="rm-hero">
       <img src="/Picture%20of%20Me/ian-professional-700.jpg" alt="Ian Karvey L. Manimtim" class="rm-photo" loading="lazy">
       <div>
-        <div class="rm-avail"><span></span>{profile.availability}</div>
+        <div class="rm-avail"><span></span>{profile.availability} · From {profile.ojt.startShort}</div>
         <h2 class="rm-name" id="rmName">{profile.name}</h2>
         <p class="rm-head">{profile.headline}</p>
         <p class="rm-loc">{profile.location} · Class of 2027</p>
@@ -66,7 +66,7 @@ const facts = [
 
     <section class="rm-block">
       <h3>Why Ian</h3>
-      <p class="rm-why">{profile.availabilityDetail} He has already shipped three complete systems on his own — a capstone safety platform on Flutter and Supabase, and two commissioned desktop apps in Python — every layer, from data to interface.</p>
+      <p class="rm-why">{profile.availabilityDetail} He has already shipped three complete systems on his own — a capstone safety platform on Flutter and Supabase for Lipa City's barangays, and two desktop apps in Python for clients who came through referrals. Friends describe him as {profile.story.words.join(', ').toLowerCase()}.</p>
     </section>
 
     <section class="rm-block">
