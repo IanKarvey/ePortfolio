@@ -67,9 +67,10 @@ export const cv = {
     },
   ],
 
+  /* [degree, school, years, honors?] */
   education: [
     ['Bachelor of Science in Information Technology — Major in System Development', 'De La Salle Lipa', '2023 – 2027 (Ongoing, 4th Year)'],
-    ['Senior High School', 'San Guillermo Academy', '2021 – 2023'],
+    ['Senior High School', 'San Guillermo Academy', '2021 – 2023', 'With Honors · Best in Research · With Honors in Work Immersion'],
   ],
 
   certifications: [

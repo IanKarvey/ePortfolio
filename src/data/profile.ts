@@ -11,7 +11,7 @@ export const profile = {
     'To build systems that are as thoughtful as they are functional — applying growing skills in web, mobile and systems development toward a reputed organization where he can contribute effectively, keep learning, and grow professionally.',
   education: [
     'Bachelor of Science in Information Technology, Major in System Development — De La Salle Lipa, 2023–2027 (currently 4th year)',
-    'Senior High School — San Guillermo Academy, 2021–2023',
+    'Senior High School — San Guillermo Academy, 2021–2023 — awards: With Honors; Best in Research; With Honors in Work Immersion',
   ],
   certifications: [
     'Cyber Threat Management — Cisco Networking Academy (April 2026)',

@@ -79,10 +79,11 @@ import { cv } from '../data/cv';
 
   <section>
     <h2>Education</h2>
-    {cv.education.map(([degree, school, years]) => (
+    {cv.education.map(([degree, school, years, honors]) => (
       <div class="cv-edu">
         <div class="cv-role">{degree}</div>
         <div class="cv-school">{school} | {years}</div>
+        {honors && <div class="cv-school cv-honors"><b>Awards:</b> {honors}</div>}
       </div>
     ))}
   </section>
@@ -133,6 +134,7 @@ import { cv } from '../data/cv';
   .cv-sub > ul{margin-top:.6mm;list-style:circle}
   .cv-edu{margin-bottom:1.6mm}
   .cv-school{padding-left:6mm;color:#333}
+  .cv-honors b{font-weight:600;color:#111}
   .cv-avail{font-style:italic;color:#333}
   .cv-certs{display:grid;grid-template-columns:1fr 1fr;column-gap:8mm}
   .cv-refs{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
