@@ -5,7 +5,6 @@ import { profile } from './profile';
 
 export const cv = {
   name: profile.name,
-  photo: '/Picture%20of%20Me/ian-professional-700.jpg',
   contact: [
     ['Email', profile.contact.personalEmail],
     ['Phone', profile.contact.phone],
