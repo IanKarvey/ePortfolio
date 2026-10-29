@@ -10,10 +10,10 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 /* skill cards: the CV's groups, a one-line description each, and the items as pills */
 const skillText: Record<string, string> = {
   'Mobile Development': 'Cross-platform apps in Flutter — used to build the resident and official apps of Barangay Safety.',
-  'Backend & Database': 'Secure data and server logic — row-level security, scheduled jobs and edge functions behind Barangay Safety.',
+  'Backend & Database': 'Databases and server logic — the PostgreSQL schema, APIs and edge functions behind Barangay Safety.',
   'Desktop & Data': 'Desktop applications with charts and dependable file-based data — delivered to two clients.',
   'Web Development': 'Responsive websites and web dashboards, from static sites to deployed web apps.',
-  'Data, Tools & Design': 'Reports and automation with Power BI and UiPath, version control with Git, and interface design in Figma and Adobe tools.',
+  'Data, Tools & Design': 'Reports with Power BI, development in Visual Studio, version control with Git, and design work in Figma and Adobe tools.',
   'AI Tools': 'Used for automation, SQL/query support, and system development.',
 };
 const skillCards = profile.skillGroups.map(([name, items]) => ({
@@ -86,7 +86,7 @@ const skillCards = profile.skillGroups.map(([name, items]) => ({
         <span class="h-tag">Web Dev</span>
         <span class="h-tag">Systems Dev</span>
         <span class="h-tag">Mobile</span>
-        <span class="h-tag">UI/UX</span>
+        <span class="h-tag">Full-Stack</span>
         <span class="h-tag">Database</span>
       </div>
     </div>
@@ -106,7 +106,7 @@ const skillCards = profile.skillGroups.map(([name, items]) => ({
     <span class="hs-dot">·</span>
     <span class="hs-word">System Development</span>
     <span class="hs-dot">·</span>
-    <span class="hs-word">UI / UX</span>
+    <span class="hs-word">Full-Stack</span>
     <span class="hs-dot">·</span>
     <span class="hs-word">Mobile</span>
     <span class="hs-dot">·</span>
@@ -155,7 +155,7 @@ const skillCards = profile.skillGroups.map(([name, items]) => ({
         </div>
       </div>
       <div class="a-paras">
-        <p class="a-p lead">I'm a fourth-year BSIT student majoring in System Development who builds complete systems end to end — from database design and security to the user interface.</p>
+        <p class="a-p lead">I'm an aspiring full-stack developer, driven to build software that solves real problems for real people.</p>
         <p class="a-p">My name is Ian Karvey L. Manimtim, currently pursuing a Bachelor of Science in Information Technology at De La Salle Lipa — one of CALABARZON's distinguished institutions known for strong academic standards and commitment to producing competent technology professionals.</p>
         <p class="a-p">Born and raised in Quiling, Talisay, Batangas. The values from growing up in a tight-knit community continue to shape how I approach work and relationships — with deep respect, accountability, and a collaborative spirit.</p>
         <p class="a-p">I'm the sole developer of Barangay Safety, a Flutter and Supabase incident-reporting platform for barangays in Lipa City, and of two commissioned Python desktop applications for clients. Detail-oriented and quick to learn, I'm seeking a Full-Stack Developer or Software Developer OJT placement, while open to other software, systems, web or mobile roles.</p>
@@ -302,7 +302,7 @@ const skillCards = profile.skillGroups.map(([name, items]) => ({
     <span class="hs-dot">·</span>
     <span class="hs-word">Figma</span>
     <span class="hs-dot">·</span>
-    <span class="hs-word">UiPath</span>
+    <span class="hs-word">Next.js</span>
   </div>
 </div>
 

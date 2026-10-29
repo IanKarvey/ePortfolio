@@ -10,7 +10,7 @@ export const profile = {
   availabilityDetail: 'Ian is actively looking for an OJT (on-the-job training) or internship placement as part of his BSIT degree at De La Salle Lipa (Class of 2027), and is happy to discuss schedules and requirements.',
   /* the CV's Professional Summary */
   summary:
-    'Fourth-year BSIT student majoring in System Development at De La Salle Lipa who builds complete systems end to end — from database design and security to the user interface. Sole developer of Barangay Safety, a Flutter and Supabase incident-reporting platform for barangays in Lipa City, and of two commissioned Python desktop applications for clients. Detail-oriented and quick to learn. Seeking a Full-Stack Developer or Software Developer OJT placement, while open to other software, systems, web or mobile roles.',
+    'Aspiring full-stack developer and fourth-year BSIT student majoring in System Development at De La Salle Lipa, based in Talisay, Batangas. Driven to build software that solves real problems for real people — including Barangay Safety, an incident-reporting platform built solo with Flutter and Supabase for barangays in Lipa City, and two Python desktop applications delivered to clients. Detail-oriented, quick to learn and comfortable owning a project from start to finish. Seeking a Full-Stack or Software Developer OJT placement with opportunities to learn and grow, while open to other software, systems, web or mobile roles.',
   education: [
     'Bachelor of Science in Information Technology, Major in System Development — De La Salle Lipa, 2023–2027 (currently 4th year)',
     'Senior High School — San Guillermo Academy, 2021–2023 — awards: With Honors; Best in Research; With Honors in Work Immersion',
@@ -25,10 +25,10 @@ export const profile = {
   /* the CV's Key Skills, group by group */
   skillGroups: [
     ['Mobile Development', 'Flutter, Dart, Provider, maps and geolocation, push notifications'],
-    ['Backend & Database', 'Supabase, PostgreSQL, SQL, row-level security, pg_cron, Edge Functions, Node.js, REST APIs, error handling'],
+    ['Backend & Database', 'Supabase, PostgreSQL, SQL, Edge Functions, Node.js, REST APIs, error handling'],
     ['Desktop & Data', 'Python, C++, Tkinter, Matplotlib and CSV data handling'],
     ['Web Development', 'HTML, CSS, JavaScript, Astro, Tailwind CSS, Next.js, Bootstrap, responsive design, Vercel and Firebase Hosting'],
-    ['Data, Tools & Design', 'Power BI, UiPath (RPA), Visual Studio, Git and GitHub, Adobe tools, UI/UX and visual design, layout and Figma'],
+    ['Data, Tools & Design', 'Power BI, Visual Studio, Git and GitHub, Adobe tools and Figma'],
     ['AI Tools', 'ChatGPT, Microsoft Copilot, Claude, Gemini (used for automation, SQL/query support, and system development)'],
   ] as [string, string][],
   strengths: ['Quick learner', 'Team player', 'Detail-oriented', 'Creative problem solver'],

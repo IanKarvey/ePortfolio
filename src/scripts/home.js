@@ -317,7 +317,7 @@ if (FINE) document.querySelectorAll('.h-tag, .proj-badge, .e-badge, .cert-link')
 });
 
 /* ── Typewriter role cycle ── */
-const roles = ['System Development Student', 'Aspiring Full-Stack Developer', 'Web & Mobile Development', 'UI / UX Design'];
+const roles = ['Aspiring Full-Stack Developer', 'System Development Student', 'Web & Mobile Development'];
 let ri = 0, ci = 0, del = false;
 const roleEl = document.getElementById('hRole');
 function typeRole() {
