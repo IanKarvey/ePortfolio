@@ -113,6 +113,7 @@ const data = JSON.stringify({ projects, profile });
     certs: { help: 'certifications', run: () => profile.certifications.forEach((s: string) => print({ t: '✓ ', c: 'term-ok' }, s)) },
     contact: { help: 'ways to reach Ian', run: () => {
       print({ t: 'linkedin ', c: 'term-dim' }, { t: 'in/ian-karvey-manimtim', href: profile.contact.linkedin });
+      print({ t: 'github   ', c: 'term-dim' }, { t: 'IanKarvey', href: profile.contact.github });
       print({ t: 'email    ', c: 'term-dim' }, { t: profile.contact.personalEmail, href: `mailto:${profile.contact.personalEmail}` });
       print({ t: 'school   ', c: 'term-dim' }, { t: profile.contact.schoolEmail, href: `mailto:${profile.contact.schoolEmail}` });
       print({ t: 'phone    ', c: 'term-dim' }, { t: profile.contact.phone, href: `tel:${profile.contact.phone.replace(/\s/g, '')}` });

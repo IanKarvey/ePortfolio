@@ -54,7 +54,7 @@ Certifications:\n- ${profile.certifications.join('\n- ')}
 Skills:\n- ${profile.skillGroups.map(([k, v]) => `${k}: ${v}`).join('\n- ')}
 Strengths: ${profile.strengths.join(', ')}
 Languages: ${profile.languages.join(', ')}
-Contact: LinkedIn ${profile.contact.linkedin}; personal email ${profile.contact.personalEmail}; school email ${profile.contact.schoolEmail}; phone ${profile.contact.phone}; Facebook ${profile.contact.facebook}
+Contact: LinkedIn ${profile.contact.linkedin}; GitHub ${profile.contact.github} (public source code of all three projects); personal email ${profile.contact.personalEmail}; school email ${profile.contact.schoolEmail}; phone ${profile.contact.phone}; Facebook ${profile.contact.facebook}
 
 ## Projects
 ${projectText}`;

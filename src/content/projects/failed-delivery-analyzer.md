@@ -6,6 +6,7 @@ order: 3
 type: Client Commission
 year: 2026
 period: October 2026
+repo: https://github.com/IanKarvey/failed-delivery-analyzer
 status: Delivered
 role: Sole Developer
 platform: Windows desktop · Terminal

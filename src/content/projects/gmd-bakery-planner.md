@@ -6,6 +6,7 @@ order: 2
 type: Client Commission
 year: 2026
 period: October 2026
+repo: https://github.com/IanKarvey/gmd-bakery-planner
 status: Delivered
 role: Sole Developer
 client: GMD Bakery

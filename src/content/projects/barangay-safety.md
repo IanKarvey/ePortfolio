@@ -6,6 +6,7 @@ order: 1
 type: Capstone Project
 year: 2026
 period: September 2025 – October 2026
+repo: https://github.com/IanKarvey/barangay-safety
 status: Completed
 role: Sole Developer — design, mobile, web, backend
 platform: Android · Web dashboard

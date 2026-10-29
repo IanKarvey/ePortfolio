@@ -34,7 +34,7 @@ import { cv } from '../data/cv';
         {cv.contact.map(([k, v], i) => <><b>{k}:</b> {v}{i < cv.contact.length - 1 && <span class="sep">|</span>}</>)}
       </p>
       <p class="cv-line">
-        {cv.links.map(([k, v], i) => <><b>{k}:</b> {v}{i < cv.links.length - 1 && <span class="sep">|</span>}</>)}
+        {cv.links.map(([k, v], i) => <><b>{k}:</b> <a href={`https://${v}`}>{v}</a>{i < cv.links.length - 1 && <span class="sep">|</span>}</>)}
       </p>
     </div>
     <!-- only shown on the resume variant (/cv/?photo) -->
@@ -127,6 +127,7 @@ import { cv } from '../data/cv';
   .cv-line{font-size:calc(var(--fs) * .98);line-height:1.65}
   .cv-line b{font-weight:700}
   .sep{margin:0 2mm;color:#888}
+  .cv-line a{color:inherit;text-decoration:none}  /* clickable in the PDF, but looks like the rest of the line */
 
   section{margin-top:var(--gap)}
   h2{font-size:calc(var(--fs) * 1.16);font-weight:700;padding-bottom:.9mm;margin-bottom:2mm;border-bottom:.9pt solid #111}

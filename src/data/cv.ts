@@ -12,6 +12,7 @@ export const cv = {
   ],
   links: [
     ['LinkedIn', 'linkedin.com/in/ian-karvey-manimtim'],
+    ['GitHub', 'github.com/IanKarvey'],
     ['Portfolio', 'karveyportfolio.vercel.app'],
   ],
 

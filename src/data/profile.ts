@@ -46,6 +46,7 @@ export const profile = {
   contact: {
     personalEmail: 'ianmanimtim07.4@gmail.com',
     linkedin: 'https://www.linkedin.com/in/ian-karvey-manimtim/',
+    github: 'https://github.com/IanKarvey',
     schoolEmail: 'ian_karvey_manimtim@dlsl.edu.ph',
     phone: '+63 993 867 3884',
     facebook: 'https://www.facebook.com/IanKarveyM/',
