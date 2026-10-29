@@ -12,9 +12,6 @@ import { cv } from '../data/cv';
 <title>Resume — {cv.name}</title>
 <meta name="description" content={`Resume of ${cv.name}`}>
 <meta name="robots" content="noindex">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="bar">
@@ -50,15 +47,14 @@ import { cv } from '../data/cv';
   </section>
 
   <section>
-    <h2>Professional Experience</h2>
+    <h2>Experience</h2>
     {cv.experience.map(x => (
       <div class="cv-item">
         <div class="cv-role">{x.role}</div>
-        <div class="cv-where">{x.where} | {x.when}</div>
         <ul>
           {x.points.map(p => <li>{p}</li>)}
           {x.sub.map(s => (
-            <li class="cv-sub"><b>{s.title}</b>
+            <li class="cv-sub"><div class="cv-row"><b>{s.title}</b><span class="cv-date">{s.date}</span></div>
               <ul>{s.points.map(p => <li>{p}</li>)}</ul>
             </li>
           ))}
@@ -71,7 +67,7 @@ import { cv } from '../data/cv';
     <h2>Projects and Achievements</h2>
     {cv.projects.map(p => (
       <div class="cv-item">
-        <div class="cv-role">{p.title}</div>
+        <div class="cv-row"><span class="cv-role">{p.title}</span><span class="cv-date">{p.date}</span></div>
         <ul>{p.points.map(t => <li>{t}</li>)}</ul>
       </div>
     ))}
@@ -107,43 +103,49 @@ import { cv } from '../data/cv';
 
 <style is:global>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{background:#e8e8e8;color:#111;font-family:'Poppins',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  /* --fs (text size) and --gap (space between sections) are tuned so the content fills exactly one A4 page */
+  :root{--fs:9.6pt;--gap:4.2mm}
+  body{background:#e8e8e8;color:#111;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
   .bar{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:#1b1813;font-size:12px}
   .bar a,.bar button{color:#f3eee4;text-decoration:none;background:none;border:1px solid #4a4237;border-radius:3px;padding:7px 12px;font:inherit;cursor:pointer;margin-left:6px}
   .bar a:first-child{border:none;padding-left:0;margin:0}
-  .cv{width:210mm;min-height:297mm;margin:24px auto;padding:12mm 14mm;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.15);font-size:8.4pt;line-height:1.36}
+  .cv{width:210mm;min-height:297mm;margin:24px auto;padding:12mm 14mm;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.15);font-size:var(--fs);line-height:1.38}
 
-  .cv-head{display:grid;grid-template-columns:1fr 27mm;gap:6mm;align-items:center}
-  .cv-id{text-align:center}
-  h1{font-size:25pt;font-weight:800;line-height:1.1;letter-spacing:-.01em;padding-bottom:1.5mm;border-bottom:1pt solid #111;margin-bottom:2mm}
-  .cv-line{font-size:8.6pt;line-height:1.6}
+  .cv-head{display:grid;grid-template-columns:1fr 28mm;gap:6mm;align-items:start}
+  .cv-id{text-align:center;padding-top:1mm}
+  h1{font-family:'Arial Black',Arial,sans-serif;font-size:26pt;font-weight:900;line-height:1.1;letter-spacing:-.01em;padding-bottom:1.6mm;border-bottom:1.2pt solid #111;margin-bottom:2.2mm}
+  .cv-line{font-size:calc(var(--fs) * .98);line-height:1.6}
   .cv-line b{font-weight:700}
-  .sep{margin:0 2mm;color:#777}
-  .cv-photo{width:27mm;height:31mm;object-fit:cover;object-position:50% 16%;border-radius:2mm}
+  .sep{margin:0 2mm;color:#888}
+  /* small, and it never reaches the first section's rule */
+  .cv-photo{width:28mm;height:32mm;object-fit:cover;object-position:50% 16%;border-radius:2mm}
 
-  section{margin-top:2.7mm}
-  h2{font-size:9.6pt;font-weight:700;padding-bottom:.8mm;margin-bottom:1.8mm;border-bottom:.8pt solid #111}
+  section{margin-top:var(--gap)}
+  h2{font-size:calc(var(--fs) * 1.16);font-weight:700;padding-bottom:.9mm;margin-bottom:2mm;border-bottom:.9pt solid #111}
   .cv-summary{text-align:justify}
-  ul{margin-left:4.5mm}
-  li{margin-bottom:.2mm}
-  li b{font-weight:600}
-  .cv-item{margin-bottom:2mm;break-inside:avoid}
-  .cv-role{font-weight:700;font-size:9pt}
-  .cv-where{font-weight:600;margin-bottom:.8mm}
-  .cv-sub{margin-top:1mm;list-style:disc}
-  .cv-sub > ul{margin-top:.6mm;list-style:circle}
-  .cv-edu{margin-bottom:1.6mm}
+  ul{margin-left:5mm;list-style:disc}
+  li{margin-bottom:.5mm}
+  li b{font-weight:700}
+  .cv-item{margin-bottom:2.2mm;break-inside:avoid}
+  .cv-row{display:flex;justify-content:space-between;align-items:baseline;gap:6mm}
+  .cv-role{font-weight:700;font-size:calc(var(--fs) * 1.03)}
+  .cv-date{font-weight:700;white-space:nowrap;flex-shrink:0}
+  .cv-sub{margin-top:1.2mm}
+  .cv-sub > ul{margin-top:.7mm;list-style:circle}
+  .cv-edu{margin-bottom:2mm}
   .cv-school{padding-left:6mm;color:#333}
-  .cv-honors b{font-weight:600;color:#111}
+  .cv-honors b{font-weight:700;color:#111}
   .cv-avail{font-style:italic;color:#333}
   .cv-certs{display:grid;grid-template-columns:1fr 1fr;column-gap:8mm}
   .cv-refs{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
   .cv-refs div{display:flex;flex-direction:column}
-  .cv-refs span{font-size:8pt;color:#333}
+  .cv-refs span{font-size:calc(var(--fs) * .92);color:#333}
 
   /* real page margins, so a second page never starts flush against the paper edge */
-  @page{size:A4;margin:8mm 12mm}
+  @page{size:A4;margin:11mm 14mm}
   @media print{
+    /* tuned so the current content fills exactly one A4 page — re-tune if the CV grows */
+    :root{--fs:8pt;--gap:4.2mm}
     body{background:#fff}
     .bar{display:none}
     .cv{margin:0;padding:0;box-shadow:none;width:auto;min-height:0}

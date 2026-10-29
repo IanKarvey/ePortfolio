@@ -17,13 +17,13 @@ export const cv = {
   ],
 
   summary:
-    'Fourth-year BSIT student majoring in System Development at De La Salle Lipa who builds complete systems end to end — from database design and security to the user interface. Sole developer of Barangay Safety, a Flutter and Supabase incident-reporting platform for barangays in Lipa City, and of two commissioned Python desktop applications for clients. Detail-oriented and quick to learn. Seeking an OJT / internship placement in software, systems, web or mobile development.',
+    'Fourth-year BSIT student majoring in System Development at De La Salle Lipa who builds complete systems end to end — from database design and security to the user interface. Sole developer of Barangay Safety, a Flutter and Supabase incident-reporting platform for barangays in Lipa City, and of two commissioned Python desktop applications for clients. Detail-oriented and quick to learn. Seeking a Full-Stack Developer or Software Developer OJT placement, while open to other software, systems, web or mobile roles.',
 
   skills: [
     ['Mobile Development', 'Flutter, Dart, Provider, maps and geolocation, push notifications'],
     ['Backend & Database', 'Supabase, PostgreSQL, SQL, row-level security, pg_cron, Edge Functions, Node.js, REST APIs'],
-    ['Desktop & Data', 'Python, Tkinter, Matplotlib, CSV data handling, PyInstaller packaging, automated testing'],
-    ['Web Development', 'HTML, CSS, JavaScript, Astro, responsive design, Vercel and Firebase Hosting'],
+    ['Desktop & Data', 'Python, Tkinter, Matplotlib and CSV data handling'],
+    ['Web Development', 'HTML, CSS, JavaScript, Astro, Tailwind CSS, Next.js, Bootstrap, responsive design, Vercel and Firebase Hosting'],
     ['Data, Tools & Design', 'Visual Studio, Git and GitHub, Adobe tools, UI/UX design'],
     ['AI Tools', 'ChatGPT, Microsoft Copilot, Claude, Gemini (used for automation, SQL/query support, and system development)'],
     ['Soft Skills & Languages', 'Quick learner, team player, detail-oriented, creative problem solver · Tagalog, English'],
@@ -32,12 +32,11 @@ export const cv = {
   experience: [
     {
       role: 'Freelance Software Developer — Client Commissions',
-      where: 'Talisay, Batangas',
-      when: '2026',
       points: [] as string[],
       sub: [
         {
           title: 'GMD Bakery — Order and Production Planner',
+          date: 'October 2026',
           points: [
             'Replaced handwritten order slips with a Python/Tkinter app for orders, inventory, daily sales, reports and Matplotlib charts.',
             'Built a production plan that computes, per day, the pieces still to bake after subtracting stock on hand, with a printable bake sheet.',
@@ -46,6 +45,7 @@ export const cv = {
         },
         {
           title: 'Failed Delivery & Redelivery Pattern Analyzer',
+          date: 'October 2026',
           points: [
             'Built desktop and terminal versions on one shared engine that track delivery attempts and redeliveries, success rate by area, top failure reasons and trends, with four Matplotlib charts.',
             'Enforced data-integrity rules (e.g. no attempts after a successful delivery) and covered them with 79 automated tests.',
@@ -57,9 +57,10 @@ export const cv = {
 
   projects: [
     {
-      title: 'Barangay Safety — Incident Reporting with Geo-Tagging and Interactive Maps (Capstone Project)',
+      title: 'Barangay Safety — Incident Reporting with Geo-Tagging and Interactive Maps',
+      date: 'September 2025 – October 2026',
       points: [
-        'Sole developer of a Flutter mobile app and web dashboard on Supabase (PostgreSQL) for five high-density barangays in Lipa City.',
+        'Capstone project: sole developer of a Flutter mobile app and web dashboard on Supabase (PostgreSQL) for five high-density barangays in Lipa City.',
         'GPS geo-tagged incident reports with photos, live incident map, heatmaps and real-time responder tracking.',
         'Server-side auto-escalation of unanswered reports at 5, 10 and 15 minutes using pg_cron, with push alerts via Edge Functions and Firebase Cloud Messaging.',
         'Row-level security on every table, private photo storage with signed URLs, duplicate-photo detection, audit logs, and PDF/Excel exports.',
@@ -74,8 +75,8 @@ export const cv = {
   ],
 
   certifications: [
-    'Cyber Threat Management — Cisco Networking Academy (Certified, 2026)',
-    'Python Essentials 1 & 2 — Cisco × OpenEDG Python Institute (Certified, 2026)',
+    'Cyber Threat Management — Cisco Networking Academy (2026)',
+    'Python Essentials 1 & 2 — Cisco × OpenEDG Python Institute (2026)',
     'Skills to Succeed Academy, 58 modules — Accenture (2026)',
     'DevRoutes: Learning How to Learn with Roadmaps — JPCS, De La Salle Chapter (2026)',
   ],
