@@ -20,7 +20,7 @@ export const profile = {
   },
   /* the CV's Professional Summary */
   summary:
-    'Aspiring full-stack developer and fourth-year BSIT student majoring in System Development at De La Salle Lipa. Curious about how software works since childhood, and now enjoys building apps and websites that turn creativity into something useful — including Barangay Safety, an incident-reporting platform built solo with Flutter and Supabase to help Lipa City\'s urban barangays respond faster, and two Python desktop applications for clients who came through referrals. Capable, persistent and thoughtful. Seeking a Full-Stack or Software Developer OJT, open to other IT roles, to gain real-world experience, learn and grow. Available December 1, 2026 for 486 hours.',
+    'Aspiring full-stack developer and fourth-year BSIT student majoring in System Development at De La Salle Lipa. Has been curious about how software works since childhood, and now enjoys building apps and websites that turn creativity into something useful — including Barangay Safety, an incident-reporting platform built solo with Flutter and Supabase to help Lipa City\'s urban barangays respond faster, and two Python desktop applications for clients who came through referrals. Capable, persistent and thoughtful. Seeking a Full-Stack or Software Developer OJT, open to other IT roles, to gain real-world experience, learn and grow. Available December 1, 2026 for 486 hours.',
   education: [
     'Bachelor of Science in Information Technology, Major in System Development — De La Salle Lipa, 2023–2027 (currently 4th year)',
     'Senior High School — San Guillermo Academy, 2021–2023 — awards: With Honors; Best in Research; With Honors in Work Immersion',

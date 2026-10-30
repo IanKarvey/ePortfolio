@@ -1,0 +1,32 @@
+---
+/* Shown by Vercel for any address that does not exist. */
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page not found — Ian Karvey L. Manimtim" description="This page does not exist. Head back to Ian Karvey L. Manimtim's portfolio.">
+<main class="nf" data-glow="#dbb95e,#b5532c,#7a2f45">
+  <div class="nf-in">
+    <div class="sl">Error 404</div>
+    <h1 class="nf-h">This page<br>doesn&rsquo;t exist.</h1>
+    <p class="nf-p">The link may be old or mistyped. Everything else is one click away.</p>
+    <nav class="nf-links" aria-label="Where to go">
+      <a href="/">Home</a>
+      <a href="/#projects">Projects</a>
+      <a href="/projects/barangay-safety/">Barangay Safety demo</a>
+      <a href="/cv/">CV</a>
+    </nav>
+  </div>
+</main>
+</Base>
+
+<style>
+  .nf{min-height:100vh;display:flex;align-items:center;padding:clamp(110px,14vw,170px) var(--g) clamp(64px,8vw,110px)}
+  .nf-in{max-width:var(--w);width:100%;margin:0 auto}
+  .nf-h{margin:18px 0 22px;font-family:var(--serif);font-weight:900;font-size:clamp(48px,9vw,120px);line-height:.95;color:var(--fg)}
+  .nf-p{max-width:520px;font-family:var(--sans);font-size:16px;font-weight:300;line-height:1.7;color:var(--fg2)}
+  .nf-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+  .nf-links a{display:inline-flex;align-items:center;height:42px;padding:0 20px;border:.6px solid var(--brd2);border-radius:3px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg2);text-decoration:none;transition:color .25s,border-color .25s}
+  .nf-links a:first-child{background:var(--accent);border-color:var(--accent);color:#14110d}
+  .nf-links a:hover{color:var(--fg);border-color:var(--fg3)}
+  .nf-links a:first-child:hover{color:#14110d;filter:brightness(1.08)}
+  :global(html:not(.touch)) .nf-links a{cursor:none}
+</style>

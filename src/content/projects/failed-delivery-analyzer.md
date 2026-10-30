@@ -11,8 +11,8 @@ status: Delivered
 role: Sole Developer
 platform: Windows desktop · Terminal
 stack: [Python, Tkinter, Matplotlib, CSV, PyInstaller, Automated tests]
-logo: /projects/delivery-badge.svg
-logoBg: '#14110d'
+logo: /projects/delivery-app-icon.png
+logoBg: 'transparent'
 accent: '#dbb95e'
 demo: delivery
 stats:

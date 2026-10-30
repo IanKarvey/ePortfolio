@@ -1,297 +1,891 @@
 ---
-/* GMD Bakery Planner — a browser recreation of the desktop app's core loop with sample data:
-   take an order → see the bake list change → watch sales update. Prices are the app's own menu. */
+/* GMD Bakery Planner — the real program's window, rebuilt for the browser.
+   All seven tabs with the same palette, wording, rules and numbers as bakery_planner.py,
+   running on the sample data the program itself generates on first start. */
 ---
-<div class="bk" id="bk">
-  <div class="bk-bar">
-    <span class="bk-dots"><i></i><i></i><i></i></span>
-    <span class="bk-title">GMD Bakery — Order and Production Planner</span>
-    <span class="bk-file">orders.csv · saved</span>
-  </div>
-  <div class="bk-head">
-    <img src="/projects/gmd-bakery-badge.jpg" alt="GMD Bakery logo" class="bk-logo">
-    <div>
-      <div class="bk-brand">GMD Bakery</div>
-      <div class="bk-sub">Home of the Special Mamon de Tabla</div>
+<div class="gmd" id="gmd">
+  <div class="gmd-win">
+    <div class="gmd-bar">
+      <img src="/projects/gmd-bakery-badge.jpg" alt="" width="16" height="16">
+      <span>GMD Bakery - Order and Production Planner</span>
+      <i class="gmd-caps" aria-hidden="true"><b>&#8212;</b><b>&#9633;</b><b>&#10005;</b></i>
     </div>
-  </div>
-  <div class="bk-tabs" role="tablist">
-    <button type="button" role="tab" class="on" data-tab="order">Add Order <kbd>Ctrl+1</kbd></button>
-    <button type="button" role="tab" data-tab="plan">Production Plan <kbd>Ctrl+4</kbd></button>
-    <button type="button" role="tab" data-tab="sales">Sales &amp; Charts <kbd>Ctrl+7</kbd></button>
-  </div>
 
-  <div class="bk-pane" data-pane="order">
-    <form class="bk-form" id="bkForm">
-      <label>Customer<input id="bkCust" list="bkCusts" value="Maria Santos" required></label>
-      <datalist id="bkCusts"></datalist>
-      <label>Product<select id="bkProd"></select></label>
-      <label class="bk-sm">Quantity<input id="bkQty" type="number" min="1" max="500" value="24" required></label>
-      <label class="bk-sm">Price each<input id="bkPrice" readonly></label>
-      <div class="bk-when">
-        <span>Needed on</span>
-        <div class="bk-chips" id="bkWhen"></div>
+    <div class="gmd-app" id="gmdApp" data-lenis-prevent>
+      <header class="gmd-head">
+        <img src="/projects/gmd-bakery-badge.jpg" alt="GMD Bakery logo" class="gmd-logo">
+        <div class="gmd-names"><b>GMD Bakery</b><span>Order and Production Planner</span></div>
+        <div class="gmd-right"><span id="gmdToday"></span><em id="gmdPending"></em></div>
+      </header>
+      <nav class="gmd-tabs" role="tablist" aria-label="Tabs">
+        <button type="button" class="on" data-tab="0" role="tab">Add Order</button>
+        <button type="button" data-tab="1" role="tab">Orders</button>
+        <button type="button" data-tab="2" role="tab">Daily Sales</button>
+        <button type="button" data-tab="3" role="tab">Production Plan</button>
+        <button type="button" data-tab="4" role="tab">Inventory</button>
+        <button type="button" data-tab="5" role="tab">Reports</button>
+        <button type="button" data-tab="6" role="tab">Charts</button>
+        <i class="gmd-line" id="gmdLine"></i>
+      </nav>
+
+      <div class="gmd-pages">
+        <!-- Add Order -->
+        <section class="gmd-page on" data-tab="0">
+          <p class="gmd-note" id="gmdAddNote">Record a customer order. Pick a product and the price fills in by itself.</p>
+          <div class="gmd-add">
+            <form class="gmd-card gmd-form" id="gmdForm" novalidate>
+              <label class="s2">Customer name<input id="gCust" class="gmd-in" autocomplete="off"></label>
+              <label class="s2">Product &nbsp;(pick or type a new one)<input id="gProd" class="gmd-in gmd-cb" list="gProds" autocomplete="off"><datalist id="gProds"></datalist></label>
+              <label>Quantity<input id="gQty" class="gmd-in" type="number" min="1" max="1000" value="1"></label>
+              <label>Unit price (₱)<input id="gPrice" class="gmd-in" inputmode="decimal" autocomplete="off"></label>
+              <label>Date needed<input id="gDate" class="gmd-in" autocomplete="off"></label>
+              <label>Status<select id="gStatus" class="gmd-in gmd-cb"><option>Pending</option><option>Completed</option></select></label>
+              <div class="gmd-total s4"><span>Order total</span><b id="gTotal">₱0.00</b></div>
+              <div class="gmd-btns s4"><button type="submit" class="gmd-btn" id="gSave">Save order</button><button type="button" class="gmd-btn ghost" id="gClear">Clear</button></div>
+            </form>
+            <div class="gmd-card gmd-recent">
+              <h4>Latest orders</h4>
+              <div class="gmd-tbl" id="gRecent"></div>
+              <img src="/projects/gmd-bakery-badge.jpg" alt="" class="gmd-mark">
+            </div>
+          </div>
+        </section>
+
+        <!-- Orders -->
+        <section class="gmd-page" data-tab="1">
+          <p class="gmd-note">Search, filter and manage every order.</p>
+          <div class="gmd-card gmd-filter">
+            <label class="grow">Search<input id="oText" class="gmd-in" autocomplete="off"></label>
+            <label>Product<select id="oProd" class="gmd-in gmd-cb"></select></label>
+            <label>Status<span class="gmd-seg" id="oStatus"><button type="button" class="on">All</button><button type="button">Pending</button><button type="button">Completed</button></span></label>
+            <label>From date<input id="oFrom" class="gmd-in w10" autocomplete="off"></label>
+            <label>To date<input id="oTo" class="gmd-in w10" autocomplete="off"></label>
+            <button type="button" class="gmd-btn ghost" id="oReset">Reset</button>
+          </div>
+          <div class="gmd-card gmd-tbl gmd-fill" id="oTable"></div>
+          <div class="gmd-bottom">
+            <span id="oCount"></span>
+            <button type="button" class="gmd-btn" id="oDone">Mark completed</button>
+            <button type="button" class="gmd-btn ghost" id="oEdit">Edit</button>
+            <button type="button" class="gmd-btn danger" id="oDel">Delete</button>
+          </div>
+        </section>
+
+        <!-- Daily Sales -->
+        <section class="gmd-page" data-tab="2">
+          <p class="gmd-note">How much the bakery earned on each day.</p>
+          <div class="gmd-cards c3" id="sCards"></div>
+          <div class="gmd-card gmd-tbl gmd-fill" id="sTable"></div>
+        </section>
+
+        <!-- Production Plan -->
+        <section class="gmd-page" data-tab="3">
+          <p class="gmd-note">The baker's to-do list: pick a date and the list updates by itself, showing how many pieces of each product to bake.</p>
+          <div class="gmd-card gmd-ctl">
+            <div class="gmd-ctlrow">
+              <label>Date to bake for<input id="pDate" class="gmd-in w13" autocomplete="off"></label>
+              <button type="button" class="gmd-btn ghost" data-pday="0">Today</button>
+              <button type="button" class="gmd-btn ghost" data-pday="1">Tomorrow</button>
+              <span class="gmd-seg" id="pMode"><button type="button" class="on">Pending only</button><button type="button">All orders</button></span>
+              <button type="button" class="gmd-btn right" id="pPrint">Print bake sheet</button>
+            </div>
+            <div class="gmd-chips"><span>Dates with orders to bake:</span><span id="pChips"></span></div>
+          </div>
+          <div class="gmd-cards c3" id="pCards"></div>
+          <div class="gmd-card gmd-tbl gmd-fill" id="pTable"></div>
+          <p class="gmd-msgline" id="pMsg"></p>
+        </section>
+
+        <!-- Inventory -->
+        <section class="gmd-page" data-tab="4">
+          <p class="gmd-note">Keep count of what you bake. In stock = pieces baked minus orders marked Completed since your first record.</p>
+          <div class="gmd-card gmd-ctl">
+            <div class="gmd-ctlrow">
+              <label>Product<input id="iProd" class="gmd-in gmd-cb w20" list="gProds" autocomplete="off"></label>
+              <label>What happened<span class="gmd-seg" id="iKind"><button type="button" class="on">Baked</button><button type="button">Used / wasted</button></span></label>
+              <label>Pieces<input id="iQty" class="gmd-in w7" type="number" min="1" max="10000" value="1"></label>
+              <label>Date<input id="iDate" class="gmd-in w11" autocomplete="off"></label>
+              <button type="button" class="gmd-btn right" id="iRecord">Record</button>
+            </div>
+          </div>
+          <div class="gmd-cards c3" id="iCards"></div>
+          <div class="gmd-card gmd-tbl gmd-fill" id="iTable"></div>
+          <div class="gmd-bottom"><span id="iMsg"></span><button type="button" class="gmd-btn ghost" id="iUndo">Undo last record</button></div>
+        </section>
+
+        <!-- Reports -->
+        <section class="gmd-page" data-tab="5">
+          <p class="gmd-note">A summary of orders, pieces and sales.</p>
+          <div class="gmd-cards c4" id="rCards1"></div>
+          <div class="gmd-cards c3" id="rCards2"></div>
+          <div class="gmd-card gmd-tbl gmd-fill" id="rTable"></div>
+          <div class="gmd-bottom"><span>Saves a plain-text copy of this report that you can print or send.</span><button type="button" class="gmd-btn ghost" id="rSave">Save report</button></div>
+        </section>
+
+        <!-- Charts -->
+        <section class="gmd-page" data-tab="6">
+          <p class="gmd-note">See what sells best and how sales change over time.</p>
+          <div class="gmd-charttop">
+            <span class="gmd-seg big" id="cKind"><button type="button" class="on" data-k="bar">Quantity per product</button><button type="button" data-k="line">Sales trend</button><button type="button" data-k="pie">Sales share</button></span>
+            <span class="gmd-seg" id="cMode" hidden><button type="button" class="on">Daily</button><button type="button">Weekly</button></span>
+          </div>
+          <div class="gmd-card gmd-fill gmd-chart" id="cChart"></div>
+        </section>
       </div>
-      <div class="bk-total">Total <b id="bkTotal">₱0</b></div>
-      <button class="bk-btn" type="submit">Save order <kbd>Enter</kbd></button>
-    </form>
-    <div class="bk-orders">
-      <div class="bk-h">Latest orders <span>yellow = still pending</span></div>
-      <table><thead><tr><th>Customer</th><th>Product</th><th>Qty</th><th>Needed</th><th></th></tr></thead><tbody id="bkRows"></tbody></table>
-    </div>
-  </div>
 
-  <div class="bk-pane" data-pane="plan" hidden>
-    <div class="bk-h">What to bake <span>needed − already in stock</span></div>
-    <div class="bk-chips" id="bkDays"></div>
-    <table class="bk-plan"><thead><tr><th>Product</th><th>Needed</th><th>In stock</th><th>Still to bake</th><th></th></tr></thead><tbody id="bkPlan"></tbody></table>
-    <p class="bk-hint">Tip: press <b>+ Baked 12</b> to record a batch — the plan updates instantly, just like the Inventory tab.</p>
-  </div>
+      <footer class="gmd-foot">Orders are saved in &nbsp;C:\Users\Owner\Desktop\GMD Bakery Planner\orders.csv</footer>
 
-  <div class="bk-pane" data-pane="sales" hidden>
-    <div class="bk-cards">
-      <div><span>Total sales</span><b id="bkSales">₱0</b><small id="bkPending"></small></div>
-      <div><span>Orders</span><b id="bkCount">0</b><small id="bkPcs"></small></div>
-      <div><span>Most ordered</span><b id="bkTop">—</b><small id="bkTopN"></small></div>
+      <!-- Windows message box (tkinter.messagebox) -->
+      <div class="gmd-over" id="gmdMsg" hidden>
+        <div class="gmd-mb" role="alertdialog" aria-modal="true" aria-labelledby="gmdMbT">
+          <div class="gmd-mbbar"><span id="gmdMbT"></span><b aria-hidden="true">&#10005;</b></div>
+          <div class="gmd-mbbody"><i id="gmdMbIcon"></i><p id="gmdMbText"></p></div>
+          <div class="gmd-mbfoot" id="gmdMbBtns"></div>
+        </div>
+      </div>
+
+      <!-- Notepad (the bake sheet and report open in it) -->
+      <div class="gmd-over" id="gmdNp" hidden>
+        <div class="gmd-np">
+          <div class="gmd-npbar"><span id="gmdNpT"></span><button type="button" id="gmdNpX" aria-label="Close Notepad">&#10005;</button></div>
+          <div class="gmd-npmenu"><span>File</span><span>Edit</span><span>View</span></div>
+          <pre id="gmdNpText" data-lenis-prevent></pre>
+          <div class="gmd-npstat"><span id="gmdNpPos">Ln 1, Col 1</span><span>100%</span><span>Windows (CRLF)</span><span>UTF-8 with BOM</span></div>
+        </div>
+      </div>
     </div>
-    <div class="bk-h">Quantity per product</div>
-    <div class="bk-chart" id="bkChart"></div>
   </div>
 </div>
 
 <script>
-  import { showToast } from '../../scripts/core.js';
-
+  /* ══════════════ data: the program's own sample data (seed_sample_data, generated on 2026-10-30) ══════════════ */
   const PRODUCTS: Record<string, number> = {
     'Pandesal': 5, 'Ensaymada': 25, 'Spanish Bread': 12, 'Cheese Bread': 15, 'Pan de Coco': 12,
     'Monay': 8, 'Cinnamon Roll': 35, 'Chocolate Cake (slice)': 60, 'Egg Pie (slice)': 40, 'Brownies': 30,
   };
+  const P = Object.keys(PRODUCTS);
   const CUSTOMERS = ['Maria Santos', 'Juan Dela Cruz', 'Ana Reyes', 'Carlo Garcia', 'Liza Mendoza', 'Paolo Cruz', 'Grace Bautista', 'Mark Ramos', 'Joy Villanueva', 'Ben Aquino'];
-  const DAYS = ['Today', 'Tomorrow', 'In 2 days'];
-  type Order = { cust: string; prod: string; qty: number; day: number; done: boolean; fresh?: boolean };
+  const CHART_COLORS = ['#175f27', '#63ab33', '#a8d27a', '#e9b44c', '#c8743a', '#8a5a3b', '#3b8ea5', '#7a6fb0', '#d9534f', '#8c9a8a'];
+  /* customer digit, product digit, quantity, then the day relative to the day it was generated; c = Completed */
+  const ORDERS_SRC = '097,-27c;1027,-27c;821,-27c;612,-27c;124,-27c;931,-27c;9017,-27c;9910,-27c;024,-27c;433,-27c;9013,-26c;2111,-26c;3028,-26c;129,-26c;3410,-26c;639,-26c;9524,-26c;486,-26c;313,-26c;8019,-26c;736,-26c;142,-25c;533,-25c;6025,-25c;1031,-25c;5528,-25c;926,-25c;138,-25c;198,-24c;4032,-24c;7531,-24c;517,-24c;5024,-24c;048,-23c;215,-23c;6522,-23c;188,-23c;8022,-23c;613,-23c;517,-22c;3522,-22c;2015,-22c;014,-22c;2310,-22c;211,-22c;926,-22c;843,-22c;0911,-22c;8811,-21c;627,-21c;6030,-21c;3012,-21c;522,-21c;042,-21c;149,-21c;0910,-21c;6710,-20c;5018,-20c;148,-20c;7025,-20c;135,-20c;5033,-20c;2525,-20c;834,-20c;0027,-19c;1519,-19c;8518,-19c;523,-19c;8527,-19c;3520,-19c;344,-19c;3612,-19c;5025,-19c;4510,-19c;9112,-18c;598,-18c;196,-18c;714,-18c;7016,-18c;0410,-18c;5311,-18c;162,-18c;3534,-17c;633,-17c;1520,-17c;6612,-17c;1312,-17c;2515,-17c;7028,-17c;963,-17c;5911,-16c;2027,-16c;1035,-16c;633,-16c;394,-16c;4016,-16c;5310,-16c;217,-16c;5033,-16c;8536,-15c;229,-15c;839,-15c;2024,-15c;243,-15c;1029,-15c;836,-15c;138,-15c;4016,-14c;8013,-14c;121,-14c;8210,-14c;444,-14c;729,-14c;834,-14c;875,-14c;774,-14c;727,-13c;3111,-13c;424,-13c;2538,-13c;5911,-13c;2038,-13c;194,-13c;228,-13c;294,-13c;597,-12c;526,-12c;0021,-12c;728,-12c;5522,-12c;835,-12c;392,-12c;192,-12c;211,-12c;613,-12c;4611,-12c;8039,-11c;5412,-11c;2011,-11c;422,-11c;1911,-11c;962,-11c;472,-11c;078,-11c;497,-10c;841,-10c;1540,-10c;095,-10c;4039,-10c;349,-10c;219,-10c;421,-9c;8010,-9c;834,-9c;138,-9c;6530,-9c;6527,-9c;395,-9c;2212,-8c;026,-8c;161,-8c;645,-8c;6012,-8c;4711,-8c;015,-7c;433,-7c;525,-7c;599,-7c;315,-7c;521,-7c;428,-7c;334,-7c;131,-7c;663,-6c;047,-6c;3111,-6c;8040,-6c;963,-6c;726,-6c;9033,-6c;841,-6c;8412,-6c;8026,-6c;961,-5c;3612,-5c;2011,-5c;642,-5c;069,-5c;8411,-5c;4525,-5c;1035,-5c;8526,-5c;1026,-5c;4525,-5c;365,-5c;7111,-4c;137,-4c;4311,-4c;3529,-4c;5014,-4c;4112,-4c;741,-3c;1018,-3c;7531,-3c;419,-3c;138,-3c;399,-3c;712,-3c;1024,-3c;468,-3c;114,-2c;843,-2c;216,-2c;8411,-2c;512,-2c;618,-2c;7010,-2c;4522,-2c;527,-1c;0020,-1c;616,-1c;3039,-1c;4538,-1c;612,-1c;5910,0p;485,0p;2036,0c;815,0c;016,0c;8611,0c;0312,0p;987,0c;7533,1p;2050,1p;5041,1p;416,1p;425,2p;6312,2p;1025,2p;8046,2p';
+  const STOCK_SRC = '315,-20;710,-20;528,-20;48,-20;079,-20;614,-19;5100,-19;48,-19;052,-19;23,-19;921,-18;311,-18;67,-18;117,-18;416,-18;020,-18;319,-17;623,-17;574,-17;028,-17;915,-16;314,-16;115,-16;0111,-16;325,-15;544,-15;43,-15;055,-15;212,-15;34,-14;79,-14;44,-14;029,-14;220,-14;919,-13;112,-13;541,-13;039,-13;219,-13;914,-12;35,-12;611,-12;16,-12;527,-12;021,-12;214,-12;915,-11;710,-11;67,-11;412,-11;056,-11;22,-11;912,-10;113,-10;540,-10;417,-10;039,-10;96,-9;319,-9;561,-9;010,-9;21,-9;712,-8;61,-8;45,-8;019,-8;223,-8;99,-7;38,-7;114,-7;218,-7;610,-6;116,-6;428,-6;099,-6;26,-6;628,-5;576,-5;420,-5;073,-5;318,-4;124,-4;529,-4;022,-4;99,-3;38,-3;68,-3;111,-3;531,-3;44,-3;042,-3;120,-2;527,-2;414,-2;016,-2;18,-1;540,-1;064,-1;214,-1;910,0;316,0;616,0;812,0;112,0;036,0';
 
-  const peso = (n: number) => '₱' + n.toLocaleString('en-PH');
-  const $ = (id: string) => document.getElementById(id)!;
-  const root = $('bk');
-
-  /* sample orders + stock, the way the app ships with sample data */
-  let orders: Order[] = [
-    { cust: 'Juan Dela Cruz', prod: 'Pandesal', qty: 60, day: 0, done: true },
-    { cust: 'Ana Reyes', prod: 'Ensaymada', qty: 12, day: 0, done: false },
-    { cust: 'Carlo Garcia', prod: 'Spanish Bread', qty: 24, day: 0, done: false },
-    { cust: 'Liza Mendoza', prod: 'Pandesal', qty: 40, day: 1, done: false },
-    { cust: 'Paolo Cruz', prod: 'Chocolate Cake (slice)', qty: 8, day: 1, done: false },
-    { cust: 'Grace Bautista', prod: 'Cheese Bread', qty: 30, day: 1, done: false },
-    { cust: 'Mark Ramos', prod: 'Egg Pie (slice)', qty: 10, day: 2, done: false },
-    { cust: 'Joy Villanueva', prod: 'Pan de Coco', qty: 18, day: 2, done: false },
-  ];
-  const stock: Record<string, number> = { 'Pandesal': 30, 'Ensaymada': 6, 'Spanish Bread': 24, 'Cheese Bread': 10 };
-  let when = 1;
-  let planDay = 0;
-
-  $('bkCusts').innerHTML = CUSTOMERS.map(c => `<option value="${c}">`).join('');
-  $('bkProd').innerHTML = Object.keys(PRODUCTS).map(p => `<option>${p}</option>`).join('');
-  const prodSel = $('bkProd') as HTMLSelectElement;
-  const qtyIn = $('bkQty') as HTMLInputElement;
-  function price() {
-    const p = PRODUCTS[prodSel.value];
-    ($('bkPrice') as HTMLInputElement).value = peso(p);
-    $('bkTotal').textContent = peso(p * (+qtyIn.value || 0));
+  /* ══════════════ helpers ══════════════ */
+  type Order = { order_id: number; customer: string; product: string; quantity: number; price: number; order_date: string; status: string };
+  type Stock = { entry_id: number; date: string; product: string; quantity: number };
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const iso = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const dayAt = (off: number) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + off); return iso(d); };
+  const todayS = () => dayAt(0);
+  const toDate = (s: string) => new Date(s + 'T12:00:00');
+  const daysBetween = (a: string, b: string) => Math.round((toDate(a).getTime() - toDate(b).getTime()) / 864e5);
+  const num = (n: number) => n.toLocaleString('en-US');
+  const peso = (n: number) => '₱' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const plural = (n: number, w: string) => `${num(n)} ${w}${n === 1 ? '' : 's'}`;
+  const total = (o: Order) => o.quantity * o.price;
+  const esc = (s: unknown) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const longDate = (s: string) => { const d = toDate(s); return `${DAYS[d.getDay()]}, ${pad(d.getDate())} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; };
+  const chipDate = (s: string) => { const d = toDate(s); return `${DAYS[d.getDay()].slice(0, 3)} ${pad(d.getDate())} ${MONTHS[d.getMonth()].slice(0, 3)}`; };
+  /* parse_date: YYYY-MM-DD, or the formats Excel turns dates into */
+  function parseDate(s: string): string | null {
+    const t = s.trim();
+    let m = t.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/), y = 0, mo = 0, d = 0;
+    if (m) [y, mo, d] = [+m[1], +m[2], +m[3]];
+    else if ((m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) [mo, d, y] = [+m[1], +m[2], +m[3]];
+    else return null;
+    const dt = new Date(y, mo - 1, d, 12);
+    return dt.getFullYear() === y && dt.getMonth() === mo - 1 && dt.getDate() === d ? iso(dt) : null;
   }
-  prodSel.addEventListener('change', price);
-  qtyIn.addEventListener('input', price);
 
-  function chips(el: HTMLElement, active: number, label: (i: number) => string, onPick: (i: number) => void) {
-    el.innerHTML = '';
-    DAYS.forEach((_, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'bk-chip' + (i === active ? ' on' : '');
-      b.textContent = label(i);
-      b.addEventListener('click', () => onPick(i));
-      el.appendChild(b);
+  let orders: Order[] = ORDERS_SRC.split(';').map((s, i) => {
+    const m = s.match(/^(\d)(\d)(\d+),(-?\d+)([cp])$/)!;
+    const product = P[+m[2]];
+    return { order_id: i + 1, customer: CUSTOMERS[+m[1]], product, quantity: +m[3], price: PRODUCTS[product], order_date: dayAt(+m[4]), status: m[5] === 'c' ? 'Completed' : 'Pending' };
+  });
+  let stock: Stock[] = STOCK_SRC.split(';').map((s, i) => {
+    const m = s.match(/^(\d)(-?\d+),(-?\d+)$/)!;
+    return { entry_id: i + 1, date: dayAt(+m[3]), product: P[+m[1]], quantity: +m[2] };
+  });
+
+  /* ══════════════ the program's calculations ══════════════ */
+  function menuPrices() {
+    const menu: Record<string, number> = { ...PRODUCTS };
+    orders.slice().sort((a, b) => (a.order_date + String(a.order_id).padStart(6, '0') < b.order_date + String(b.order_id).padStart(6, '0') ? -1 : 1))
+      .forEach(o => { if (!(o.product in PRODUCTS)) menu[o.product] = o.price; });
+    return menu;
+  }
+  function dailyTotals() {
+    const days = new Map<string, [number, number, number]>();
+    orders.forEach(o => { const d = days.get(o.order_date) ?? [0, 0, 0]; d[0]++; d[1] += o.quantity; d[2] += total(o); days.set(o.order_date, d); });
+    return new Map([...days.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)));
+  }
+  function mostOrdered(): [string, number, number] | null {
+    const count = new Map<string, number>(), pieces = new Map<string, number>();
+    orders.forEach(o => { count.set(o.product, (count.get(o.product) ?? 0) + 1); pieces.set(o.product, (pieces.get(o.product) ?? 0) + o.quantity); });
+    if (!count.size) return null;
+    const top = [...count.keys()].reduce((a, b) => (count.get(b)! > count.get(a)! || (count.get(b) === count.get(a) && pieces.get(b)! > pieces.get(a)!) ? b : a));
+    return [top, count.get(top)!, pieces.get(top)!];
+  }
+  function stockSummary(): [Record<string, { baked: number; sold: number; have: number; waiting: number; short: number }>, string | null] {
+    const start = stock.length ? stock.map(e => e.date).sort()[0] : null;
+    const baked: Record<string, number> = {}, sold: Record<string, number> = {}, waiting: Record<string, number> = {};
+    stock.forEach(e => { baked[e.product] = (baked[e.product] ?? 0) + e.quantity; });
+    orders.forEach(o => {
+      if (o.status === 'Pending') waiting[o.product] = (waiting[o.product] ?? 0) + o.quantity;
+      else if (start !== null && o.order_date >= start) sold[o.product] = (sold[o.product] ?? 0) + o.quantity;
+    });
+    const out: Record<string, { baked: number; sold: number; have: number; waiting: number; short: number }> = {};
+    new Set([...Object.keys(baked), ...Object.keys(sold), ...Object.keys(waiting)]).forEach(p => {
+      const have = (baked[p] ?? 0) - (sold[p] ?? 0);
+      out[p] = { baked: baked[p] ?? 0, sold: sold[p] ?? 0, have, waiting: waiting[p] ?? 0, short: Math.max(0, (waiting[p] ?? 0) - Math.max(have, 0)) };
+    });
+    return [out, start];
+  }
+
+  /* ══════════════ UI plumbing ══════════════ */
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+  type Col = { label: string; left?: boolean };
+  function table(cols: Col[], rows: { cells: unknown[]; tag?: string; key?: string }[]) {
+    const head = cols.map(c => `<th class="${c.left ? 'l' : ''}">${esc(c.label)}</th>`).join('');
+    const body = rows.map((r, i) => `<tr class="${r.tag ?? (i % 2 ? 'odd' : 'even')}"${r.key ? ` data-key="${r.key}"` : ''}>${r.cells.map((v, j) => `<td class="${cols[j].left ? 'l' : ''}">${esc(v)}</td>`).join('')}</tr>`).join('');
+    return `<div class="gmd-scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  const card = (title: string, value: string, note: string) => `<div class="gmd-card gmd-stat"><span>${esc(title)}</span><b>${esc(value)}</b><small>${esc(note)}</small></div>`;
+  function segmented(id: string, onPick: (v: string) => void) {
+    $(id).addEventListener('click', e => {
+      const b = (e.target as HTMLElement).closest('button');
+      if (!b) return;
+      $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      onPick(b.textContent!.trim());
     });
   }
-  const needed = (day: number) => {
-    const m: Record<string, number> = {};
-    orders.filter(o => o.day === day && !o.done).forEach(o => { m[o.prod] = (m[o.prod] || 0) + o.qty; });
-    return m;
-  };
+  const setSeg = (id: string, v: string) => $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x.textContent!.trim() === v));
 
-  function renderOrders() {
-    chips($('bkWhen'), when, i => DAYS[i], i => { when = i; renderOrders(); });
-    const rows = $('bkRows');
-    rows.innerHTML = '';
-    orders.slice(0, 6).forEach(o => {
-      const tr = document.createElement('tr');
-      tr.className = (o.done ? '' : 'pending') + (o.fresh ? ' fresh' : '');
-      [o.cust, o.prod, String(o.qty), DAYS[o.day]].forEach(t => { const td = document.createElement('td'); td.textContent = t; tr.appendChild(td); });
-      const td = document.createElement('td');
-      if (!o.done) {
-        const b = document.createElement('button');
-        b.type = 'button'; b.className = 'bk-mini'; b.textContent = 'Mark completed';
-        b.addEventListener('click', () => {
-          o.done = true;
-          stock[o.prod] = Math.max(0, (stock[o.prod] || 0) - o.qty);
-          renderAll();
-        });
-        td.appendChild(b);
-      } else td.innerHTML = '<span class="bk-ok">✓ done</span>';
-      tr.appendChild(td);
-      rows.appendChild(tr);
-      o.fresh = false;
+  /* tkinter.messagebox → a Windows message box */
+  function messagebox(title: string, text: string, kind: 'info' | 'error' | 'question' | 'warning' = 'info', buttons = ['OK']): Promise<string> {
+    $('gmdMbT').textContent = title;
+    $('gmdMbText').textContent = text;
+    $('gmdMbIcon').className = 'gmd-ic ' + kind;
+    $('gmdMbIcon').textContent = { info: 'i', error: '✕', question: '?', warning: '!' }[kind];
+    const box = $('gmdMbBtns');
+    box.innerHTML = buttons.map((b, i) => `<button type="button" class="${i === 0 ? 'def' : ''}">${b}</button>`).join('');
+    $('gmdMsg').hidden = false;
+    (box.querySelector('button') as HTMLButtonElement).focus();
+    return new Promise(res => {
+      box.onclick = e => { const b = (e.target as HTMLElement).closest('button'); if (b) { $('gmdMsg').hidden = true; res(b.textContent!); } };
     });
   }
-
-  function renderPlan() {
-    chips($('bkDays'), planDay, i => {
-      const pcs = Object.values(needed(i)).reduce((a, b) => a + b, 0);
-      return `${DAYS[i]} · ${pcs} pcs`;
-    }, i => { planDay = i; renderPlan(); });
-    const n = needed(planDay);
-    const body = $('bkPlan');
-    body.innerHTML = '';
-    const names = Object.keys(n);
-    if (!names.length) { body.innerHTML = '<tr><td colspan="5" class="bk-empty">Nothing pending for this day — all orders covered</td></tr>'; return; }
-    names.forEach(p => {
-      const have = stock[p] || 0;
-      const bake = Math.max(0, n[p] - have);
-      const tr = document.createElement('tr');
-      if (bake) tr.className = 'pending';
-      tr.innerHTML = `<td></td><td>${n[p]}</td><td>${have}</td><td><b>${bake || '✓ covered'}</b></td><td></td>`;
-      tr.cells[0].textContent = p;
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'bk-mini'; b.textContent = '+ Baked 12';
-      b.addEventListener('click', () => { stock[p] = (stock[p] || 0) + 12; renderPlan(); });
-      tr.cells[4].appendChild(b);
-      body.appendChild(tr);
-    });
+  const askyesno = async (t: string, m: string) => (await messagebox(t, m, 'question', ['Yes', 'No'])) === 'Yes';
+  /* write_export → the .txt opens in Notepad */
+  function notepad(stem: string, text: string) {
+    const n = new Date();
+    $('gmdNpT').textContent = `${stem}-${n.getFullYear()}${pad(n.getMonth() + 1)}${pad(n.getDate())}-${pad(n.getHours())}${pad(n.getMinutes())}${pad(n.getSeconds())}.txt - Notepad`;
+    $('gmdNpText').textContent = text;
+    $('gmdNp').hidden = false;
   }
+  $('gmdNpX').addEventListener('click', () => { $('gmdNp').hidden = true; });
 
-  function renderSales() {
-    const total = orders.reduce((a, o) => a + o.qty * PRODUCTS[o.prod], 0);
-    const pend = orders.filter(o => !o.done).reduce((a, o) => a + o.qty * PRODUCTS[o.prod], 0);
-    const qty: Record<string, number> = {};
-    const freq: Record<string, number> = {};
-    orders.forEach(o => { qty[o.prod] = (qty[o.prod] || 0) + o.qty; freq[o.prod] = (freq[o.prod] || 0) + 1; });
-    const top = Object.entries(freq).sort((a, b) => b[1] - a[1])[0];
-    $('bkSales').textContent = peso(total);
-    $('bkPending').textContent = `${peso(pend)} still pending`;
-    $('bkCount').textContent = String(orders.length);
-    $('bkPcs').textContent = `${orders.reduce((a, o) => a + o.qty, 0)} pieces`;
-    $('bkTop').textContent = top ? top[0] : '—';
-    $('bkTopN').textContent = top ? `in ${top[1]} orders` : '';
-    const max = Math.max(...Object.values(qty), 1);
-    $('bkChart').innerHTML = '';
-    Object.entries(qty).sort((a, b) => b[1] - a[1]).forEach(([p, q]) => {
-      const row = document.createElement('div');
-      row.className = 'bk-row';
-      row.innerHTML = `<span></span><div class="bk-track"><i style="width:0"></i></div><b>${q}</b>`;
-      row.querySelector('span')!.textContent = p;
-      $('bkChart').appendChild(row);
-      requestAnimationFrame(() => requestAnimationFrame(() => { (row.querySelector('i') as HTMLElement).style.width = (q / max) * 100 + '%'; }));
-    });
+  /* ══════════════ header + tabs ══════════════ */
+  let current = 0;
+  function refreshHeader() {
+    $('gmdToday').textContent = longDate(todayS());
+    const pending = orders.filter(o => o.status === 'Pending').length;
+    $('gmdPending').textContent = `${pending} pending order${pending !== 1 ? 's' : ''}`;
   }
-  const renderAll = () => { renderOrders(); renderPlan(); renderSales(); };
+  function moveLine() {
+    const b = document.querySelector<HTMLElement>(`#gmd .gmd-tabs [data-tab="${current}"]`)!;
+    const line = $('gmdLine');
+    line.style.left = b.offsetLeft + 'px'; line.style.width = b.offsetWidth + 'px';
+  }
+  function showPage(i: number) {
+    current = i;
+    document.querySelectorAll<HTMLElement>('#gmd .gmd-tabs [data-tab]').forEach(b => b.classList.toggle('on', +b.dataset.tab! === i));
+    document.querySelectorAll<HTMLElement>('#gmd .gmd-page').forEach(p => p.classList.toggle('on', +p.dataset.tab! === i));
+    if (i === 3 && !pTouched) $<HTMLInputElement>('pDate').value = defaultProdDate();
+    refreshAll();
+    moveLine();
+  }
+  document.querySelectorAll<HTMLElement>('#gmd .gmd-tabs [data-tab]').forEach(b => b.addEventListener('click', () => showPage(+b.dataset.tab!)));
+  addEventListener('resize', moveLine);
 
-  $('bkForm').addEventListener('submit', e => {
+  /* ══════════════ Add Order ══════════════ */
+  const fCust = $<HTMLInputElement>('gCust'), fProd = $<HTMLInputElement>('gProd'), fQty = $<HTMLInputElement>('gQty');
+  const fPrice = $<HTMLInputElement>('gPrice'), fDate = $<HTMLInputElement>('gDate'), fStatus = $<HTMLSelectElement>('gStatus');
+  let editingId: number | null = null;
+  function onProduct(mode: 'empty' | 'force' = 'empty') {
+    const menu = menuPrices(), typed = fProd.value.trim();
+    const match = Object.keys(menu).find(p => p.toLowerCase() === typed.toLowerCase());
+    if (match) {
+      if (match !== fProd.value) fProd.value = match;
+      if (mode === 'force' || fPrice.value.trim() === '') fPrice.value = menu[match].toFixed(2);
+      updateTotal();
+    }
+  }
+  function updateTotal() {
+    const q = fQty.value.trim(), p = fPrice.value.trim();
+    const t = /^-?\d+$/.test(q) && p !== '' && isFinite(+p) ? +q * +p : NaN;
+    $('gTotal').textContent = isNaN(t) ? '₱0.00' : peso(t);
+  }
+  function setAddHeading(id: number | null) {
+    const note = $('gmdAddNote');
+    note.textContent = id === null ? 'Record a customer order. Pick a product and the price fills in by itself.' : `Editing order #${id}. Change what you need, then save.`;
+    note.classList.toggle('edit', id !== null);
+    $('gSave').textContent = id === null ? 'Save order' : 'Save changes';
+  }
+  function clearForm() {
+    editingId = null; setAddHeading(null);
+    fCust.value = ''; fProd.value = ''; fQty.value = '1'; fPrice.value = ''; fDate.value = todayS(); fStatus.value = 'Pending';
+    updateTotal();
+  }
+  fProd.addEventListener('input', () => { if (Object.keys(menuPrices()).includes(fProd.value)) onProduct('force'); });
+  fProd.addEventListener('blur', () => onProduct());
+  [fQty, fPrice].forEach(el => el.addEventListener('input', updateTotal));
+  $('gClear').addEventListener('click', clearForm);
+  $('gmdForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const cust = ($('bkCust') as HTMLInputElement).value.trim() || 'Walk-in';
-    const qty = Math.max(1, Math.min(500, +qtyIn.value || 1));
-    orders.unshift({ cust, prod: prodSel.value, qty, day: when, done: false, fresh: true });
-    planDay = when;
-    renderAll();
-    showToast(`Order saved — ${qty} × ${prodSel.value} for ${DAYS[when].toLowerCase()}`);
-    ($('bkCust') as HTMLInputElement).value = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
+    onProduct();
+    const cust = fCust.value.trim(), prod = fProd.value.trim();
+    if (!cust) return messagebox('Missing info', 'Please enter the customer name.', 'error');
+    if (!prod) return messagebox('Missing info', 'Please choose or type a product.', 'error');
+    if (cust.length > 80 || prod.length > 60) return messagebox('Too long', 'Customer names can be up to 80 characters and product names up to 60.', 'error');
+    const qty = /^-?\d+$/.test(fQty.value.trim()) ? +fQty.value.trim() : NaN, price = fPrice.value.trim() === '' ? NaN : +fPrice.value.trim();
+    if (!(qty > 0) || !(price >= 0) || !isFinite(price)) return messagebox('Invalid number', 'Quantity must be a positive whole number and price a valid number.', 'error');
+    if ((qty > 10000 || price > 100000) && !(await askyesno('Check the amount', `${num(qty)} pieces at ${peso(price)} each is unusually large. Is that correct?`))) return;
+    const d = parseDate(fDate.value);
+    if (!d) return messagebox('Invalid date', 'Use the format YYYY-MM-DD (e.g. 2026-10-12).', 'error');
+    const gap = Math.abs(daysBetween(d, todayS()));
+    if (gap > 90 && !(await askyesno('Check the date', `${d} is ${gap} days from today. Is that correct?`))) return;
+    if (editingId === null) {
+      if (orders.some(o => o.customer.toLowerCase() === cust.toLowerCase() && o.product === prod && o.quantity === qty && o.price === price && o.order_date === d)
+        && !(await askyesno('Possible duplicate', 'An identical order (same customer, product, quantity, price and date) is already recorded.\n\nSave it again anyway?'))) return;
+      const id = Math.max(0, ...orders.map(o => o.order_id)) + 1;
+      orders.push({ order_id: id, customer: cust, product: prod, quantity: qty, price, order_date: d, status: fStatus.value });
+      await messagebox('Saved', `Order #${id} saved.\nTotal: ${peso(qty * price)}`);
+    } else {
+      const o = orders.find(x => x.order_id === editingId)!;
+      Object.assign(o, { customer: cust, product: prod, quantity: qty, price, order_date: d, status: fStatus.value });
+      await messagebox('Updated', `Order #${editingId} updated.`);
+    }
+    clearForm(); refreshAll();
   });
-
-  function tab(name: string) {
-    root.querySelectorAll<HTMLElement>('[data-tab]').forEach(b => { const on = b.dataset.tab === name; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
-    root.querySelectorAll<HTMLElement>('[data-pane]').forEach(p => { p.hidden = p.dataset.pane !== name; });
-    if (name === 'sales') renderSales();
+  function refreshRecent() {
+    const latest = orders.slice().sort((a, b) => b.order_id - a.order_id).slice(0, 8);
+    $('gRecent').innerHTML = table([{ label: 'Customer', left: true }, { label: 'Product', left: true }, { label: 'Qty' }, { label: 'Total' }],
+      latest.map(o => ({ cells: [o.customer, o.product, o.quantity, num(total(o))] })));
   }
-  root.querySelectorAll<HTMLElement>('[data-tab]').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab!)));
-  /* the real app's shortcuts, active while the demo is on screen */
-  let visible = false;
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(root);
-  document.addEventListener('keydown', e => {
-    if (!visible || !e.ctrlKey) return;
-    const map: Record<string, string> = { '1': 'order', '4': 'plan', '7': 'sales' };
-    if (map[e.key]) { e.preventDefault(); tab(map[e.key]); }
+
+  /* ══════════════ Orders ══════════════ */
+  let oStatus = 'All', oSel: number | null = null;
+  segmented('oStatus', v => { oStatus = v; refreshOrders(); });
+  function filtered() {
+    const txt = $<HTMLInputElement>('oText').value.trim().toLowerCase(), prod = $<HTMLSelectElement>('oProd').value;
+    const f1 = $<HTMLInputElement>('oFrom').value.trim(), f2 = $<HTMLInputElement>('oTo').value.trim();
+    const d1 = f1 ? parseDate(f1) ?? '' : '', d2 = f2 ? parseDate(f2) ?? '' : '';
+    return orders.filter(o => {
+      if (txt && !o.customer.toLowerCase().includes(txt) && !String(o.order_id).includes(txt) && !o.product.toLowerCase().includes(txt)) return false;
+      if (prod !== 'All' && o.product !== prod) return false;
+      if (oStatus !== 'All' && o.status !== oStatus) return false;
+      if (d1 && o.order_date < d1) return false;
+      if (d2 && o.order_date > d2) return false;
+      return true;
+    }).sort((a, b) => (a.order_date === b.order_date ? b.order_id - a.order_id : a.order_date < b.order_date ? 1 : -1));
+  }
+  function refreshOrders() {
+    const sel = $<HTMLSelectElement>('oProd'), keep = sel.value || 'All';
+    const names = [...new Set([...P, ...orders.map(o => o.product)])].sort();
+    sel.innerHTML = ['All', ...names].map(n => `<option>${esc(n)}</option>`).join('');
+    sel.value = names.includes(keep) ? keep : 'All';
+    const rows = filtered();
+    $('oTable').innerHTML = table(
+      [{ label: 'ID' }, { label: 'Customer', left: true }, { label: 'Product', left: true }, { label: 'Qty' }, { label: 'Unit price' }, { label: 'Total' }, { label: 'Date' }, { label: 'Status' }],
+      rows.map((o, i) => ({ cells: [o.order_id, o.customer, o.product, o.quantity, o.price.toFixed(2), total(o).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), o.order_date, o.status],
+        tag: (o.order_id === oSel ? 'sel ' : '') + (o.status === 'Pending' ? 'pending' : i % 2 ? 'odd' : 'even'), key: String(o.order_id) })));
+    const bad = ([[$<HTMLInputElement>('oFrom').value, 'From'], [$<HTMLInputElement>('oTo').value, 'To']] as [string, string][]).filter(([v]) => v.trim() && !parseDate(v));
+    const c = $('oCount');
+    c.classList.toggle('bad', bad.length > 0);
+    c.innerHTML = bad.length ? `'${bad[0][1]}' date not understood - use YYYY-MM-DD`
+      : `${rows.length} order(s) &nbsp; · &nbsp; ${peso(rows.reduce((s, o) => s + total(o), 0))} &nbsp; · &nbsp; yellow rows are still pending`;
+  }
+  ['oText', 'oProd'].forEach(id => $(id).addEventListener(id === 'oText' ? 'input' : 'change', refreshOrders));
+  ['oFrom', 'oTo'].forEach(id => {
+    $(id).addEventListener('input', () => { const p = [$<HTMLInputElement>('oFrom').value.trim(), $<HTMLInputElement>('oTo').value.trim()]; if (p.every(x => x === '' || (x.length >= 10 && parseDate(x)))) refreshOrders(); });
+    $(id).addEventListener('change', refreshOrders);
+  });
+  $('oReset').addEventListener('click', () => { ['oText', 'oFrom', 'oTo'].forEach(id => ($(id) as HTMLInputElement).value = ''); $<HTMLSelectElement>('oProd').value = 'All'; oStatus = 'All'; setSeg('oStatus', 'All'); refreshOrders(); });
+  $('oTable').addEventListener('click', e => { const tr = (e.target as HTMLElement).closest<HTMLElement>('tr[data-key]'); if (tr) { oSel = +tr.dataset.key!; refreshOrders(); } });
+  async function selectedId() {
+    if (oSel === null || !orders.some(o => o.order_id === oSel)) { await messagebox('Select an order', 'Please select an order from the list first.'); return null; }
+    return oSel;
+  }
+  $('oDone').addEventListener('click', async () => { const id = await selectedId(); if (id === null) return; orders.find(o => o.order_id === id)!.status = 'Completed'; refreshAll(); });
+  $('oDel').addEventListener('click', async () => {
+    const id = await selectedId(); if (id === null) return;
+    if (await askyesno('Delete order', `Delete order #${id}? This cannot be undone.`)) {
+      orders = orders.filter(o => o.order_id !== id); if (editingId === id) clearForm(); oSel = null; refreshAll();
+    }
+  });
+  $('oEdit').addEventListener('click', async () => {
+    const id = await selectedId(); if (id === null) return;
+    const o = orders.find(x => x.order_id === id)!;
+    editingId = id; setAddHeading(id);
+    fCust.value = o.customer; fProd.value = o.product; fQty.value = String(o.quantity); fPrice.value = o.price.toFixed(2); fDate.value = o.order_date; fStatus.value = o.status;
+    updateTotal(); showPage(0);
   });
 
-  price();
-  renderAll();
+  /* ══════════════ Daily Sales ══════════════ */
+  function refreshSales() {
+    const days = dailyTotals(), entries = [...days.entries()];
+    const grand = entries.reduce((s, [, v]) => s + v[2], 0), pendingValue = orders.filter(o => o.status === 'Pending').reduce((s, o) => s + total(o), 0);
+    const best = entries.length ? entries.reduce((a, b) => (b[1][2] > a[1][2] ? b : a)) : null;
+    $('sCards').innerHTML = card('Total sales', peso(grand), `${num(entries.reduce((s, [, v]) => s + v[0], 0))} orders · incl. ${peso(pendingValue)} pending`)
+      + card('Best day', best ? peso(best[1][2]) : '—', best ? best[0] : '') + card('Average per day', entries.length ? peso(grand / entries.length) : '—', entries.length ? `across ${plural(entries.length, 'day')}` : '');
+    $('sTable').innerHTML = table([{ label: 'Date', left: true }, { label: 'Orders' }, { label: 'Pieces sold' }, { label: 'Total sales' }],
+      entries.reverse().map(([d, [n, pcs, amt]]) => ({ cells: [d, n, num(pcs), peso(amt)] })));
+  }
+
+  /* ══════════════ Production Plan ══════════════ */
+  let pTouched = false, pPending = true;
+  function defaultProdDate() {
+    const t = todayS(), pending = [...new Set(orders.filter(o => o.status === 'Pending' && o.order_date >= t).map(o => o.order_date))].sort();
+    return pending[0] ?? t;
+  }
+  function planRows(d: string): [[string, number, number, number, number | null, number][], boolean] {
+    const agg = new Map<string, [number, number, number]>();
+    orders.forEach(o => {
+      if (o.order_date === d && (!pPending || o.status === 'Pending')) {
+        const a = agg.get(o.product) ?? [0, 0, 0]; a[0]++; a[1] += o.quantity; a[2] += o.status === 'Pending' ? o.quantity : 0; agg.set(o.product, a);
+      }
+    });
+    const [summary, start] = stockSummary(), tracking = start !== null;
+    const rows = [...agg.entries()].sort((a, b) => b[1][1] - a[1][1]).map(([prod, [n, qty, pend]]) => {
+      const have = tracking ? Math.max(0, summary[prod]?.have ?? 0) : null;
+      return [prod, n, qty, pend, have, have === null ? pend : Math.max(0, pend - have)] as [string, number, number, number, number | null, number];
+    });
+    return [rows, tracking];
+  }
+  function refreshProdChips(selected: string) {
+    const t = todayS(), pieces = new Map<string, number>();
+    orders.filter(o => o.status === 'Pending').forEach(o => pieces.set(o.order_date, (pieces.get(o.order_date) ?? 0) + o.quantity));
+    const upcoming = [...pieces.keys()].filter(x => x >= t).sort().slice(0, 4);
+    const overdue = [...pieces.keys()].filter(x => x < t).sort().reverse().slice(0, Math.max(0, 4 - upcoming.length));
+    const chips = [...upcoming, ...overdue];
+    $('pChips').innerHTML = chips.length ? chips.map(x => {
+      const name = x === t ? 'Today' : x === dayAt(1) ? 'Tomorrow' : chipDate(x);
+      return `<button type="button" class="gmd-btn chip ${x === selected ? '' : 'ghost'}" data-d="${x}">${name} &nbsp;·&nbsp; ${num(pieces.get(x)!)} pcs${x < t ? ' &nbsp;(overdue)' : ''}</button>`;
+    }).join('') : '<span class="muted">none yet. Add an order first.</span>';
+    return chips.length;
+  }
+  function refreshProd() {
+    const d = parseDate($<HTMLInputElement>('pDate').value);
+    const msg = $('pMsg');
+    if (!d) {
+      msg.textContent = 'Invalid date — use YYYY-MM-DD'; msg.classList.add('bad');
+      $('pCards').innerHTML = card('Pieces needed', '—', '') + card('Already in stock', '—', '') + card('Still to bake', '—', '');
+      $('pTable').innerHTML = table([{ label: 'Product', left: true }, { label: 'Orders' }, { label: 'Pieces needed' }, { label: 'In stock' }, { label: 'Still to bake' }], []);
+      return;
+    }
+    const [rows, tracking] = planRows(d);
+    $('pTable').innerHTML = table([{ label: 'Product', left: true }, { label: 'Orders' }, { label: 'Pieces needed' }, { label: 'In stock' }, { label: 'Still to bake' }],
+      rows.map((r, i) => ({ cells: [r[0], r[1], num(r[2]), r[4] === null ? '—' : num(r[4]), num(r[5])], tag: r[5] > 0 ? 'pending' : i % 2 ? 'odd' : 'even' })));
+    $('pCards').innerHTML = card('Pieces needed', num(rows.reduce((s, r) => s + r[2], 0)), `${plural(rows.length, 'product')} · ${plural(rows.reduce((s, r) => s + r[1], 0), 'order')}`)
+      + card('Already in stock', tracking ? num(rows.reduce((s, r) => s + Math.min(r[4]!, r[3]), 0)) : '—', tracking ? 'covered by what you already baked' : 'no baking records yet')
+      + card('Still to bake', num(rows.reduce((s, r) => s + r[5], 0)), `for ${d}`);
+    const nChips = refreshProdChips(d);
+    const which = pPending ? 'pending orders' : 'orders';
+    msg.classList.remove('bad');
+    msg.textContent = rows.length ? `Showing ${which} for ${d}, biggest quantity first.  ` + (tracking ? 'Stock comes from the Inventory tab.' : 'Record what you bake on the Inventory tab to see what is already in stock.')
+      : nChips ? `Nothing to bake for ${d} yet. Click one of the dates above that has orders.` : 'No pending orders yet. Add an order on the Add Order tab and it will appear here.';
+  }
+  $('pDate').addEventListener('keydown', () => { pTouched = true; });
+  $('pDate').addEventListener('input', () => { if ($<HTMLInputElement>('pDate').value.trim().length >= 10) refreshProd(); });
+  document.querySelectorAll<HTMLElement>('#gmd [data-pday]').forEach(b => b.addEventListener('click', () => { pTouched = true; $<HTMLInputElement>('pDate').value = dayAt(+b.dataset.pday!); refreshProd(); }));
+  $('pChips').addEventListener('click', e => { const b = (e.target as HTMLElement).closest<HTMLElement>('[data-d]'); if (b) { pTouched = true; $<HTMLInputElement>('pDate').value = b.dataset.d!; refreshProd(); } });
+  segmented('pMode', v => { pPending = v === 'Pending only'; refreshProd(); });
+  function bakeSheetText(d: string) {
+    const [rows, tracking] = planRows(d), w = 62, n = new Date();
+    const lines = ['GMD BAKERY - BAKE SHEET', '='.repeat(w), `Bake for : ${longDate(d)}`, `Orders   : ${pPending ? 'pending orders only' : 'all orders'}`,
+      `Printed  : ${iso(n)} ${pad(n.getHours())}:${pad(n.getMinutes())}`, '', 'Product'.padEnd(28) + 'Needed'.padStart(8) + 'In stock'.padStart(10) + 'To bake'.padStart(10), '-'.repeat(w)];
+    rows.forEach(r => lines.push(r[0].slice(0, 27).padEnd(28) + num(r[2]).padStart(8) + (r[4] === null ? '-' : num(r[4])).padStart(10) + num(r[5]).padStart(10)));
+    lines.push('-'.repeat(w), 'TOTAL'.padEnd(28) + num(rows.reduce((s, r) => s + r[2], 0)).padStart(8) + (tracking ? num(rows.reduce((s, r) => s + Math.min(r[4]!, r[3]), 0)) : '-').padStart(10) + num(rows.reduce((s, r) => s + r[5], 0)).padStart(10), '', 'Orders for this day:');
+    orders.filter(o => o.order_date === d && (!pPending || o.status === 'Pending')).sort((a, b) => a.order_id - b.order_id)
+      .forEach(o => lines.push(`  #${String(o.order_id).padEnd(5)} ${o.customer.slice(0, 24).padEnd(25)} ${num(o.quantity).padStart(5)} x ${o.product}  [${o.status}]`));
+    return lines.join('\n') + '\n';
+  }
+  $('pPrint').addEventListener('click', () => {
+    const d = parseDate($<HTMLInputElement>('pDate').value);
+    if (!d) return messagebox('Invalid date', 'Pick a valid date first (YYYY-MM-DD).', 'error');
+    if (!planRows(d)[0].length) return messagebox('Nothing to print', `There is nothing to bake for ${d}.`);
+    notepad(`bake-sheet-${d}`, bakeSheetText(d));
+  });
+
+  /* ══════════════ Inventory ══════════════ */
+  let stKind = 'Baked', sayTimer = 0;
+  segmented('iKind', v => { stKind = v; });
+  function stockSay(text: string, error = false) {
+    const el = $('iMsg');
+    el.textContent = text; el.className = error ? 'bad' : 'good';
+    clearTimeout(sayTimer);
+    if (!error) sayTimer = window.setTimeout(() => { el.className = 'fade'; }, 60);
+  }
+  function refreshStock() {
+    const [summary, start] = stockSummary();
+    const rows = Object.entries(summary).sort((a, b) => b[1].short - a[1].short || (a[0] < b[0] ? -1 : 1));
+    $('iTable').innerHTML = table([{ label: 'Product', left: true }, { label: 'Baked' }, { label: 'Sold' }, { label: 'In stock' }, { label: 'Orders waiting' }, { label: 'Still to bake' }],
+      rows.map(([p, v], i) => ({ cells: [p, num(v.baked), num(v.sold), num(v.have), num(v.waiting), num(v.short)], tag: v.short > 0 ? 'pending' : i % 2 ? 'odd' : 'even' })));
+    if (start === null) {
+      $('iCards').innerHTML = card('Pieces in stock', '—', 'no baking records yet') + card('Still to bake', '—', 'no baking records yet') + card('Products running short', '—', 'no baking records yet');
+      return;
+    }
+    const vals = Object.values(summary), shortRows = vals.filter(v => v.short > 0);
+    $('iCards').innerHTML = card('Pieces in stock', num(vals.reduce((s, v) => s + Math.max(0, v.have), 0)), `across ${plural(vals.filter(v => v.have > 0).length, 'product')}`)
+      + card('Still to bake', num(shortRows.reduce((s, v) => s + v.short, 0)), 'for the orders that are waiting')
+      + card('Products running short', String(shortRows.length), `of ${plural(vals.length, 'product')}`);
+    if (!$('iMsg').classList.contains('good') && !$('iMsg').classList.contains('bad'))
+      $('iMsg').textContent = `${stock.length} records since ${start}.  Yellow rows still need baking for the orders that are waiting.`;
+  }
+  $('iRecord').addEventListener('click', async () => {
+    const menu = menuPrices(), typed = $<HTMLInputElement>('iProd').value.trim();
+    const prod = Object.keys(menu).find(p => p.toLowerCase() === typed.toLowerCase()) ?? typed;
+    if (!prod) return stockSay('Please choose or type a product first.', true);
+    if (prod.length > 60) return stockSay('Product names can be up to 60 characters.', true);
+    const q = $<HTMLInputElement>('iQty').value.trim(), qty = /^\d+$/.test(q) ? +q : 0;
+    if (qty <= 0 || qty > 100000) return stockSay('Pieces must be a positive whole number.', true);
+    const d = parseDate($<HTMLInputElement>('iDate').value);
+    if (!d) return stockSay('Use the date format YYYY-MM-DD (e.g. 2026-10-12).', true);
+    const gap = Math.abs(daysBetween(d, todayS()));
+    if (gap > 90 && !(await askyesno('Check the date', `${d} is ${gap} days from today. Is that correct?`))) return;
+    if (qty > 10000 && !(await askyesno('Check the amount', `${num(qty)} pieces is unusually large. Is that correct?`))) return;
+    const signed = stKind === 'Baked' ? qty : -qty;
+    stock.push({ entry_id: Math.max(0, ...stock.map(e => e.entry_id)) + 1, date: d, product: prod, quantity: signed });
+    $<HTMLInputElement>('iQty').value = '1';
+    refreshAll();
+    stockSay(`Recorded ${signed > 0 ? '+' : '-'}${num(qty)} ${prod} on ${d}.`);
+  });
+  $('iUndo').addEventListener('click', async () => {
+    if (!stock.length) return stockSay('There are no records to undo yet.', true);
+    const last = stock.reduce((a, b) => (b.entry_id > a.entry_id ? b : a));
+    if (!(await askyesno('Undo last record', `Remove this record?\n\n${last.quantity > 0 ? '+' : ''}${num(last.quantity)} ${last.product} on ${last.date}`))) return;
+    stock = stock.filter(e => e !== last); refreshAll(); stockSay('Last record removed.');
+  });
+
+  /* ══════════════ Reports ══════════════ */
+  function productTotals() {
+    const qty = new Map<string, number>(), sales = new Map<string, number>();
+    orders.forEach(r => { qty.set(r.product, (qty.get(r.product) ?? 0) + r.quantity); sales.set(r.product, (sales.get(r.product) ?? 0) + total(r)); });
+    return { qty, sales, grand: [...sales.values()].reduce((s, v) => s + v, 0) };
+  }
+  function refreshReport() {
+    const { qty, sales, grand } = productTotals(), days = [...dailyTotals().entries()];
+    const pending = orders.filter(r => r.status === 'Pending'), pendingValue = pending.reduce((s, r) => s + total(r), 0);
+    const [summary, start] = stockSummary(), best = days.length ? days.reduce((a, b) => (b[1][2] > a[1][2] ? b : a)) : null, top = mostOrdered();
+    $('rCards1').innerHTML = card('Total orders', num(orders.length), `${pending.length} pending · ${orders.length - pending.length} completed`)
+      + card('Pieces sold', num([...qty.values()].reduce((s, v) => s + v, 0)), plural(qty.size, 'product'))
+      + card('Total sales', peso(grand), `incl. ${peso(pendingValue)} pending`)
+      + card('Average per day', days.length ? peso(grand / days.length) : '—', days.length ? `across ${plural(days.length, 'day')}` : '');
+    $('rCards2').innerHTML = card('Most ordered product', top ? top[0] : '—', top ? `${plural(top[1], 'order')} · ${num(top[2])} pieces` : '')
+      + card('Best sales day', best ? best[0] : '—', best ? `${peso(best[1][2])} in sales` : '')
+      + card('Pieces in stock', start === null ? '—' : num(Object.values(summary).reduce((s, v) => s + Math.max(0, v.have), 0)), start === null ? 'no baking records yet' : 'baked minus completed orders');
+    $('rTable').innerHTML = table([{ label: 'Product', left: true }, { label: 'Pieces' }, { label: 'Sales' }, { label: 'Share of sales' }],
+      [...qty.keys()].sort((a, b) => qty.get(b)! - qty.get(a)!).map(p => ({ cells: [p, num(qty.get(p)!), peso(sales.get(p)!), grand ? (sales.get(p)! / grand * 100).toFixed(1) + '%' : '0.0%'] })));
+  }
+  function reportText() {
+    const { qty, sales, grand } = productTotals(), days = [...dailyTotals().entries()], n = new Date();
+    const pend = orders.filter(r => r.status === 'Pending'), pendValue = pend.reduce((s, r) => s + total(r), 0);
+    const [summary, start] = stockSummary(), w = 62;
+    const lines = ['GMD BAKERY - SUMMARY REPORT', '='.repeat(w), `Generated: ${iso(n)} ${pad(n.getHours())}:${pad(n.getMinutes())}`, '',
+      `Total orders ........ ${num(orders.length)}   (${pend.length} pending, ${orders.length - pend.length} completed)`,
+      `Pieces ordered ...... ${num([...qty.values()].reduce((s, v) => s + v, 0))}`,
+      `Total sales ......... ${peso(grand)}`, `  completed ......... ${peso(grand - pendValue)}`, `  still pending ..... ${peso(pendValue)}`];
+    if (days.length) {
+      const best = days.reduce((a, b) => (b[1][2] > a[1][2] ? b : a));
+      lines.push(`Average per day ..... ${peso(grand / days.length)}  (over ${days.length} days)`, `Best sales day ...... ${best[0]}  (${peso(best[1][2])})`);
+    }
+    const top = mostOrdered();
+    if (top) lines.push(`Most ordered ........ ${top[0]}  (${plural(top[1], 'order')}, ${num(top[2])} pieces)`);
+    lines.push('Pieces in stock ..... ' + (start === null ? 'not tracked yet' : num(Object.values(summary).reduce((s, v) => s + Math.max(0, v.have), 0))));
+    lines.push('', 'Product'.padEnd(28) + 'Pieces'.padStart(8) + 'Sales'.padStart(16) + 'Share'.padStart(9), '-'.repeat(w));
+    [...qty.keys()].sort((a, b) => qty.get(b)! - qty.get(a)!).forEach(p => lines.push(p.slice(0, 27).padEnd(28) + num(qty.get(p)!).padStart(8) + peso(sales.get(p)!).padStart(16) + ((grand ? (sales.get(p)! / grand * 100).toFixed(1) : '0.0') + '%').padStart(9)));
+    lines.push('', 'Daily sales (latest 14 days)', 'Date'.padEnd(14) + 'Orders'.padStart(8) + 'Pieces'.padStart(9) + 'Sales'.padStart(16), '-'.repeat(w));
+    days.reverse().slice(0, 14).forEach(([d, [k, pcs, amt]]) => lines.push(d.padEnd(14) + String(k).padStart(8) + num(pcs).padStart(9) + peso(amt).padStart(16)));
+    return lines.join('\n') + '\n';
+  }
+  $('rSave').addEventListener('click', () => notepad('report', reportText()));
+
+  /* ══════════════ Charts (Matplotlib, drawn as SVG) ══════════════ */
+  let chartKind = 'bar', lineMode = 'Daily';
+  const INK = '#15231a', MUTED = '#6b7568', BORDER = '#e4e2d8', PRIMARY = '#175f27', ACCENT = '#63ab33';
+  const W = 1000, H = 470;
+  const T = (x: number, y: number, s: string, a = '') => `<text x="${x}" y="${y}" ${a}>${esc(s)}</text>`;
+  const lerp = (a: string, b: string, t: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) + (parseInt(b.slice(i, i + 2), 16) - parseInt(a.slice(i, i + 2), 16)) * t).toString(16).padStart(2, '0')).join('');
+  function niceTicks(max: number) {
+    const raw = max / 5, mag = Math.pow(10, Math.floor(Math.log10(raw || 1))), step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw) ?? mag * 10;
+    const out = []; for (let v = 0; v <= max + 1e-9; v += step) out.push(v); return out;
+  }
+  function chartSvg(): string {
+    let g = '';
+    const { qty, sales } = productTotals();
+    if (!orders.length) return `<svg viewBox="0 0 ${W} ${H}" class="gmd-svg">${T(W / 2, H / 2, 'No data yet', 'class="gx-mut" text-anchor="middle"')}</svg>`;
+    if (chartKind === 'bar') {
+      const items = [...qty.entries()].sort((a, b) => a[1] - b[1]), top = Math.max(...items.map(i => i[1]));
+      const L = 200, R = 960, Tp = 70, B = 400, xmax = top * 1.12, slot = (B - Tp) / items.length;
+      g += T(L, 34, 'Quantity sold per product', 'class="gx-t"');
+      niceTicks(xmax).forEach(v => { const x = L + ((R - L) * v) / xmax; g += `<line x1="${x}" y1="${Tp}" x2="${x}" y2="${B}" stroke="${BORDER}" stroke-opacity=".8"/>` + T(x, B + 20, num(v), 'class="gx-tk" text-anchor="middle"'); });
+      items.forEach(([k, v], i) => {
+        const y = B - slot * (i + 1) + slot * 0.19, h = slot * 0.62, w = ((R - L) * v) / xmax;
+        g += `<rect class="gx-grow" x="${L}" y="${y}" width="${w}" height="${h}" fill="${lerp('#a8d27a', PRIMARY, v / top)}"/>`
+          + T(L - 8, y + h / 2 + 4, k, 'class="gx-tk" text-anchor="end"') + T(L + w + 5, y + h / 2 + 4, String(v), 'class="gx-lb"');
+      });
+      g += `<line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="${BORDER}"/>` + T((L + R) / 2, B + 44, 'Pieces', 'class="gx-al" text-anchor="middle"');
+    } else if (chartKind === 'line') {
+      const days = [...dailyTotals().entries()];
+      const multiYear = new Set(days.map(([d]) => d.slice(0, 4))).size > 1;
+      let labels: string[], ys: number[], xlabel: string;
+      if (lineMode === 'Weekly') {
+        const wk = new Map<string, number>();
+        days.forEach(([d, v]) => { const dt = toDate(d); dt.setDate(dt.getDate() - ((dt.getDay() + 6) % 7)); const k = iso(dt); wk.set(k, (wk.get(k) ?? 0) + v[2]); });
+        const keys = [...wk.keys()].sort();
+        labels = keys.map(k => { const dt = toDate(k); return `${MONTHS[dt.getMonth()].slice(0, 3)} ${pad(dt.getDate())}${multiYear ? ', ' + dt.getFullYear() : ''}`; });
+        ys = keys.map(k => wk.get(k)!); xlabel = 'Week starting';
+      } else { labels = days.map(([d]) => (multiYear ? d : d.slice(5))); ys = days.map(([, v]) => v[2]); xlabel = multiYear ? 'Date' : 'Date (MM-DD)'; }
+      const L = 120, R = 960, Tp = 70, B = 360, ymax = ys.length && Math.max(...ys) > 0 ? Math.max(...ys) * 1.1 : 1;
+      const X = (i: number) => L + ((R - L) * (i + 0.5)) / Math.max(ys.length, 1), Y = (v: number) => B - ((B - Tp) * v) / ymax;
+      g += T(L, 34, `${lineMode} sales trend`, 'class="gx-t"');
+      niceTicks(ymax).forEach(v => { g += `<line x1="${L}" y1="${Y(v)}" x2="${R}" y2="${Y(v)}" stroke="${BORDER}" stroke-opacity=".8"/>` + T(L - 10, Y(v) + 4, String(Math.round(v)), 'class="gx-tk" text-anchor="end"'); });
+      const path = ys.map((v, i) => `${i ? 'L' : 'M'}${X(i)} ${Y(v)}`).join(' ');
+      if (ys.length) g += `<path d="${path} L${X(ys.length - 1)} ${Y(0)} L${X(0)} ${Y(0)} Z" fill="${ACCENT}" fill-opacity=".14"/><path class="gx-draw" d="${path}" fill="none" stroke="${ACCENT}" stroke-width="2.8" stroke-linejoin="round"/>`;
+      ys.forEach((v, i) => { g += `<circle cx="${X(i)}" cy="${Y(v)}" r="4.6" fill="${ACCENT}"/>`; });
+      const step = Math.max(1, Math.floor(ys.length / 12));
+      labels.forEach((l, i) => { if (i % step === 0) g += T(X(i), B + 14, l, `class="gx-tk" text-anchor="end" transform="rotate(-45 ${X(i)} ${B + 14})"`); });
+      g += `<line x1="${L}" y1="${Tp - 10}" x2="${L}" y2="${B}" stroke="${BORDER}"/><line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="${BORDER}"/>`
+        + T((L + R) / 2, H - 16, xlabel, 'class="gx-al" text-anchor="middle"') + T(52, (Tp + B) / 2, 'Sales (₱)', `class="gx-al" text-anchor="middle" transform="rotate(-90 52 ${(Tp + B) / 2})"`);
+    } else {
+      const items = [...sales.entries()].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+      if (!items.length) return `<svg viewBox="0 0 ${W} ${H}" class="gmd-svg">${T(W / 2, H / 2, 'No sales to show', 'class="gx-mut" text-anchor="middle"')}</svg>`;
+      const sum = items.reduce((s, [, v]) => s + v, 0), cx = W / 2, cy = 255, r = 165;
+      g += T(cx - r - 40, 34, 'Share of total sales by product', 'class="gx-t"');
+      let a0 = -Math.PI / 2;  // startangle=90, counter-clockwise like matplotlib
+      items.forEach(([k, v], i) => {
+        const span = (2 * Math.PI * v) / sum, a1 = a0 - span, color = CHART_COLORS[i % CHART_COLORS.length];
+        const p = (a: number, rr: number) => `${cx + rr * Math.cos(a)} ${cy + rr * Math.sin(a)}`;
+        g += items.length === 1 ? `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}"/>`
+          : `<path d="M${cx} ${cy} L${p(a0, r)} A${r} ${r} 0 ${span > Math.PI ? 1 : 0} 0 ${p(a1, r)} Z" fill="${color}" stroke="#fff" stroke-width="2.5"/>`;
+        const mid = (a0 + a1) / 2, [rr, gg, bb] = [1, 3, 5].map(j => parseInt(color.slice(j, j + 2), 16));
+        const dark = 0.299 * rr + 0.587 * gg + 0.114 * bb < 140;
+        g += T(cx + r * 0.8 * Math.cos(mid), cy + r * 0.8 * Math.sin(mid) + 4, ((v / sum) * 100).toFixed(1) + '%', `class="gx-pct" text-anchor="middle" fill="${dark ? '#fff' : INK}"`)
+          + T(cx + r * 1.1 * Math.cos(mid), cy + r * 1.1 * Math.sin(mid) + 4, k, `class="gx-lb" text-anchor="${Math.cos(mid) >= 0 ? 'start' : 'end'}"`);
+        a0 = a1;
+      });
+    }
+    return `<svg viewBox="0 0 ${W} ${H}" class="gmd-svg" role="img" aria-label="Chart">${g}</svg>`;
+  }
+  function refreshCharts() {
+    if (current !== 6) return;
+    $('cMode').hidden = chartKind !== 'line';
+    $('cChart').innerHTML = chartSvg();
+  }
+  $('cKind').addEventListener('click', e => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-k]'); if (!b) return;
+    chartKind = b.dataset.k!; $('cKind').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); refreshCharts();
+  });
+  segmented('cMode', v => { lineMode = v; refreshCharts(); });
+
+  /* ══════════════ refresh_all ══════════════ */
+  function refreshAll() {
+    $('gProds').innerHTML = Object.keys(menuPrices()).map(p => `<option value="${esc(p)}">`).join('');
+    refreshRecent(); refreshOrders(); refreshSales(); refreshProd(); refreshStock(); refreshReport(); refreshHeader(); refreshCharts();
+  }
+
+  fDate.value = todayS();
+  $<HTMLInputElement>('iDate').value = todayS();
+  $<HTMLInputElement>('pDate').value = defaultProdDate();
+  refreshAll();
+  requestAnimationFrame(moveLine);
+  addEventListener('load', moveLine);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !$('gmdMsg').hidden) { e.preventDefault(); ($('gmdMbBtns').querySelector('button') as HTMLButtonElement).click(); }
+    else if (e.key === 'Escape') { if (!$('gmdMsg').hidden) ($('gmdMbBtns').lastElementChild as HTMLButtonElement).click(); else $('gmdNp').hidden = true; }
+  });
+  $('iQty').addEventListener('keydown', e => { if (e.key === 'Enter') $('iRecord').click(); });
 </script>
 
 <style is:global>
-  .bk{--g1:#175f27;--g2:#63ab33;--soft:#e7f1e1;--ink:#15231a;--mut:#6b7568;--line:#e4e2d8;
-    background:#f5f4ee;color:var(--ink);border-radius:10px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.5);
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:13px;font-variation-settings:normal;max-width:980px}
-  .bk-bar{display:flex;align-items:center;gap:14px;padding:9px 14px;background:#e9e7df;border-bottom:1px solid var(--line)}
-  .bk-dots{display:flex;gap:6px}.bk-dots i{width:11px;height:11px;border-radius:50%;background:#d3d0c6}
-  .bk-title{flex:1;text-align:center;font-size:12px;color:var(--mut)}
-  .bk-file{font-size:11px;color:var(--g1)}
-  .bk-head{display:flex;align-items:center;gap:14px;padding:16px 20px;background:#fff;border-bottom:1px solid var(--line)}
-  .bk-logo{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--line)}
-  .bk-brand{font-size:19px;font-weight:700;color:var(--g1)}
-  .bk-sub{font-size:12px;color:var(--mut)}
-  .bk-tabs{display:flex;gap:2px;padding:0 14px;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto}
-  .bk-tabs button{position:relative;padding:12px 14px;background:none;border:none;font:inherit;font-size:13px;color:var(--mut);cursor:pointer;white-space:nowrap}
-  .bk-tabs button.on{color:var(--ink);font-weight:600}
-  .bk-tabs button.on::after{content:'';position:absolute;left:10px;right:10px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--g2)}
-  .bk kbd{font-family:inherit;font-size:10px;color:#9aa296;margin-left:4px}
-  .bk-pane{padding:20px}
-  .bk-pane[data-pane="order"]{display:grid;grid-template-columns:300px 1fr;gap:20px}
-  .bk-pane[hidden]{display:none!important}
-  .bk-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;padding:18px;background:#fff;border:1px solid var(--line);border-radius:10px}
-  .bk-form label{grid-column:span 2;display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:#3f4d3f}
-  .bk-form label.bk-sm{grid-column:span 1}
-  .bk-form input,.bk-form select{height:36px;padding:0 10px;border:1px solid #d6d4c9;border-radius:7px;background:#fff;font:inherit;font-weight:400;color:var(--ink);min-width:0}
-  .bk-form input:focus,.bk-form select:focus{outline:2px solid var(--g2);outline-offset:1px}
-  .bk-form input[readonly]{background:#f5f4ee;color:var(--mut)}
-  .bk-when{grid-column:span 2;display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3f4d3f}
-  .bk-chips{display:flex;flex-wrap:wrap;gap:6px}
-  .bk-chip{height:32px;padding:0 12px;border-radius:16px;border:1px solid #d6d4c9;background:#fff;font:inherit;font-size:12px;color:var(--ink);cursor:pointer}
-  .bk-chip.on{background:var(--g1);border-color:var(--g1);color:#fff}
-  .bk-total{grid-column:span 2;display:flex;justify-content:space-between;align-items:baseline;padding-top:8px;border-top:1px dashed var(--line);color:var(--mut)}
-  .bk-total b{font-size:22px;color:var(--g1)}
-  .bk-btn{grid-column:span 2;height:42px;border:none;border-radius:8px;background:var(--g1);color:#fff;font:inherit;font-weight:600;cursor:pointer}
-  .bk-btn:hover{background:#114a1e}
-  .bk-btn kbd{color:#a9d39a}
-  .bk-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-weight:700;margin-bottom:10px;color:var(--ink)}
-  .bk-h span{font-size:11px;font-weight:400;color:var(--mut)}
-  .bk table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  .bk th{text-align:left;font-size:11px;font-weight:600;color:var(--mut);padding:9px 10px;background:#fafaf6;border-bottom:1px solid var(--line)}
-  .bk td{padding:9px 10px;border-bottom:1px solid #efede6}
-  .bk tr.pending td{background:#fff8dc}
-  .bk tr.fresh td{animation:bkFresh 1.6s ease-out}
-  @keyframes bkFresh{from{background:#cfe9c2}}
-  .bk-mini{height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--g2);background:#fff;color:var(--g1);font:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
-  .bk-mini:hover{background:var(--soft)}
-  .bk-ok{font-size:11px;color:var(--g1)}
-  .bk-plan{margin-top:12px}
-  .bk-plan b{color:var(--g1)}
-  .bk-plan tr.pending b{color:#9a5b00}
-  .bk-empty{text-align:center;color:var(--mut);padding:24px!important}
-  .bk-hint{margin-top:12px;font-size:12px;color:var(--mut)}
-  .bk-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-  .bk-cards div{padding:14px 16px;background:#fff;border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;gap:3px;min-width:0}
-  .bk-cards span{font-size:11px;color:var(--mut)}
-  .bk-cards b{font-size:20px;color:var(--g1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .bk-cards small{font-size:11px;color:var(--mut)}
-  .bk-chart{display:flex;flex-direction:column;gap:7px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:10px}
-  .bk-row{display:grid;grid-template-columns:150px 1fr 40px;gap:10px;align-items:center;font-size:12px}
-  .bk-track{height:16px;background:#f0efe8;border-radius:4px;overflow:hidden}
-  .bk-track i{display:block;height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:4px;transition:width .9s cubic-bezier(.25,1,.5,1)}
-  .bk-row b{text-align:right;color:var(--g1)}
-  html:not(.touch) .bk button,html:not(.touch) .bk select{cursor:none}
-  @media(max-width:760px){
-    .bk-pane[data-pane="order"]{grid-template-columns:1fr}
-    .bk-file,.bk kbd{display:none}
-    .bk-cards{grid-template-columns:1fr}
-    .bk-row{grid-template-columns:100px 1fr 34px}
-    .bk-orders{overflow-x:auto}
-    .bk-pane{padding:14px}
+  /* palette from bakery_planner.py */
+  .gmd{position:relative;left:50%;transform:translateX(-50%);width:min(1180px,calc(100vw - 32px))}
+  .gmd-win{--bg:#f5f4ee;--surface:#fff;--border:#e4e2d8;--ink:#15231a;--muted:#6b7568;--label:#3f4d3f;--primary:#175f27;--primaryh:#114a1e;
+    --accent:#63ab33;--soft:#e7f1e1;--sel:#dcebd2;--pend:#fff7e0;--danger:#b3261e;--ui:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    border-radius:8px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08)}
+  .gmd-bar{display:flex;align-items:center;gap:10px;height:32px;padding-left:12px;background:#f3f3f3;color:#1b1b1b;font:12px var(--ui);border-bottom:1px solid #e5e5e5}
+  .gmd-bar img{width:16px;height:16px;border-radius:2px;object-fit:cover}
+  .gmd-caps{margin-left:auto;display:flex;height:100%;font-style:normal}
+  .gmd-caps b{width:46px;display:grid;place-items:center;font-weight:400;font-size:11px}
+
+  .gmd-app{position:relative;height:790px;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:13.3px/1.35 var(--ui);border-top:4px solid var(--primary)}
+  .gmd-app *{box-sizing:border-box}
+  .gmd-head{display:flex;align-items:center;gap:16px;padding:6px 34px 6px 34px;background:var(--surface);flex:none}
+  .gmd-logo{width:64px;height:64px;border-radius:50%;object-fit:cover}
+  .gmd-names b{display:block;font:700 25.3px/1.15 Georgia,"Times New Roman",serif;color:var(--primary)}
+  .gmd-names span{display:block;font-size:13.3px;color:var(--muted)}
+  .gmd-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .gmd-right span{font-size:13.3px;color:var(--label)}
+  .gmd-right em{font-style:normal;padding:5px 14px;border-radius:14px;background:var(--soft);color:var(--primary);font:600 12px var(--ui)}
+  .gmd-tabs{position:relative;display:flex;gap:2px;padding:0 28px;background:var(--surface);border-bottom:1px solid var(--border);flex:none;overflow-x:auto;scrollbar-width:none}
+  .gmd-tabs button{height:46px;padding:0 20px;border:none;background:none;font:600 14.7px var(--ui);color:var(--muted);white-space:nowrap;cursor:pointer}
+  .gmd-tabs button:hover{color:var(--ink)}
+  .gmd-tabs button.on{color:var(--ink)}
+  .gmd-line{position:absolute;bottom:0;height:3px;background:var(--accent);transition:left .26s cubic-bezier(.25,1,.5,1),width .26s}
+
+  .gmd-pages{flex:1;min-height:0;position:relative;padding:0 34px}
+  .gmd-page{display:none;height:100%;flex-direction:column;padding-bottom:12px}
+  .gmd-page.on{display:flex;animation:gmdIn .26s cubic-bezier(.25,1,.5,1)}
+  @keyframes gmdIn{from{opacity:0;transform:translateX(30px)}}
+  .gmd-note{margin:16px 3px 12px;font-size:13.3px;color:var(--muted);flex:none}
+  .gmd-note.edit{color:var(--primary);font-weight:700}
+  .gmd-card{background:var(--surface);border:1px solid var(--border)}
+
+  /* entries and combos (ttk) */
+  .gmd-app label{display:flex;flex-direction:column;gap:4px;font-size:13.3px;color:var(--label);min-width:0}
+  .gmd-in{height:36px;padding:0 9px;border:1px solid #c7cabd;border-radius:3px;background:#fff;color:var(--ink);font:13.3px var(--ui);outline:none;width:100%}
+  .gmd-in:focus{border-color:var(--primary);box-shadow:inset 0 -2px 0 var(--primary)}
+  .gmd-cb{appearance:none;-webkit-appearance:none;padding-right:30px;background:linear-gradient(45deg,transparent 50%,#555 50%) calc(100% - 15px) 52%/5px 5px no-repeat,linear-gradient(-45deg,transparent 50%,#555 50%) calc(100% - 10px) 52%/5px 5px no-repeat #fff}
+  .gmd-cb::-webkit-calendar-picker-indicator{opacity:0}
+  .w7{width:90px}.w10{width:120px}.w11{width:130px}.w13{width:150px}.w20{width:220px}
+
+  /* RoundButton */
+  .gmd-btn{height:40px;min-width:90px;padding:0 20px;border:none;border-radius:8px;background:var(--primary);color:#fff;font:600 13.3px var(--ui);white-space:nowrap;cursor:pointer;transition:background .15s}
+  .gmd-btn:hover{background:var(--primaryh)}
+  .gmd-btn.ghost{background:#eceee4;color:var(--ink)}
+  .gmd-btn.ghost:hover{background:#dde3d2}
+  .gmd-btn.danger{background:#fff;color:var(--danger);box-shadow:inset 0 0 0 1px #e8b4b0}
+  .gmd-btn.danger:hover{background:#fdeceb}
+  .gmd-btn.chip{height:32px;min-width:0;padding:0 14px;font-size:13.3px}
+  .gmd-btn:focus-visible,.gmd-seg button:focus-visible,.gmd-tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  /* Segmented */
+  .gmd-seg{display:inline-flex;padding:4px;border-radius:10px;background:#e9e9df;gap:2px}
+  .gmd-seg button{height:30px;padding:0 16px;border:none;border-radius:7px;background:none;color:var(--label);font:13px var(--ui);cursor:pointer;white-space:nowrap}
+  .gmd-seg button.on{background:#fff;color:var(--ink);box-shadow:0 0 0 1px #d8d9cc}
+  .gmd-seg.big button{min-width:150px}
+
+  /* Add Order */
+  .gmd-add{flex:1;min-height:0;display:grid;grid-template-columns:7fr 4fr;gap:24px}
+  .gmd-form{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 12px;align-content:start;padding:20px 22px}
+  .gmd-form .s2{grid-column:span 2}.gmd-form .s4{grid-column:span 4}
+  .gmd-total{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;background:var(--soft);color:var(--label);font-size:14.7px}
+  .gmd-total b{font-size:28px;color:var(--primary)}
+  .gmd-btns{display:flex;gap:10px}
+  .gmd-btns .gmd-btn:first-child{min-width:150px}
+  .gmd-recent{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .gmd-recent h4{margin:16px 20px 10px;font:700 16px var(--ui);color:var(--ink)}
+  .gmd-recent .gmd-tbl{flex:none}
+  .gmd-mark{margin:auto auto 14px;width:130px;height:130px;border-radius:50%;opacity:.12;filter:grayscale(.2)}
+
+  /* tables (ttk.Treeview) */
+  .gmd-tbl{display:flex;min-height:0}
+  .gmd-fill{flex:1}
+  .gmd-scroll{flex:1;min-height:0;overflow:auto;scrollbar-color:#cfd3c4 var(--bg)}
+  .gmd-app table{width:100%;border-collapse:collapse;font-size:13.3px}
+  .gmd-app th{position:sticky;top:0;height:33px;padding:0 8px;background:#f1f1e8;color:var(--label);font-weight:600;text-align:right;white-space:nowrap}
+  .gmd-app td{height:30px;padding:0 8px;text-align:right;white-space:nowrap}
+  .gmd-app th.l,.gmd-app td.l{text-align:left}
+  #oTable th,#oTable td{text-align:center}#oTable .l{text-align:left}
+  .gmd-app tr.even td{background:#fff}
+  .gmd-app tr.odd td{background:#faf9f4}
+  .gmd-app tr.pending td{background:var(--pend)}
+  .gmd-app tr.sel td{background:var(--sel)}
+  .gmd-app tr[data-key]{cursor:pointer}
+
+  /* Orders */
+  .gmd-filter{display:flex;align-items:flex-end;gap:10px;padding:12px 16px 14px;margin-bottom:14px;flex:none;flex-wrap:wrap}
+  .gmd-filter .grow{flex:1;min-width:120px}
+  .gmd-filter #oProd{width:190px}
+  .gmd-filter .gmd-btn{min-width:72px;margin-left:2px}
+  .gmd-bottom{display:flex;align-items:center;gap:8px;margin-top:14px;flex:none;color:var(--muted)}
+  .gmd-bottom>span{margin-right:auto;font-size:13.3px;white-space:pre-wrap}
+  .gmd-bottom .bad,.gmd-msgline.bad{color:var(--danger)}
+  #oDone{min-width:150px}#iUndo{min-width:150px}#rSave{min-width:130px}
+  #iMsg.good{color:var(--primary);transition:none}
+  #iMsg.fade{color:var(--muted);transition:color 2.5s ease-in-out}
+
+  /* stat cards */
+  .gmd-cards{display:grid;gap:14px;margin-bottom:16px;flex:none}
+  .gmd-cards.c3{grid-template-columns:repeat(3,1fr)}.gmd-cards.c4{grid-template-columns:repeat(4,1fr)}
+  .gmd-stat{display:flex;flex-direction:column;gap:2px;padding:16px 20px 14px;min-width:0}
+  .gmd-stat span{font-size:13.3px;color:var(--label)}
+  .gmd-stat b{font-size:28px;font-weight:600;color:var(--primary);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gmd-stat small{font-size:12px;color:var(--muted);min-height:16px}
+  #rCards2 .gmd-stat b{font-size:28px}
+
+  /* Production Plan / Inventory controls */
+  .gmd-ctl{padding:12px 18px;margin-bottom:12px;flex:none}
+  .gmd-ctlrow{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+  .gmd-ctlrow .right{margin-left:auto;min-width:110px}
+  #pPrint{min-width:150px}
+  .gmd-chips{display:flex;align-items:center;gap:12px;margin-top:10px;font-size:13.3px;color:var(--label);flex-wrap:wrap}
+  .gmd-chips #pChips{display:flex;gap:8px;flex-wrap:wrap}
+  .gmd-chips .muted{color:var(--muted)}
+  .gmd-msgline{margin:10px 3px 0;font-size:13.3px;color:var(--muted);flex:none}
+
+  /* Charts */
+  .gmd-charttop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex:none}
+  .gmd-charttop .gmd-seg[hidden]{display:none}
+  .gmd-chart{display:flex;align-items:center;justify-content:center;padding:12px 14px}
+  .gmd-svg{width:100%;height:100%;font-family:"DejaVu Sans",Verdana,"Segoe UI",sans-serif}
+  .gmd-svg .gx-t{font-size:17.5px;font-weight:700;fill:#15231a}
+  .gmd-svg .gx-tk{font-size:12.5px;fill:#6b7568}
+  .gmd-svg .gx-lb{font-size:12.5px;fill:#15231a}
+  .gmd-svg .gx-pct{font-size:12.5px}
+  .gmd-svg .gx-al{font-size:12.5px;fill:#6b7568}
+  .gmd-svg .gx-mut{font-size:18px;fill:#6b7568}
+  .gmd-svg .gx-grow{transform-box:fill-box;transform-origin:left;animation:gmdGrow .7s cubic-bezier(.25,1,.5,1)}
+  @keyframes gmdGrow{from{transform:scaleX(0)}}
+
+  .gmd-foot{flex:none;padding:7px 34px;border-top:1px solid var(--border);font-size:10.7px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* Windows message box + Notepad */
+  .gmd-over{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.08)}
+  .gmd-over[hidden]{display:none}
+  .gmd-mb{width:min(420px,100%);background:#fff;border-radius:8px;box-shadow:0 16px 48px rgba(0,0,0,.28),0 0 0 1px rgba(0,0,0,.1);font:13.3px var(--ui);overflow:hidden;animation:gmdPop .18s ease-out}
+  @keyframes gmdPop{from{opacity:0;transform:scale(.97)}}
+  .gmd-mbbar{display:flex;justify-content:space-between;align-items:center;height:32px;padding:0 0 0 14px;font-size:12px;color:#1b1b1b}
+  .gmd-mbbar b{width:46px;text-align:center;font-weight:400;font-size:11px}
+  .gmd-mbbody{display:flex;gap:16px;align-items:flex-start;padding:14px 24px 26px}
+  .gmd-mbbody p{margin:4px 0 0;white-space:pre-line;color:#1b1b1b;line-height:1.45}
+  .gmd-ic{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:700 17px Georgia,serif;font-style:normal;color:#fff}
+  .gmd-ic.info{background:#0067c0;font-style:italic}.gmd-ic.error{background:#c42b1c;font:700 14px var(--ui)}.gmd-ic.question{background:#0067c0}.gmd-ic.warning{background:#f7b500;color:#1b1b1b;border-radius:4px}
+  .gmd-mbfoot{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;background:#f3f3f3;border-top:1px solid #e5e5e5}
+  .gmd-mbfoot button{min-width:88px;height:32px;border-radius:4px;border:1px solid #d1d1d1;background:#fbfbfb;font:13px var(--ui);color:#1b1b1b;cursor:pointer}
+  .gmd-mbfoot button.def{background:#0067c0;border-color:#0067c0;color:#fff}
+  .gmd-mbfoot button:hover{filter:brightness(.96)}
+  .gmd-np{width:min(760px,100%);height:min(560px,100%);display:flex;flex-direction:column;background:#fff;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.12);overflow:hidden}
+  .gmd-npbar{display:flex;align-items:center;height:36px;padding-left:14px;background:#f3f3f3;font:12px var(--ui)}
+  .gmd-npbar button{margin-left:auto;width:46px;height:100%;border:none;background:none;font-size:12px;cursor:pointer}
+  .gmd-npbar button:hover{background:#c42b1c;color:#fff}
+  .gmd-npmenu{display:flex;gap:4px;padding:4px 8px;font:13px var(--ui);border-bottom:1px solid #eee}
+  .gmd-npmenu span{padding:3px 8px}
+  .gmd-np pre{flex:1;margin:0;padding:10px 14px;overflow:auto;font:14px/1.4 Consolas,"Cascadia Mono","Courier New",monospace;color:#1b1b1b;white-space:pre;user-select:text}
+  .gmd-npstat{display:flex;gap:28px;justify-content:flex-end;padding:5px 16px;background:#f9f9f9;border-top:1px solid #eee;font:11.5px var(--ui);color:#444}
+
+  html:not(.touch) .gmd button,html:not(.touch) .gmd select,html:not(.touch) .gmd tr[data-key],html:not(.touch) .gmd-cb{cursor:none}
+
+  @media(max-width:980px){
+    .gmd-app{height:auto}
+    .gmd-head{padding:8px 14px}
+    .gmd-right{display:none}
+    .gmd-logo{width:48px;height:48px}
+    .gmd-tabs{padding:0 6px}
+    .gmd-tabs button{padding:0 12px;font-size:13.3px}
+    .gmd-pages{padding:0 14px}
+    .gmd-page{height:auto}
+    .gmd-add{grid-template-columns:1fr}
+    .gmd-form{grid-template-columns:repeat(2,1fr)}
+    .gmd-form .s2,.gmd-form .s4{grid-column:span 2}
+    .gmd-cards.c3,.gmd-cards.c4{grid-template-columns:repeat(2,1fr)}
+    .gmd-tbl.gmd-fill,.gmd-fill{min-height:280px;max-height:420px}
+    .gmd-chart{min-height:300px}
+    .gmd-bottom{flex-wrap:wrap}
+    .gmd-ctlrow .right{margin-left:0}
+    .gmd-charttop{flex-wrap:wrap;gap:8px}
+    .gmd-seg.big button{min-width:0}
   }
 </style>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/demos/barangay-resident/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Barangay Safety: the real resident app screens running on a sample account (portfolio demo).">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Barangay Safety · Resident app (demo)</title>
+  <style>html{height:100%}body{margin:0;min-height:100%;background:#0d47a1}.center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}</style>
+  <script>
+    function removeSplashFromWeb() { document.getElementById("splash")?.remove(); document.body.style.background = "transparent"; }
+    // Live updates (Supabase realtime) would dial the demo's fake backend address; answer them in the page instead.
+    (function () {
+      var Real = window.WebSocket;
+      function Quiet(url, protocols) {
+        if (String(url).indexOf('portfolio-demo.invalid') < 0) return protocols === undefined ? new Real(url) : new Real(url, protocols);
+        this.url = String(url); this.readyState = 0; this.protocol = ''; this.extensions = ''; this.bufferedAmount = 0; this.binaryType = 'blob';
+        this.onopen = this.onclose = this.onerror = this.onmessage = null;
+      }
+      Quiet.prototype.send = function () {};
+      Quiet.prototype.close = function () { this.readyState = 3; };
+      Quiet.prototype.addEventListener = function () {};
+      Quiet.prototype.removeEventListener = function () {};
+      Quiet.prototype.dispatchEvent = function () { return true; };
+      ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'].forEach(function (k, i) { Quiet[k] = i; Quiet.prototype[k] = i; });
+      window.WebSocket = Quiet;
+    })();
+    // GPS for the demo: a fixed spot in Barangay 3, so the visitor's own location is never asked for or used.
+    (function () {
+      var spot = { coords: { latitude: 13.9400, longitude: 121.1610, accuracy: 12, altitude: null, altitudeAccuracy: null, heading: null, speed: null }, timestamp: Date.now() };
+      var fix = function (ok) { setTimeout(function () { spot.timestamp = Date.now(); ok(spot); }, 300); };
+      var geo = { getCurrentPosition: fix, watchPosition: function (ok) { fix(ok); return 1; }, clearWatch: function () {} };
+      try { Object.defineProperty(navigator, 'geolocation', { value: geo, configurable: true }); } catch (e) {}
+      if (navigator.permissions && navigator.permissions.query) {
+        var query = navigator.permissions.query.bind(navigator.permissions);
+        navigator.permissions.query = function (d) {
+          return d && d.name === 'geolocation'
+            ? Promise.resolve({ state: 'granted', status: 'granted', onchange: null, addEventListener: function () {}, removeEventListener: function () {} })
+            : query(d);
+        };
+      }
+    })();
+  </script>
+</head>
+<body>
+  <!-- the real app's splash screen while it loads -->
+  <picture id="splash">
+    <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
+    <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+    <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+  </picture>
+  <!-- no service worker: the demo always loads fresh and never touches the portfolio's storage -->
+  <script src="flutter.js"></script>
+  <script>
+    _flutter.buildConfig = {"engineRevision":"425cfb54d01a9472b3e81d9e76fd63a4a44cfbcb","builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"}]};
+    _flutter.loader.load({});
+  </script>
+</body>
+</html>

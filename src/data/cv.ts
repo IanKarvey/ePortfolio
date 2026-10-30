@@ -44,7 +44,7 @@ export const cv = {
           date: 'October 2026',
           href: '/projects/failed-delivery-analyzer/',
           points: [
-            'Built desktop and terminal versions on one shared engine that track delivery attempts and redeliveries, success rate by area, top failure reasons and trends, with four Matplotlib charts.',
+            'Built desktop and terminal versions on one shared engine that tracks delivery attempts and redeliveries, success rate by area, top failure reasons and trends, with four Matplotlib charts.',
             'Enforced data-integrity rules (e.g. no attempts after a successful delivery) and covered them with 79 automated tests.',
           ],
         },
